@@ -1,10 +1,8 @@
 "use client";
-export const dynamic = "force-dynamic";
-
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
 import axios from "axios";
-import { getApiUrl } from '../../config/api';
+import { getApiUrl } from "@/config/api";
 
 function ResetPasswordInner() {
   const searchParams = useSearchParams();
@@ -16,12 +14,11 @@ function ResetPasswordInner() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
+    setError("");
     try {
       await axios.post(getApiUrl('/customers/reset-password'), { token, password });
-      setMessage("Password reset! You can now log in.");
+   setMessage("Password reset! You can now log in.");
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong.");
     }
