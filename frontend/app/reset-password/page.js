@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
-export default function ResetPasswordPage() {
+function ResetPasswordInner() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
   const [password, setPassword] = useState("");
@@ -16,8 +16,8 @@ export default function ResetPasswordPage() {
     setLoading(true);
     setError("");
     try {
-    await axios.post("http://localhost:4000/customers/reset-password", { token, password });
-    setMessage("Password reset! You can now log in.");
+      await axios.post("http://localhost:4000/customers/reset-password", { token, password });
+      setMessage("Password reset! You can now log in.");
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong.");
     }
@@ -57,5 +57,13 @@ export default function ResetPasswordPage() {
         </form>
       )}
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordInner />
+    </Suspense>
   );
 }
