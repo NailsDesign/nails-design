@@ -15,6 +15,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { getApiUrl } from '../../config/api';
 
+console.log("Resolved API URL:", getApiUrl('/staff'));
+
 // Salon open hours
 const openHours = {
   0: { start: 11, end: 17.5 }, // Sunday: 11-17:30
