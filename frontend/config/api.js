@@ -8,7 +8,7 @@ const API_CONFIG = {
   },
 };
 
-const environment = process.env.NODE_ENV || 'development';
+const environment = process.env.NODE_ENV || 'production';
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nails-design.onrender.com/';
 
 // Helper function to get full API URL
