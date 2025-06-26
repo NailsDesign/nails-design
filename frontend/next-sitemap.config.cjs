@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'https://nailsdesign.co.uk',
+  siteUrl: 'https://nails-design.vercel.app/',
   generateRobotsTxt: true,
 };
