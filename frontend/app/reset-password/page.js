@@ -1,7 +1,8 @@
-export const dynamic = "force-dynamic";
 "use client";
+export const dynamic = "force-dynamic";
+
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import axios from "axios";
 import { getApiUrl } from '../../config/api';
 
@@ -16,7 +17,6 @@ function ResetPasswordInner() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
