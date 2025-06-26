@@ -5,7 +5,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getApiUrl } from "@/config/api";
 
-console.log("✅ Rebuilding: Vercel should recompile fresh chunks now");
+useEffect(() => {
+  console.log("🚀 Booking page mounted");
+  axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
+  axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data));
+}, []);
 
 // Salon open hours
 const openHours = {
