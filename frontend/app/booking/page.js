@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { getApiUrl } from "@/config/api";
 
 console.log("✅ Rebuilding: Vercel should recompile fresh chunks now");
 
@@ -62,23 +63,24 @@ export default function BookingPage() {
   const [error, setError] = useState("");
 
   // Fetch services and staff on mount
-  useEffect(() => {
-    axios.get("http://localhost:4000/services").then((res) => setServices(res.data));
-    axios.get("http://localhost:4000/staff").then((res) => setStaff(res.data));
-  }, []);
+ useEffect(() => {
+  axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
+  axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data));
+}, []);
+
 
   // Fetch booked slots for selected staff and date
   useEffect(() => {
-    if (!selectedDate || !form.staff_id) return;
-    const dayString = selectedDate.toISOString().slice(0, 10);
-    axios
-      .get(`http://localhost:4000/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`)
-      .then(res => {
-        setBookedSlots(res.data.map(dt =>
-          new Date(dt).toTimeString().slice(0, 5)
-        ));
-      });
-  }, [selectedDate, form.staff_id]);
+  if (!selectedDate || !form.staff_id) return;
+  const dayString = selectedDate.toISOString().slice(0, 10);
+  axios
+    .get(getApiUrl(`/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`))
+    .then(res => {
+      setBookedSlots(res.data.map(dt =>
+        new Date(dt).toTimeString().slice(0, 5)
+      ));
+    });
+}, [selectedDate, form.staff_id]);
 
   function filterDate(date) {
     const now = new Date();
@@ -157,7 +159,7 @@ export default function BookingPage() {
     }
 
     try {
-      await axios.post("http://localhost:4000/appointments", form);
+      await axios.post(getApiUrl("/appointments"), form);
       setSuccess(true);
       setError("");
       setForm({
