@@ -2,23 +2,30 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { getApiUrl } from '../../config/api';
 
 export default function Register() {
   const router = useRouter();
   const [form, setForm] = useState({ first_name: "", last_name: "", email: "", phone: "", birth_date: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      await axios.post("http://localhost:4000/customers/register", form);
+      await axios.post(getApiUrl('/customers/register'), form);
       setSuccess(true);
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed.");
+    } finally {
+      setLoading(false);
     }
   };
 

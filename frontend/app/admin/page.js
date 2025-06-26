@@ -1,16 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { getApiUrl } from '../../config/api';
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    axios.get("http://localhost:4000/appointments")
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      router.push("/admin/login");
+      return;
+    }
+
+    axios.get(getApiUrl('/appointments'))
       .then(res => setBookings(res.data))
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   return (
     <main className="max-w-4xl mx-auto p-8">

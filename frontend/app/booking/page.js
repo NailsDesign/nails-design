@@ -13,6 +13,7 @@ import { enGB } from 'date-fns/locale';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { getApiUrl } from '../../config/api';
 
 // Salon open hours
 const openHours = {
@@ -270,8 +271,8 @@ export default function BookingPage() {
 
   // Fetch services and staff on mount
   useEffect(() => {
-    axios.get("http://localhost:4000/services").then((res) => setServices(res.data));
-    axios.get("http://localhost:4000/staff").then((res) => setStaff(res.data));
+    axios.get(getApiUrl('/services')).then((res) => setServices(res.data));
+    axios.get(getApiUrl('/staff')).then((res) => setStaff(res.data));
   }, []);
 
   // Fetch booked slots for selected staff and date
@@ -279,7 +280,7 @@ export default function BookingPage() {
     if (!selectedDate || !form.staff_id) return;
     const dayString = selectedDate.toISOString().slice(0, 10);
     axios
-      .get(`http://localhost:4000/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`)
+      .get(getApiUrl(`/booked-slots?staff_id=${form.staff_id}&date=${dayString}`))
       .then(res => {
         setBookedSlots(res.data.map(dt =>
           new Date(dt).toTimeString().slice(0, 5)
@@ -372,7 +373,7 @@ export default function BookingPage() {
     }
 
     try {
-      await axios.post("http://localhost:4000/appointments", {
+      await axios.post(getApiUrl('/appointments'), {
         ...form,
         service_ids: basket.map(s => s.id)
       });
@@ -493,7 +494,7 @@ export default function BookingPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:4000/customers/login", {
+      const res = await axios.post(getApiUrl('/customers/login'), {
         email: authForm.email,
         password: authForm.password
       });
@@ -512,7 +513,7 @@ export default function BookingPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4000/customers/register", {
+      await axios.post(getApiUrl('/customers/register'), {
         first_name: authForm.first_name,
         last_name: authForm.last_name,
         email: authForm.email,
@@ -521,7 +522,7 @@ export default function BookingPage() {
         password: authForm.password
       });
       // Now log in the user
-      const res = await axios.post("http://localhost:4000/customers/login", {
+      const res = await axios.post(getApiUrl('/customers/login'), {
         email: authForm.email,
         password: authForm.password
       });

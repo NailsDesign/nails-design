@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
+import { getApiUrl } from '../../config/api';
 
 function ResetPasswordInner() {
   const searchParams = useSearchParams();
@@ -13,10 +14,12 @@ function ResetPasswordInner() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+    setSuccess("");
+    setLoading(true);
+
     try {
-      await axios.post("http://localhost:4000/customers/reset-password", { token, password });
+      await axios.post(getApiUrl('/customers/reset-password'), { token, password });
       setMessage("Password reset! You can now log in.");
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong.");

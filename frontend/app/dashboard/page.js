@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { getApiUrl } from '../../config/api';
 
 export default function CustomerDashboard() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function CustomerDashboard() {
       return;
     }
     setUser(JSON.parse(localStorage.getItem("user")));
-    axios.get("http://localhost:4000/my-bookings", {
+    axios.get(getApiUrl('/my-bookings'), {
       headers: { Authorization: "Bearer " + token }
     }).then(res => setBookings(res.data));
   }, []);

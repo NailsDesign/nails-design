@@ -2,24 +2,31 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { getApiUrl } from '../../config/api';
 
 export default function Login() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      const res = await axios.post("http://localhost:4000/customers/login", form);
+      const res = await axios.post(getApiUrl('/customers/login'), form);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setError("");
       router.push("/dashboard");
     } catch (err) {
       setError(err.response?.data?.error || "Login failed.");
+    } finally {
+      setLoading(false);
     }
   };
 

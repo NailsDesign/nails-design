@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { getApiUrl } from '../../../config/api';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function AdminDashboard() {
       return;
     }
     setAdmin(JSON.parse(localStorage.getItem("admin")));
-    axios.get("http://localhost:4000/appointments", {
+    axios.get(getApiUrl('/appointments'), {
       headers: { Authorization: "Bearer " + token }
     }).then(res => setBookings(res.data))
       .catch(() => router.push("/admin/login"));
