@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getApiUrl } from "@/config/api";
+import { getApiUrl } from "../../config/api";
 
 useEffect(() => {
   console.log("🚀 Booking page mounted");

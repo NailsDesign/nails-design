@@ -2,7 +2,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { getApiUrl } from "@/config/api";
+import { getApiUrl } from "../../config/api";
+
 
 function ResetPasswordInner() {
   const searchParams = useSearchParams();
