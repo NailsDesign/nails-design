@@ -1,17 +1,10 @@
-// API Configuration
-const API_CONFIG = {
-  development: {
-    baseURL: 'http://localhost:4000',
-  },
-  production: {
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://nails-design.onrender.com/',
-  },
-};
+// config/api.js
 
-const environment = process.env.NODE_ENV || 'production';
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nails-design.onrender.com/';
+// Dynamically set the base API URL based on environment
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'https://nails-design.onrender.com';
 
-// Helper function to get full API URL
+// Helper function to construct full API URLs
 export const getApiUrl = (endpoint) => {
   return `${API_BASE_URL}${endpoint}`;
-}; 
+};
