@@ -1025,83 +1025,96 @@ export default function BookingPage() {
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                         {/* Left: Details */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 border rounded-lg p-4">
+                          <div className="flex justify-between"><span className="font-semibold">Date</span><button className="text-pink-600 underline text-sm sm:text-base" onClick={() => { setCurrentStep(2); }}>Edit</button></div>
+                          <div className="mb-4 text-sm sm:text-base">
+                            {(() => {
+                              let dt = form.appointment_datetime ? new Date(form.appointment_datetime) : selectedDate;
+                              if (dt && !isNaN(dt)) {
+                                return `${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${dt.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+                              }
+                              return '';
+                            })()}
+                          </div>
+                          <div className="flex justify-between"><span className="font-semibold">Location</span><button className="text-pink-600 underline text-sm sm:text-base">Edit</button></div>
+                          <div className="mb-4 text-sm sm:text-base">Nails Design<br/>25 Porchester Road, London, W2 5DP</div>
+                          <div className="flex justify-between"><span className="font-semibold">Guests</span><button className="text-pink-600 underline text-sm sm:text-base">Edit</button></div>
+                          <div className="mb-4 text-sm sm:text-base">Just Me!</div>
+                          <div className="flex justify-between"><span className="font-semibold">Services</span><button className="text-pink-600 underline text-sm sm:text-base" onClick={() => { setCurrentStep(1); setStep1Stage('service'); }}>Edit</button></div>
                           <div>
-                            <div className="flex justify-between"><span className="text-sm sm:text-base">Date</span><button className="text-pink-600 underline text-sm sm:text-base" onClick={() => { setCurrentStep(2); }}>Edit</button></div>
-                            <div className="text-sm sm:text-base">
-                              {(() => {
-                                let dt = form.appointment_datetime ? new Date(form.appointment_datetime) : selectedDate;
-                                if (dt && !isNaN(dt)) {
-                                  return `${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${dt.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
-                                }
-                                return '';
-                              })()}
+                            {basket.length > 0 ? (
+                              <ul className="ml-2 text-xs sm:text-sm text-gray-900">
+                                {basket.map(service => (
+                                  <li key={service.name}>{service.name}</li>
+                                ))}
+                              </ul>
+                            ) : <span className="text-gray-500 text-xs sm:text-sm">No services selected</span>}
+                            {selectedAddOns.length > 0 && (
+                              <ul className="ml-4 text-xs sm:text-sm text-gray-700">
+                                {selectedAddOns.map(addon => (
+                                  <li key={addon}>+ {addon}</li>
+                                ))}
+                              </ul>
+                            )}
+                            {selectedRemovalType && (
+                              <div className="ml-4 text-xs sm:text-sm text-gray-700">Removal: {selectedRemovalType}</div>
+                            )}
+                          </div>
+                        </div>
+                        {/* Right: Payment & Confirmation */}
+                        <div className="border rounded-lg p-4 flex flex-col gap-4">
+                          <div>
+                            <label className="block font-semibold mb-1">Have a promo code? (Optional)</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                className="border rounded px-2 py-1 flex-1"
+                                placeholder="Enter code"
+                                // value and onChange can be added if you implement promo codes
+                              />
+                              <button
+                                className="bg-gray-100 px-4 py-1 rounded font-semibold"
+                                // onClick handler can be added if you implement promo codes
+                              >
+                                APPLY
+                              </button>
                             </div>
                           </div>
                           <div>
-                            <div className="flex justify-between"><span className="text-sm sm:text-base">Location</span><button className="text-pink-600 underline text-sm sm:text-base">Edit</button></div>
-                            <div className="text-sm sm:text-base">Nails Design<br/>25 Porchester Road, London, W2 5DP</div>
+                            <div className="font-semibold">Total</div>
+                            <div className="text-lg font-bold">Payable at location</div>
+                            <div className="text-2xl font-bold mt-1">£{basket.reduce((sum, s) => sum + Number(s.price), 0)}</div>
                           </div>
                           <div>
-                            <div className="flex justify-between"><span className="text-sm sm:text-base">Services</span><button className="text-pink-600 underline text-sm sm:text-base" onClick={() => { setCurrentStep(1); setStep1Stage('service'); }}>Edit</button></div>
-                            <div>
-                              {basket.length > 0 ? (
-                                <ul className="ml-2 text-xs sm:text-sm text-gray-900">
-                                  {basket.map(service => (
-                                    <li key={service.name}>{service.name}</li>
-                                  ))}
-                                </ul>
-                              ) : <span className="text-gray-500 text-xs sm:text-sm">No services selected</span>}
-                              {selectedAddOns.length > 0 && (
-                                <ul className="ml-4 text-xs sm:text-sm text-gray-700">
-                                  {selectedAddOns.map(addon => (
-                                    <li key={addon}>+ {addon}</li>
-                                  ))}
-                                </ul>
-                              )}
-                              {selectedRemovalType && (
-                                <div className="ml-4 text-xs sm:text-sm text-gray-700">Removal: {selectedRemovalType}</div>
-                              )}
-                              {/* Total Duration */}
-                              {basket.length > 0 && (
-                                <div className="mt-2 text-xs sm:text-sm font-semibold text-gray-700">
-                                  Total duration: {basket.reduce((sum, s) => sum + (s.duration || s.duration_minutes || 0), 0)} mins
-                                </div>
-                              )}
-                              {/* Total Price */}
-                              {basket.length > 0 && (
-                                <div className="text-xs sm:text-sm font-semibold text-gray-700">
-                                  Total: £{basket.reduce((sum, s) => sum + Number(s.price), 0)}
-                                </div>
-                              )}
-                              {/* Secure your booking with card section */}
-                              <div className="mt-6">
-                                <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Secure your booking with</div>
-                                <div className="text-xs sm:text-sm text-gray-600 mb-3">(Your card will not be charged until after your appointment)</div>
-                                <button
-                                  className="flex items-center w-full bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg p-3 sm:p-4 transition-colors"
-                                  onClick={() => {
-                                    // Handle card payment
-                                  }}
-                                >
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center">
-                                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                      </svg>
-                                    </div>
-                                    <div className="text-left">
-                                      <div className="font-semibold text-gray-900 text-sm sm:text-base">Card Payment</div>
-                                      <div className="text-xs sm:text-sm text-gray-600">Secure payment processing</div>
-                                    </div>
-                                  </div>
-                                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                  </svg>
-                                </button>
-                              </div>
+                            <div className="font-semibold mb-1">Secure your booking with</div>
+                            <div className="text-xs text-gray-500 mb-2">
+                              (Your card will not be charged until after your appointment)
                             </div>
+                            <button
+                              className="w-full bg-gray-100 border rounded py-2 flex items-center gap-2 justify-center"
+                              // onClick handler for card add can be added
+                            >
+                              <span role="img" aria-label="card">💳</span> Add a new card
+                            </button>
                           </div>
+                          <div className="flex items-start gap-2">
+                            <input
+                              type="checkbox"
+                              checked={agreed}
+                              onChange={e => setAgreed(e.target.checked)}
+                              className="mt-1"
+                            />
+                            <span className="text-xs text-gray-700">
+                              Tick to confirm agreement with our <a href="/terms" className="underline">Terms</a> and <a href="/conditions" className="underline">Conditions</a> and to confirm you have added all details of relevant allergies or medical information. We require card details to hold your booking - you will not be charged. You are free to cancel/change your appointment up to 12 hours before with no charge. Cancellations/changes with less than 12 hours notice and no shows are charged in full using the card on file.
+                            </span>
+                          </div>
+                          <button
+                            className="w-full bg-gray-400 text-white py-3 rounded font-bold text-lg disabled:opacity-50"
+                            onClick={handleSubmit}
+                            disabled={!agreed}
+                          >
+                            CONFIRM BOOKING
+                          </button>
                         </div>
                       </div>
                     </div>
