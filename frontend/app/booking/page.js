@@ -674,7 +674,7 @@ export default function BookingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center" style={{ fontFamily: 'Quicksand, sans-serif' }}>
+    <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-start justify-center pt-4" style={{ fontFamily: 'Quicksand, sans-serif' }}>
       <div className="w-full max-w-7xl p-4 sm:p-8 flex flex-col items-center justify-center mx-auto">
         {/* Header */}
         <div className="text-center mb-2 sm:mb-3">
@@ -728,8 +728,8 @@ export default function BookingPage() {
         )}
 
         {/* Centered Main Content for Steps */}
-        <div className="flex justify-center items-center w-full min-h-[400px] sm:min-h-[500px]">
-          <div className="w-full max-w-2xl flex flex-col items-center justify-center">
+        <div className="flex justify-center items-center w-full min-h-[400px] sm:min-h-[500px] mt-0 pt-0">
+          <div className="w-full max-w-2xl flex flex-col items-center justify-center mt-0 pt-0">
             <AnimatePresence mode="wait">
               {currentStep === 1 && step1Stage === 'service' && (
                 <motion.div
@@ -739,7 +739,7 @@ export default function BookingPage() {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="bg-white rounded-2xl shadow-lg pt-2 pb-8 px-4 sm:pt-4 sm:pb-16 sm:px-16 w-full max-w-5xl mx-auto">
+                  <div className="bg-white rounded-2xl shadow-lg pt-0 pb-8 px-4 sm:pt-0 sm:pb-12 sm:px-16 w-full max-w-5xl mx-auto mt-0">
                     <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-gray-900 mt-0 mb-6 tracking-wide uppercase">CHOOSE YOUR SERVICE</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8 items-stretch">
                       {/* MANI */}
@@ -972,7 +972,7 @@ export default function BookingPage() {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 w-full max-w-3xl mx-auto mt-1">
+                  <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 w-full max-w-3xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-center">DO YOU NEED REMOVAL?</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                       <div
