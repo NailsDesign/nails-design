@@ -348,8 +348,35 @@ export default function BookingPage() {
   const totalPrice = basket.reduce((sum, s) => sum + Number(s.price), 0);
   const totalDuration = basket.reduce((sum, s) => sum + Number(s.duration_minutes), 0);
 
+  async function finalizeBooking({
+    customer_id,
+    staff_id,
+    service_ids,
+    appointment_datetime,
+    promo_code
+  }) {
+    try {
+      const res = await axios.post(getApiUrl("/api/bookings/finalize"), {
+        customer_id,
+        staff_id,
+        service_ids,
+        appointment_datetime,
+        promo_code
+      });
+      return res.data; // { success: true, booking_id }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.error) {
+        throw new Error(err.response.data.error);
+      }
+      throw new Error("Booking failed. Please try again.");
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess(false);
+
     if (!isFormComplete(form, basket)) {
       return;
     }
@@ -378,24 +405,28 @@ export default function BookingPage() {
     }
 
     try {
-      await axios.post(getApiUrl("/appointments"), {
-        ...form,
-        service_ids: basket.map(s => s.id)
+      // Replace with actual customer_id (from logged-in user)
+      const customer_id = user?.id;
+      const staff_id = form.staff_id;
+      const service_ids = basket.map(s => s.id);
+      const appointment_datetime = form.appointment_datetime;
+      const promo_code = promoApplied ? promoCode : null;
+
+      const result = await finalizeBooking({
+        customer_id,
+        staff_id,
+        service_ids,
+        appointment_datetime,
+        promo_code
       });
-      setSuccess(true);
-      setError("");
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        staff_id: "",
-        appointment_datetime: ""
-      });
-      setBasket([]);
-      setSelectedDate(null);
-      setCurrentStep(1);
+
+      if (result.success) {
+        setSuccess(true);
+        // Optionally redirect to confirmation page:
+        // router.push(`/booking/confirmation?booking_id=${result.booking_id}`);
+      }
     } catch (err) {
-      setError("Sorry, booking failed. Please try again or contact us.");
+      setError(err.message);
     }
   };
 
