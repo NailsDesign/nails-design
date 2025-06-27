@@ -674,38 +674,52 @@ export default function BookingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
+    <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center" style={{ fontFamily: 'Quicksand, sans-serif' }}>
       <div className="w-full max-w-7xl p-4 sm:p-8 flex flex-col items-center justify-center mx-auto">
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-2 sm:mb-3">
           <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">Book Your Appointment</h1>
           <p className="text-sm sm:text-base text-gray-600">Choose your services and secure your spot</p>
         </div>
 
-        {/* Progress Steps */}
-        <div className="flex justify-center mb-6 sm:mb-8 w-full">
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold ${
-                  currentStep >= step 
-                    ? 'bg-pink-600 text-white' 
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {step}
-                </div>
-                {step < 3 && (
-                  <div className={`w-8 sm:w-16 h-1 mx-1 sm:mx-2 ${
-                    currentStep > step ? 'bg-pink-600' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
+        {/* Progress Bar - Booking Steps (single pill, fill effect, evenly distributed, Spanish Pink) */}
+        <div className="flex justify-center w-full mb-2 mt-2">
+          <div className="relative w-full max-w-xl">
+            {/* Fill background */}
+            <div className="absolute inset-0 rounded-full overflow-hidden" aria-hidden="true">
+              <div className={`h-full w-full transition-all duration-300 bg-gradient-to-r from-[#F7C6CE] to-[#F7C6CE]`} style={{ width: `${(currentStep/3)*100}%`, position: 'absolute', left: 0, top: 0, zIndex: 1 }}></div>
+              <div className="h-full w-full bg-[#FFF0F2] border border-[#F7C6CE] rounded-full absolute left-0 top-0 z-0"></div>
+            </div>
+            <div className="relative flex items-center justify-between w-full px-2 py-2" style={{zIndex:2}}>
+              {[1, 2, 3].map((step, idx) => {
+                const stepLabels = ['Service', 'Details', 'Confirm'];
+                const isActive = currentStep === step;
+                const isCompleted = currentStep > step;
+                return (
+                  <button
+                    key={step}
+                    type="button"
+                    className="flex flex-col items-center flex-1 focus:outline-none"
+                    onClick={() => { if (isCompleted) setCurrentStep(step); }}
+                    disabled={!isCompleted && !isActive}
+                    style={{zIndex:3}}
+                  >
+                    <span className={`flex items-center gap-2 text-base sm:text-lg transition-all
+                      ${isActive ? 'font-bold text-[#C94F7C]' : 'font-medium text-gray-500'}`}
+                    >
+                      <span className={`w-7 h-7 flex items-center justify-center rounded-full font-bold
+                        ${isActive ? 'bg-white bg-opacity-80 text-[#C94F7C]' : 'bg-[#F7B7D3] text-gray-500'}`}>{step}</span>
+                      {stepLabels[step-1]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
         {/* Error Message */}
-      {error && (
+        {error && (
           <div className="w-full max-w-2xl mx-auto mb-4 sm:mb-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
               <p className="text-red-600 text-sm sm:text-base">{error}</p>
@@ -725,102 +739,112 @@ export default function BookingPage() {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 w-full">
-                    <h2 className="text-center text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">CHOOSE YOUR SERVICE</h2>
-                    {/* Category Tabs - Mobile Optimized */}
-                    <div className="flex flex-col items-center w-full mb-4 sm:mb-6">
-                      <div className="flex flex-col sm:flex-row justify-center w-full max-w-3xl gap-2 sm:gap-4">
-                        {/* MANI */}
-                        <div className="flex-1 flex flex-col items-center justify-end">
-                          <button
-                            onClick={() => setSelectedCategory('Mani')}
-                            className={`w-full py-3 sm:py-4 rounded text-base sm:text-lg font-semibold uppercase transition text-center border
-                              ${selectedCategory === 'Mani' ? 'bg-pink-300 text-black border-gray-300' : 'bg-white text-black border-gray-300 hover:bg-pink-50'}`}
-                            style={{ minWidth: 0 }}
-                          >
-                            MANI
-                          </button>
-                        </div>
-                        {/* PEDI */}
-                        <div className="flex-1 flex flex-col items-center justify-end">
-                          <button
-                            onClick={() => setSelectedCategory('Pedi')}
-                            className={`w-full py-3 sm:py-4 rounded text-base sm:text-lg font-semibold uppercase transition text-center border
-                              ${selectedCategory === 'Pedi' ? 'bg-pink-300 text-black border-gray-300' : 'bg-white text-black border-gray-300 hover:bg-pink-50'}`}
-                            style={{ minWidth: 0 }}
-                          >
-                            PEDI
-                          </button>
-                        </div>
-                        {/* MANI-PEDI with Most Popular label */}
-                        <div className="flex-1 flex flex-col items-center justify-end relative">
-                          <span className={`w-full flex items-center justify-center px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold z-10 border border-gray-300 rounded-t-md rounded-b-none
-                            ${selectedCategory === 'Mani & Pedi' ? 'bg-pink-300 text-pink-900' : 'bg-pink-100 text-pink-900'}`}
-                            style={{ borderBottom: 'none', borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
-                            <span className="mr-1 text-pink-600">&#10084;</span> Most Popular!
-                          </span>
-                          <button
-                            onClick={() => setSelectedCategory('Mani & Pedi')}
-                            className={`w-full py-3 sm:py-4 text-base sm:text-lg font-semibold uppercase transition text-center z-0 border border-gray-300 rounded-t-none rounded-b-md
-                              ${selectedCategory === 'Mani & Pedi' ? 'bg-pink-300 text-black' : 'bg-white text-black hover:bg-pink-50'}`}
-                            style={{ minWidth: 0, borderTop: 'none', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-                          >
-                            MANI-PEDI
-                          </button>
-                        </div>
-                        {/* NAIL EXTENSION & ENHANCEMENTS */}
-                        <div className="flex-1 flex flex-col items-center justify-end">
-                          <button
-                            onClick={() => setSelectedCategory('Nail Extension & Enhancements')}
-                            className={`w-full py-3 sm:py-4 rounded text-base sm:text-lg font-semibold uppercase transition text-center border
-                              ${selectedCategory === 'Nail Extension & Enhancements' ? 'bg-pink-300 text-black border-gray-300' : 'bg-white text-black border-gray-300 hover:bg-pink-50'}`}
-                            style={{ minWidth: 0 }}
-                          >
-                            NAIL EXTENSION & ENHANCEMENTS
-                          </button>
-                        </div>
+                  <div className="bg-white rounded-2xl shadow-lg pt-2 pb-8 px-4 sm:pt-4 sm:pb-16 sm:px-16 w-full max-w-5xl mx-auto">
+                    <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-gray-900 mt-0 mb-6 tracking-wide uppercase">CHOOSE YOUR SERVICE</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8 items-stretch">
+                      {/* MANI */}
+                      <div className="flex flex-col items-center">
+                        <button
+                          onClick={() => setSelectedCategory('Mani')}
+                          className={`w-full h-40 sm:h-48 rounded-2xl shadow-md flex flex-col items-center justify-center border-2 transition-all duration-200
+                            ${selectedCategory === 'Mani' ? 'bg-[#F7A6B6] border-[#C94F7C] text-[#C94F7C]' :
+                              'bg-[#FFF0F2] border-transparent text-gray-900 hover:bg-[#F7C6CE] hover:text-[#C94F7C]'}
+                          `}
+                        >
+                          <span className="text-5xl mb-2">💅</span>
+                          <span className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide">MANI</span>
+                        </button>
+                      </div>
+                      {/* MANI-PEDI */}
+                      <div className="flex flex-col items-center relative">
+                        <button
+                          onClick={() => setSelectedCategory('Mani & Pedi')}
+                          className={`w-full h-40 sm:h-48 rounded-2xl shadow-md flex flex-col items-center justify-center border-2 transition-all duration-200
+                            ${selectedCategory === 'Mani & Pedi' ? 'bg-[#F7A6B6] border-[#C94F7C] text-[#C94F7C]' :
+                              'bg-[#FFF0F2] border-transparent text-gray-900 hover:bg-[#F7C6CE] hover:text-[#C94F7C]'}
+                          `}
+                        >
+                          <span className="text-5xl mb-2">🖐️</span>
+                          <span className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide">MANI-PEDI</span>
+                          {/* Most Popular badge */}
+                          <span className="absolute top-2 right-4 bg-pink-500 text-white text-xs font-bold rounded-full px-3 py-1 shadow-md">Most Popular</span>
+                        </button>
+                      </div>
+                      {/* PEDI */}
+                      <div className="flex flex-col items-center">
+                        <button
+                          onClick={() => setSelectedCategory('Pedi')}
+                          className={`w-full h-40 sm:h-48 rounded-2xl shadow-md flex flex-col items-center justify-center border-2 transition-all duration-200
+                            ${selectedCategory === 'Pedi' ? 'bg-[#F7A6B6] border-[#C94F7C] text-[#C94F7C]' :
+                              'bg-[#FFF0F2] border-transparent text-gray-900 hover:bg-[#F7C6CE] hover:text-[#C94F7C]'}
+                          `}
+                        >
+                          <span className="text-5xl mb-2">🦶</span>
+                          <span className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide">PEDI</span>
+                        </button>
+                      </div>
+                      {/* EXTENSIONS */}
+                      <div className="flex flex-col items-center">
+                        <button
+                          onClick={() => setSelectedCategory('Nail Extension & Enhancements')}
+                          className={`w-full h-40 sm:h-48 rounded-2xl shadow-md flex flex-col items-center justify-center border-2 transition-all duration-200
+                            ${selectedCategory === 'Nail Extension & Enhancements' ? 'bg-[#F7A6B6] border-[#C94F7C] text-[#C94F7C]' :
+                              'bg-[#FFF0F2] border-transparent text-gray-900 hover:bg-[#F7C6CE] hover:text-[#C94F7C]'}
+                          `}
+                        >
+                          <span className="text-5xl mb-2">✨</span>
+                          <span className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide">EXTENSIONS</span>
+                        </button>
                       </div>
                     </div>
                     {/* Service List - Mobile Optimized */}
                     {selectedCategory === 'Mani & Pedi' ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 items-stretch">
+                      <div className="mb-6 sm:mb-8">
                         {/* MANI-PEDI — MANICURES */}
-                        <div>
-                          <h4 className="font-semibold text-pink-700 mb-2">MANI-PEDI — MANICURES</h4>
-                          {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
-                            <div
-                              key={service.name}
-                              className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full mb-2 ${selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
-                              onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
-                            >
-                              <div>
-                                <div className="flex justify-between items-center mb-2">
-                                  <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
-                                  <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                        <div className="mb-6">
+                          <h4 className="font-semibold text-pink-700 mb-2 text-lg sm:text-xl">MANI-PEDI — MANICURES</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
+                              <div
+                                key={service.name}
+                                className={`rounded-lg border-2 p-4 sm:p-5 transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full
+                                  ${selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 'bg-[#F7B7D3] border-[#F7B7D3]' :
+                                    'bg-[#FDF0F5] border-transparent hover:bg-[#FDE6F2]'} duration-200`}
+                                onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
+                              >
+                                <div>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
+                                    <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                                  </div>
+                                  <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
                                 </div>
-                                <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                         {/* MANI-PEDI — PEDICURES */}
                         <div>
-                          <h4 className="font-semibold text-pink-700 mb-2">MANI-PEDI — PEDICURES</h4>
-                          {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
-                            <div
-                              key={service.name}
-                              className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full mb-2 ${selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
-                              onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
-                            >
-                              <div>
-                                <div className="flex justify-between items-center mb-2">
-                                  <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
-                                  <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                          <h4 className="font-semibold text-pink-700 mb-2 text-lg sm:text-xl">MANI-PEDI — PEDICURES</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
+                              <div
+                                key={service.name}
+                                className={`rounded-lg border-2 p-4 sm:p-5 transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full
+                                  ${selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 'bg-[#F7B7D3] border-[#F7B7D3]' :
+                                    'bg-[#FDF0F5] border-transparent hover:bg-[#FDE6F2]'} duration-200`}
+                                onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
+                              >
+                                <div>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
+                                    <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                                  </div>
+                                  <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
                                 </div>
-                                <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -832,7 +856,9 @@ export default function BookingPage() {
                         ).map((service, idx) => (
                           <div
                             key={service.name}
-                            className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[180px] sm:min-h-[220px] h-full ${selectedService && selectedService.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
+                            className={`rounded-lg border-2 p-4 sm:p-5 transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full
+                              ${selectedService && selectedService.name === service.name ? 'bg-[#F7B7D3] border-[#F7B7D3]' :
+                                'bg-[#FDF0F5] border-transparent hover:bg-[#FDE6F2]'} duration-200`}
                             onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
                           >
                             <div>
@@ -888,7 +914,8 @@ export default function BookingPage() {
                       {allAddOns.map(addon => (
                         <div
                           key={addon.name}
-                          className={`rounded-lg border p-4 sm:p-5 bg-pink-50 transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full ${selectedAddOns.includes(addon.name) ? 'bg-pink-200 border-pink-400' : 'border-gray-200 hover:bg-pink-100'}`}
+                          className={`rounded-lg border p-4 sm:p-5 bg-pink-50 transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full
+                            ${selectedAddOns.includes(addon.name) ? 'bg-pink-200 border-pink-400' : 'border-gray-200 hover:bg-pink-100'}`}
                           onClick={() => {
                             if (selectedAddOns.includes(addon.name)) {
                               setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
@@ -945,7 +972,7 @@ export default function BookingPage() {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 w-full">
+                  <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 w-full max-w-3xl mx-auto mt-1">
                     <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-center">DO YOU NEED REMOVAL?</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                       <div
@@ -1088,7 +1115,7 @@ export default function BookingPage() {
                               if (selectedDate instanceof Date && !isNaN(selectedDate)) {
                                 formattedValue = `${String(selectedDate.getDate()).padStart(2, '0')}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${selectedDate.getFullYear()}`;
                               }
-                              return (
+              return (
                                 <div className="relative mb-4">
                                   <input ref={inputRef} {...inputProps} value={formattedValue} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-sm sm:text-base" />
                                   {InputProps?.endAdornment}
@@ -1127,16 +1154,16 @@ export default function BookingPage() {
                                 }
                                 if (isBooked || isPast) return null;
                                 return (
-                                  <button
+                  <button
                                     key={slot}
-                                    type="button"
+                    type="button"
                                     onClick={() => setForm({ ...form, appointment_datetime: `${selectedDate.toISOString().slice(0, 10)}T${slot}` })}
                                     className={`py-3 sm:py-2 min-w-[60px] sm:min-w-[70px] rounded text-center font-medium border-2 transition-colors flex items-center justify-center text-xs sm:text-sm
                                       ${isSelected ? 'border-pink-600 bg-pink-50 text-black' : 'border-gray-200 bg-white text-black hover:border-pink-300'}
-                                    `}
-                                  >
+                    `}
+                  >
                                     {slot}
-                                  </button>
+                  </button>
                                 );
                               })}
                             </div>
@@ -1343,7 +1370,6 @@ export default function BookingPage() {
           </div>
         </div>
       </div>
-
       {/* Auth Modal (dismissible) */}
       <Dialog open={showAuthModal} onClose={() => setShowAuthModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen px-4">
@@ -1558,5 +1584,6 @@ export default function BookingPage() {
     </main>
   );
 }
+
 
 
