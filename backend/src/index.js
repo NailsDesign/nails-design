@@ -14,7 +14,7 @@ const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const allowedOrigins = [
-  'https://nails-design.onrender.com', // replace with your actual Vercel domain
+  'https://nails-design-17xcgpzvs-nails-design.vercel.app/', // replace with your actual Vercel domain
   'http://localhost:3000' // for local development
 ];
 
