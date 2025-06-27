@@ -24,7 +24,7 @@ app.use(cors({
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
-      /^https:\\/\\/nails-design-[a-z0-9]+-nails-design\\.vercel\\.app$/.test(origin)
+      /^https:\/\/nails-design-[a-z0-9]+-nails-design\.vercel\.app$/.test(origin)
     ) {
       callback(null, true);
     } else {
