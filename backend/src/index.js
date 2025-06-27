@@ -13,7 +13,15 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_default_jwt_secret_here";
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-app.use(cors());
+const allowedOrigins = [
+  'https://nails-design.onrender.com', // replace with your actual Vercel domain
+  'http://localhost:3000' // for local development
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true // if you use cookies/auth
+}));
 app.use(express.json());
 
 // Import your Stripe route
