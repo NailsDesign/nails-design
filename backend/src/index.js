@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import stripeRoutes from '../stripe.js';
+import { v4 as uuidv4 } from 'uuid';
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_default_jwt_secret_here";
@@ -301,6 +302,65 @@ app.post('/appointments', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Finalize booking (no payment for now)
+app.post('/api/bookings/finalize', async (req, res) => {
+  const { customer_id, staff_id, service_ids, appointment_datetime, promo_code } = req.body;
+
+  // 1. Validate input
+  if (!customer_id || !staff_id || !service_ids || !appointment_datetime) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  // 2. Check if time slot is still available
+  const slotCheck = await pool.query(
+    `SELECT 1 FROM bookings WHERE staff_id = $1 AND appointment_datetime = $2`,
+    [staff_id, appointment_datetime]
+  );
+  if (slotCheck.rowCount > 0) {
+    return res.status(409).json({ error: "Time slot already booked" });
+  }
+
+  // 3. Validate promo code (if provided)
+  let discount = 0;
+  if (promo_code) {
+    const promoRes = await pool.query(
+      `SELECT * FROM discounts WHERE code = $1 AND valid_from <= CURRENT_DATE AND (valid_until IS NULL OR valid_until >= CURRENT_DATE)` ,
+      [promo_code]
+    );
+    const promo = promoRes.rows[0];
+    if (!promo) {
+      return res.status(400).json({ error: "Invalid or expired promo code" });
+    }
+    discount = Number(promo.value);
+    // Optionally: mark promo as used for this customer (not implemented here)
+  }
+
+  // 4. Calculate total price
+  const serviceRes = await pool.query(
+    `SELECT price FROM services WHERE service_id = ANY($1::uuid[])`,
+    [service_ids]
+  );
+  const total = serviceRes.rows.reduce((sum, s) => sum + Number(s.price), 0) - discount;
+
+  // 5. Create booking record (no payment for now)
+  const booking_id = uuidv4();
+  await pool.query(
+    `INSERT INTO bookings (booking_id, customer_id, staff_id, appointment_datetime, total, promo_code, discount)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [booking_id, customer_id, staff_id, appointment_datetime, total, promo_code, discount]
+  );
+  // Link services to booking
+  for (const service_id of service_ids) {
+    await pool.query(
+      `INSERT INTO booking_services (booking_id, service_id) VALUES ($1, $2)`,
+      [booking_id, service_id]
+    );
+  }
+
+  // 6. Respond with booking ID
+  res.json({ success: true, booking_id });
 });
 
 app.get('/', (req, res) => {
