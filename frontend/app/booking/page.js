@@ -1052,26 +1052,48 @@ export default function BookingPage() {
                         Your reservation will expire in {`${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')}`}
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                        {/* Left: Details */}
+                        {/* Left: Details (new order) */}
                         <div className="space-y-4">
+                          {/* Location (no Edit) */}
                           <div>
-                            <div className="flex justify-between"><span className="text-sm sm:text-base">Date</span><button className="text-pink-600 underline text-sm sm:text-base" onClick={() => { setCurrentStep(2); }}>Edit</button></div>
+                            <div className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Location</div>
                             <div className="text-sm sm:text-base">
-                              {(() => {
-                                let dt = form.appointment_datetime ? new Date(form.appointment_datetime) : selectedDate;
-                                if (dt && !isNaN(dt)) {
-                                  return `${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${dt.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
-                                }
-                                return '';
-                              })()}
+                              Nails Design<br />
+                              25 Porchester Road, London, W2 5DP
                             </div>
                           </div>
+                          {/* Date (with Edit) */}
                           <div>
-                            <div className="flex justify-between"><span className="text-sm sm:text-base">Location</span><button className="text-pink-600 underline text-sm sm:text-base">Edit</button></div>
-                            <div className="text-sm sm:text-base">Nails Design<br/>25 Porchester Road, London, W2 5DP</div>
+                            <div className="flex justify-between">
+                              <span className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Date</span>
+                              <button className="text-pink-600 underline text-xs sm:text-sm" onClick={() => setCurrentStep(2)}>Edit</button>
+                            </div>
+                            <div className="text-sm sm:text-base">
+                              {form.appointment_datetime
+                                ? new Date(form.appointment_datetime).toLocaleString(undefined, {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })
+                                : ""}
+                            </div>
                           </div>
+                          {/* Staff */}
                           <div>
-                            <div className="flex justify-between"><span className="text-sm sm:text-base">Services</span><button className="text-pink-600 underline text-sm sm:text-base" onClick={() => { setCurrentStep(1); setStep1Stage('service'); }}>Edit</button></div>
+                            <div className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Staff</div>
+                            <div className="text-sm sm:text-base">
+                              {staff.find(s => s.id === form.staff_id)?.name || "Not selected"}
+                            </div>
+                          </div>
+                          {/* Services (with Edit) */}
+                          <div>
+                            <div className="flex justify-between">
+                              <span className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Services</span>
+                              <button className="text-pink-600 underline text-xs sm:text-sm" onClick={() => { setCurrentStep(1); setStep1Stage('service'); }}>Edit</button>
+                            </div>
                             <div>
                               {basket.length > 0 ? (
                                 <ul className="ml-2 text-xs sm:text-sm text-gray-900">
@@ -1090,18 +1112,15 @@ export default function BookingPage() {
                               {selectedRemovalType && (
                                 <div className="ml-4 text-xs sm:text-sm text-gray-700">Removal: {selectedRemovalType}</div>
                               )}
-                              {/* Total Duration */}
-                              {basket.length > 0 && (
-                                <div className="mt-2 text-xs sm:text-sm font-semibold text-gray-700">
-                                  Total duration: {basket.reduce((sum, s) => sum + (s.duration || s.duration_minutes || 0), 0)} mins
-                                </div>
-                              )}
-                              {/* Total Price */}
-                              {basket.length > 0 && (
-                                <div className="text-xs sm:text-sm font-semibold text-gray-700">
-                                  Total: £{basket.reduce((sum, s) => sum + Number(s.price), 0)}
-                                </div>
-                              )}
+                            </div>
+                          </div>
+                          {/* Total Duration */}
+                          <div>
+                            <div className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Total duration</div>
+                            <div className="text-sm sm:text-base">
+                              {basket.length > 0
+                                ? `${basket.reduce((sum, s) => sum + (s.duration || s.duration_minutes || 0), 0)} mins`
+                                : "0 mins"}
                             </div>
                           </div>
                         </div>
@@ -1153,11 +1172,14 @@ export default function BookingPage() {
                               // onClick={...} // Your card payment handler
                             >
                               <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center">
-                                  {/* Card icon SVG */}
-                                </div>
+                                {/* Card icon SVG */}
+                                <svg width="24" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <rect x="1" y="2" width="22" height="12" rx="2" fill="#fff" stroke="#333" strokeWidth="1.5"/>
+                                  <rect x="1" y="5" width="22" height="2" fill="#e5e7eb" />
+                                  <rect x="4" y="10" width="6" height="2" rx="1" fill="#e5e7eb" />
+                                </svg>
                                 <div className="text-left">
-                                  <div className="font-semibold text-gray-900 text-sm sm:text-base">Card Payment</div>
+                                  <div className="font-semibold text-gray-900 text-sm sm:text-base">Add a new card</div>
                                   <div className="text-xs sm:text-sm text-gray-600">Secure payment processing</div>
                                 </div>
                               </div>
