@@ -1140,7 +1140,7 @@ export default function BookingPage() {
                               />
                               <button
                                 type="button"
-                                className="bg-pink-600 text-white px-4 py-2 rounded"
+                                className="bg-pink-600 text-white px-2 py-1 rounded text-xs min-w-[60px]"
                                 onClick={handleApplyPromo}
                                 disabled={promoApplied}
                               >
