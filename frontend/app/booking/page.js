@@ -98,6 +98,15 @@ const maniPediServices = [
   { name: "CLASSIC PEDICURE - POLISH", description: "Get flawless feet with the . Featuring a soak, expert shaping, buffing, cuticle care, hard skin filing and smoothing and moisturising, followed by a polish of your choice from our vibrant Colour Library.", duration: 50, price: 44 },
 ];
 
+// Nail Extension & Enhancements
+const nailExtensionEnhancements = [
+  { name: "Acrylic Extensions", description: "Classic acrylic nail extensions for added length and strength.", duration: 60, price: 45 },
+  { name: "Gel Extensions", description: "Flexible and natural-looking gel nail extensions.", duration: 60, price: 50 },
+  { name: "SNS Extensions", description: "Lightweight SNS dipping powder extensions.", duration: 60, price: 48 },
+  { name: "BIAB Enhancements", description: "Builder in a Bottle for extra strength and durability.", duration: 60, price: 52 },
+  { name: "Others (specify if needed)", description: "Custom enhancements or requests.", duration: 60, price: 0 }
+];
+
 // Add-ons for all services
 const addOnOptions = [
   'BIAB',
@@ -213,6 +222,10 @@ export default function BookingPage() {
   const [selectedRemovalType, setSelectedRemovalType] = useState(null);
   const [step1Stage, setStep1Stage] = useState('service');
 
+  // --- Mani-Pedi two-part selection state ---
+  const [selectedManiPediManicure, setSelectedManiPediManicure] = useState(null);
+  const [selectedManiPediPedicure, setSelectedManiPediPedicure] = useState(null);
+
   // --- Restore booking state from localStorage on mount (client only) ---
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -275,23 +288,23 @@ export default function BookingPage() {
   }, []);
 
   // Fetch services and staff on mount
-  useEffect(() => {
-    axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
-    axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data));
-  }, []);
+ useEffect(() => {
+  axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
+  axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data));
+}, []);
 
   // Fetch booked slots for selected staff and date
   useEffect(() => {
-    if (!selectedDate || !form.staff_id) return;
-    const dayString = selectedDate.toISOString().slice(0, 10);
-    axios
-      .get(getApiUrl(`/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`))
-      .then(res => {
-        setBookedSlots(res.data.map(dt =>
-          new Date(dt).toTimeString().slice(0, 5)
-        ));
-      });
-  }, [selectedDate, form.staff_id]);
+  if (!selectedDate || !form.staff_id) return;
+  const dayString = selectedDate.toISOString().slice(0, 10);
+  axios
+    .get(getApiUrl(`/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`))
+    .then(res => {
+      setBookedSlots(res.data.map(dt =>
+        new Date(dt).toTimeString().slice(0, 5)
+      ));
+    });
+}, [selectedDate, form.staff_id]);
 
   // Check for JWT in localStorage on mount
   useEffect(() => {
@@ -421,7 +434,7 @@ export default function BookingPage() {
       });
 
       if (result.success) {
-        setSuccess(true);
+      setSuccess(true);
         // Optionally redirect to confirmation page:
         // router.push(`/booking/confirmation?booking_id=${result.booking_id}`);
       }
@@ -433,14 +446,25 @@ export default function BookingPage() {
   const nextStep = () => {
     if (currentStep === 1) {
       if (step1Stage === 'service') {
-        if (!selectedService) {
-          setError("Please select a service to continue.");
+        if (selectedCategory === 'Mani & Pedi') {
+          if (!(selectedManiPediManicure && selectedManiPediPedicure)) {
+            setError("Please select one manicure and one pedicure to continue.");
+            return;
+          }
+          setBasket([selectedManiPediManicure, selectedManiPediPedicure]);
+          setStep1Stage('addons');
+          setError("");
+          return;
+        } else {
+          if (!selectedService) {
+            setError("Please select a service to continue.");
+            return;
+          }
+          setBasket([selectedService]);
+          setStep1Stage('addons');
+          setError("");
           return;
         }
-        setBasket([selectedService]);
-        setStep1Stage('addons');
-        setError("");
-        return;
       }
       if (step1Stage === 'addons') {
         if (!(selectedAddOns.length > 0 || noAddOns)) {
@@ -626,7 +650,7 @@ export default function BookingPage() {
   };
 
   if (success) {
-    return (
+  return (
       <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
         <div className="max-w-md mx-auto p-8 text-center">
           <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -681,7 +705,7 @@ export default function BookingPage() {
         </div>
 
         {/* Error Message */}
-        {error && (
+      {error && (
           <div className="w-full max-w-2xl mx-auto mb-4 sm:mb-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
               <p className="text-red-600 text-sm sm:text-base">{error}</p>
@@ -744,26 +768,84 @@ export default function BookingPage() {
                             MANI-PEDI
                           </button>
                         </div>
+                        {/* NAIL EXTENSION & ENHANCEMENTS */}
+                        <div className="flex-1 flex flex-col items-center justify-end">
+                          <button
+                            onClick={() => setSelectedCategory('Nail Extension & Enhancements')}
+                            className={`w-full py-3 sm:py-4 rounded text-base sm:text-lg font-semibold uppercase transition text-center border
+                              ${selectedCategory === 'Nail Extension & Enhancements' ? 'bg-pink-300 text-black border-gray-300' : 'bg-white text-black border-gray-300 hover:bg-pink-50'}`}
+                            style={{ minWidth: 0 }}
+                          >
+                            NAIL EXTENSION & ENHANCEMENTS
+                          </button>
+                        </div>
                       </div>
                     </div>
                     {/* Service List - Mobile Optimized */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 items-stretch">
-                      {(selectedCategory === 'Mani' ? maniServices : selectedCategory === 'Pedi' ? pediServices : maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES')).map((service, idx) => (
-                        <div
-                          key={service.name}
-                          className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[180px] sm:min-h-[220px] h-full ${selectedService && selectedService.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
-                          onClick={() => setSelectedService(service)}
-                        >
-                          <div>
-                            <div className="flex justify-between items-center mb-2">
-                              <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
-                              <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                    {selectedCategory === 'Mani & Pedi' ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 items-stretch">
+                        {/* MANI-PEDI — MANICURES */}
+                        <div>
+                          <h4 className="font-semibold text-pink-700 mb-2">MANI-PEDI — MANICURES</h4>
+                          {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
+                            <div
+                              key={service.name}
+                              className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full mb-2 ${selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
+                              onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
+                            >
+                              <div>
+                                <div className="flex justify-between items-center mb-2">
+                                  <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
+                                  <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                                </div>
+                                <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
+                              </div>
                             </div>
-                            <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
-                          </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                        {/* MANI-PEDI — PEDICURES */}
+                        <div>
+                          <h4 className="font-semibold text-pink-700 mb-2">MANI-PEDI — PEDICURES</h4>
+                          {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
+                            <div
+                              key={service.name}
+                              className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[120px] sm:min-h-[140px] h-full mb-2 ${selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
+                              onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
+                            >
+                              <div>
+                                <div className="flex justify-between items-center mb-2">
+                                  <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
+                                  <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                                </div>
+                                <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 items-stretch">
+                        {(selectedCategory === 'Mani' ? maniServices
+                          : selectedCategory === 'Pedi' ? pediServices
+                          : selectedCategory === 'Nail Extension & Enhancements' ? nailExtensionEnhancements
+                          : []
+                        ).map((service, idx) => (
+                          <div
+                            key={service.name}
+                            className={`rounded-lg border-2 p-4 sm:p-5 bg-white transition cursor-pointer flex flex-col justify-between min-h-[180px] sm:min-h-[220px] h-full ${selectedService && selectedService.name === service.name ? 'bg-pink-100 border-pink-300' : 'border-gray-200 hover:bg-pink-50'}`}
+                            onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                          >
+                            <div>
+                              <div className="flex justify-between items-center mb-2">
+                                <div className="font-bold text-base sm:text-lg text-gray-900">{service.name}</div>
+                                <div className="text-right text-xs sm:text-sm font-semibold text-gray-700">{service.duration} Mins &nbsp; £{service.price}</div>
+                              </div>
+                              <div className="text-gray-700 text-xs sm:text-sm mb-2">{service.description}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {/* Service Selection Sub-Step - Mobile Optimized Buttons */}
                     {step1Stage === 'service' && (
                       <>
@@ -773,9 +855,18 @@ export default function BookingPage() {
                             onClick={() => prevStep()}
                           >BACK</button>
                           <button
-                            className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3 rounded font-semibold transition text-sm sm:text-base ${selectedService ? 'bg-pink-400 text-white hover:bg-pink-500' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                            className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3 rounded font-semibold transition text-sm sm:text-base ${
+                              (selectedCategory === 'Mani & Pedi'
+                                ? selectedManiPediManicure && selectedManiPediPedicure
+                                : selectedService)
+                                ? 'bg-pink-400 text-white hover:bg-pink-500'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                             onClick={nextStep}
-                            disabled={!selectedService}
+                            disabled={
+                              selectedCategory === 'Mani & Pedi'
+                                ? !(selectedManiPediManicure && selectedManiPediPedicure)
+                                : !selectedService
+                            }
                           >NEXT</button>
                         </div>
                       </>
@@ -1161,7 +1252,7 @@ export default function BookingPage() {
                           <div>
                             <label className="block font-semibold mb-1">Have a promo code? (Optional)</label>
                             <div className="flex gap-2">
-                              <input
+        <input
                                 type="text"
                                 value={promoCode}
                                 onChange={e => setPromoCode(e.target.value)}
@@ -1300,7 +1391,7 @@ export default function BookingPage() {
                   <input
                     name="first_name"
                     placeholder="First Name"
-                    required
+          required
                     className="w-full p-3 border rounded"
                     value={authForm.first_name}
                     onChange={handleAuthChange}
@@ -1319,11 +1410,11 @@ export default function BookingPage() {
                 </div>
                 <div>
                   <label className="block font-semibold mb-1">Email</label>
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="Email"
-                    required
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
                     className="w-full p-3 border rounded"
                     value={authForm.email}
                     onChange={handleAuthChange}
@@ -1331,10 +1422,10 @@ export default function BookingPage() {
                 </div>
                 <div>
                   <label className="block font-semibold mb-1">Phone</label>
-                  <input
-                    name="phone"
-                    placeholder="Phone"
-                    required
+        <input
+          name="phone"
+          placeholder="Phone"
+          required
                     className="w-full p-3 border rounded"
                     value={authForm.phone}
                     onChange={handleAuthChange}
@@ -1346,7 +1437,7 @@ export default function BookingPage() {
                     name="birth_date"
                     type="date"
                     placeholder="Date of Birth"
-                    required
+          required
                     className="w-full p-3 border rounded"
                     value={authForm.birth_date}
                     onChange={handleAuthChange}
@@ -1358,7 +1449,7 @@ export default function BookingPage() {
                     name="password"
                     type="password"
                     placeholder="Password"
-                    required
+          required
                     className="w-full p-3 border rounded"
                     value={authForm.password}
                     onChange={handleAuthChange}
@@ -1371,18 +1462,18 @@ export default function BookingPage() {
               </form>
             ) : (
               <form onSubmit={handleLogin} className="space-y-4">
-                <div>
+        <div>
                   <label className="block font-semibold mb-1">Email</label>
                   <input
                     name="email"
                     type="email"
                     placeholder="Email"
-                    required
+            required
                     className="w-full p-3 border rounded"
                     value={authForm.email}
                     onChange={handleAuthChange}
                   />
-                </div>
+          </div>
                 <div>
                   <label className="block font-semibold mb-1">Password</label>
                   <input
@@ -1394,15 +1485,15 @@ export default function BookingPage() {
                     value={authForm.password}
                     onChange={handleAuthChange}
                   />
-                </div>
+        </div>
                 <div className="text-right mb-2">
                   <button type="button" onClick={() => setShowForgotPasswordModal(true)} className="text-pink-600 hover:underline text-sm font-medium">Forgot my password?</button>
                 </div>
                 {authError && <p className="text-red-600">{authError}</p>}
                 <button className="w-full bg-rose-300 text-black py-3 rounded font-semibold tracking-wide mt-4 hover:bg-rose-400 transition">
                   LOG IN
-                </button>
-              </form>
+        </button>
+      </form>
             )}
           </div>
         </div>
