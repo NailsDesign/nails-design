@@ -1068,7 +1068,7 @@ export default function BookingPage() {
                 </motion.div>
               )}
               {currentStep === 3 && (
-                <>
+                <form onSubmit={handleSubmit}>
                   <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-center">CONFIRM YOUR APPOINTMENT DETAILS</h3>
                   <motion.div
                     key="step3"
@@ -1236,9 +1236,9 @@ export default function BookingPage() {
                           </div>
                           {/* Confirm Booking Button */}
                           <button
+                            type="submit"
                             className={`w-full bg-pink-600 text-white py-3 rounded font-semibold transition ${!agreed ? "opacity-50 cursor-not-allowed" : ""}`}
                             disabled={!agreed}
-                            onClick={handleSubmit}
                           >
                             CONFIRM BOOKING
                           </button>
@@ -1246,7 +1246,7 @@ export default function BookingPage() {
                       </div>
                     </div>
                   </motion.div>
-                </>
+                </form>
               )}
             </AnimatePresence>
           </div>
