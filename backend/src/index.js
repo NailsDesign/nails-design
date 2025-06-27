@@ -14,15 +14,24 @@ const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const allowedOrigins = [
-  'nails-design.vercel.app',
-  'nails-design-git-main-nails-design.vercel.app',
-  'nails-design-dw7g9php8-nails-design.vercel.app', // replace with your actual Vercel domain
-  'http://localhost:3000' // for local development
+  'https://nails-design.vercel.app', // production domain
+  'http://localhost:3000' // local dev
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true // if you use cookies/auth
+  origin: function (origin, callback) {
+    // Allow localhost, production, and all Vercel preview deployments
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /^https:\\/\\/nails-design-[a-z0-9]+-nails-design\\.vercel\\.app$/.test(origin)
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 app.use(express.json());
 
