@@ -191,6 +191,11 @@ export default function BookingPage() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSent, setForgotSent] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoError, setPromoError] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoMessage, setPromoMessage] = useState("");
 
   // Real-time clock for time slot updates
   const [now, setNow] = useState(new Date());
@@ -566,6 +571,28 @@ export default function BookingPage() {
   useEffect(() => {
     localStorage.setItem('booking_step1Stage', step1Stage);
   }, [step1Stage]);
+
+  // Multiple promo codes logic
+  const promoCodes = {
+    WELCOME10: { discount: 10, message: "£10 off your first booking!" },
+    SUMMER5: { discount: 5, message: "£5 off summer special!" },
+    VIP20: { discount: 20, message: "VIP: £20 off!" }
+  };
+
+  const handleApplyPromo = () => {
+    const code = promoCode.trim().toUpperCase();
+    if (promoCodes[code]) {
+      setPromoApplied(true);
+      setPromoError("");
+      setPromoDiscount(promoCodes[code].discount);
+      setPromoMessage(promoCodes[code].message);
+    } else {
+      setPromoApplied(false);
+      setPromoError("Invalid promo code.");
+      setPromoDiscount(0);
+      setPromoMessage("");
+    }
+  };
 
   if (success) {
     return (
@@ -1020,6 +1047,7 @@ export default function BookingPage() {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 w-full">
+                      {/* Reservation timer */}
                       <div className="mb-4 text-center text-pink-700 font-semibold text-sm sm:text-base">
                         Your reservation will expire in {`${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')}`}
                       </div>
@@ -1074,34 +1102,93 @@ export default function BookingPage() {
                                   Total: £{basket.reduce((sum, s) => sum + Number(s.price), 0)}
                                 </div>
                               )}
-                              {/* Secure your booking with card section */}
-                              <div className="mt-6">
-                                <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Secure your booking with</div>
-                                <div className="text-xs sm:text-sm text-gray-600 mb-3">(Your card will not be charged until after your appointment)</div>
-                                <button
-                                  className="flex items-center w-full bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg p-3 sm:p-4 transition-colors"
-                                  onClick={() => {
-                                    // Handle card payment
-                                  }}
-                                >
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center">
-                                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                      </svg>
-                                    </div>
-                                    <div className="text-left">
-                                      <div className="font-semibold text-gray-900 text-sm sm:text-base">Card Payment</div>
-                                      <div className="text-xs sm:text-sm text-gray-600">Secure payment processing</div>
-                                    </div>
-                                  </div>
-                                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                  </svg>
-                                </button>
-                              </div>
                             </div>
                           </div>
+                        </div>
+                        {/* Right: Payment & Promo */}
+                        <div className="space-y-4">
+                          {/* Promo Code */}
+                          <div>
+                            <label className="block font-semibold mb-1">Have a promo code? (Optional)</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={promoCode}
+                                onChange={e => setPromoCode(e.target.value)}
+                                className="border rounded p-2 flex-1"
+                                placeholder="Enter promo code"
+                                disabled={promoApplied}
+                              />
+                              <button
+                                type="button"
+                                className="bg-pink-600 text-white px-4 py-2 rounded"
+                                onClick={handleApplyPromo}
+                                disabled={promoApplied}
+                              >
+                                {promoApplied ? "APPLIED" : "APPLY"}
+                              </button>
+                            </div>
+                            {promoError && <div className="text-red-600 text-sm mt-1">{promoError}</div>}
+                            {promoApplied && <div className="text-green-600 text-sm mt-1">{promoMessage}</div>}
+                          </div>
+                          {/* Total */}
+                          <div className="mb-2">
+                            <div className="flex justify-between font-semibold text-base">
+                              <span>Total</span>
+                              <span>£{Math.max(0, basket.reduce((sum, s) => sum + Number(s.price), 0) - promoDiscount)}</span>
+                            </div>
+                            {promoDiscount > 0 && (
+                              <div className="flex justify-between text-xs text-gray-500">
+                                <span>Discount</span>
+                                <span>-£{promoDiscount}</span>
+                              </div>
+                            )}
+                          </div>
+                          {/* Secure your booking with card section */}
+                          <div className="mt-6">
+                            <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Secure your booking with</div>
+                            <div className="text-xs sm:text-sm text-gray-600 mb-3">(Your card will not be charged until after your appointment)</div>
+                            <button
+                              className="flex items-center w-full bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg p-3 sm:p-4 transition-colors"
+                              // onClick={...} // Your card payment handler
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center">
+                                  {/* Card icon SVG */}
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-semibold text-gray-900 text-sm sm:text-base">Card Payment</div>
+                                  <div className="text-xs sm:text-sm text-gray-600">Secure payment processing</div>
+                                </div>
+                              </div>
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
+                          {/* Agreement Checkbox */}
+                          <div className="mb-4 flex items-start">
+                            <input
+                              type="checkbox"
+                              id="agreement"
+                              checked={agreed}
+                              onChange={e => setAgreed(e.target.checked)}
+                              className="mt-1"
+                            />
+                            <label htmlFor="agreement" className="ml-2 text-sm">
+                              Tick to confirm agreement with our{' '}
+                              <a href="/terms" target="_blank" className="underline text-pink-600">Terms</a> and{' '}
+                              <a href="/conditions" target="_blank" className="underline text-pink-600">Conditions</a>, and to confirm you have added all details of relevant allergies or medical information.
+                            </label>
+                          </div>
+                          {/* Confirm Booking Button */}
+                          <button
+                            className={`w-full bg-pink-600 text-white py-3 rounded font-semibold transition ${!agreed ? "opacity-50 cursor-not-allowed" : ""}`}
+                            disabled={!agreed}
+                            onClick={handleSubmit}
+                          >
+                            CONFIRM BOOKING
+                          </button>
                         </div>
                       </div>
                     </div>
