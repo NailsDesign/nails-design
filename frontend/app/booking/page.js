@@ -1,8 +1,18 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Tab, Dialog } from '@headlessui/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { enGB } from 'date-fns/locale';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { getApiUrl } from '../../config/api';
 
 
@@ -62,24 +72,23 @@ export default function BookingPage() {
   const [error, setError] = useState("");
 
   // Fetch services and staff on mount
- useEffect(() => {
-  axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
-  axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data));
-}, []);
-
+  useEffect(() => {
+    axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
+    axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data));
+  }, []);
 
   // Fetch booked slots for selected staff and date
   useEffect(() => {
-  if (!selectedDate || !form.staff_id) return;
-  const dayString = selectedDate.toISOString().slice(0, 10);
-  axios
-    .get(getApiUrl(`/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`))
-    .then(res => {
-      setBookedSlots(res.data.map(dt =>
-        new Date(dt).toTimeString().slice(0, 5)
-      ));
-    });
-}, [selectedDate, form.staff_id]);
+    if (!selectedDate || !form.staff_id) return;
+    const dayString = selectedDate.toISOString().slice(0, 10);
+    axios
+      .get(getApiUrl(`/appointments/by-day?date=${dayString}&staff_id=${form.staff_id}`))
+      .then(res => {
+        setBookedSlots(res.data.map(dt =>
+          new Date(dt).toTimeString().slice(0, 5)
+        ));
+      });
+  }, [selectedDate, form.staff_id]);
 
   function filterDate(date) {
     const now = new Date();
