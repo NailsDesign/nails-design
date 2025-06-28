@@ -5,31 +5,12 @@ import { useEffect, useState } from "react";
 export default function Header() {
   const [user, setUser] = useState(null);
   const [admin, setAdmin] = useState(null);
-  const [showHeader, setShowHeader] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
     setAdmin(JSON.parse(localStorage.getItem("admin")));
   }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY < 60) {
-        setShowHeader(true);
-        setLastScrollY(window.scrollY);
-        return;
-      }
-      if (window.scrollY > lastScrollY) {
-        setShowHeader(false); // hide on scroll down
-      } else {
-        setShowHeader(true); // show on scroll up
-      }
-      setLastScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
 
   useEffect(() => {
     const handleAuthChanged = () => {
@@ -38,6 +19,18 @@ export default function Header() {
     };
     window.addEventListener("authChanged", handleAuthChanged);
     return () => window.removeEventListener("authChanged", handleAuthChanged);
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-container')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const logout = () => {
@@ -55,13 +48,7 @@ export default function Header() {
   };
 
   return (
-    <header
-      className={`
-        shadow bg-white font-sans sticky top-0 z-50 transition-transform duration-300
-        ${showHeader ? "translate-y-0" : "-translate-y-full"}
-      `}
-      style={{ willChange: "transform" }}
-    >
+    <header className="shadow bg-white font-sans sticky top-0 z-50">
       <div className="flex flex-wrap items-center justify-between px-8 py-3 gap-4">
         <Link href="/" className="flex items-center gap-2">
           <img
@@ -71,7 +58,9 @@ export default function Header() {
             style={{ maxHeight: "90px" }}
           />
         </Link>
-        <nav className="flex gap-4 md:gap-7 items-center text-base font-medium flex-wrap">
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex gap-4 md:gap-7 items-center text-base font-medium flex-wrap">
           <Link href="/" className="hover:text-[#d8b48f] transition">Home</Link>
           <Link href="/services" className="hover:text-[#d8b48f] transition">Services</Link>
           <Link href="/gallery" className="hover:text-[#d8b48f] transition">Gallery</Link>
@@ -79,7 +68,9 @@ export default function Header() {
           <Link href="/contact" className="hover:text-[#d8b48f] transition">Contact</Link>
           <Link href="/testimonials" className="hover:text-[#d8b48f] transition">Testimonials</Link>
         </nav>
-        <div className="flex gap-4 items-center text-base font-medium">
+
+        {/* Desktop User Actions */}
+        <div className="hidden md:flex gap-4 items-center text-base font-medium">
           {admin ? (
             <>
               <Link href="/admin/dashboard" className="text-pink-700 font-semibold">Admin Dashboard</Link>
@@ -97,6 +88,145 @@ export default function Header() {
               <Link href="/register" className="hover:text-[#d8b48f]">Register</Link>
               <Link href="/admin/login" className="text-pink-700 font-semibold hover:text-[#d8b48f]">Admin Login</Link>
             </>
+          )}
+        </div>
+
+        {/* Mobile Dropdown Button */}
+        <div className="md:hidden dropdown-container relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+            aria-label="Menu"
+          >
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              {/* Navigation Links */}
+              <div className="px-4 py-2 border-b border-gray-100">
+                <div className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Navigation</div>
+                <Link 
+                  href="/" 
+                  className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Home
+                </Link>
+                <Link 
+                  href="/services" 
+                  className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Services
+                </Link>
+                <Link 
+                  href="/gallery" 
+                  className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Gallery
+                </Link>
+                <Link 
+                  href="/booking" 
+                  className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Booking
+                </Link>
+                <Link 
+                  href="/contact" 
+                  className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Contact
+                </Link>
+                <Link 
+                  href="/testimonials" 
+                  className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Testimonials
+                </Link>
+              </div>
+
+              {/* User Actions */}
+              <div className="px-4 py-2">
+                <div className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Account</div>
+                {admin ? (
+                  <>
+                    <Link 
+                      href="/admin/dashboard" 
+                      className="block py-2 px-2 text-pink-700 font-semibold hover:bg-gray-50 transition rounded"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                    <button 
+                      className="block w-full text-left py-2 px-2 text-pink-600 underline hover:bg-gray-50 transition rounded"
+                      onClick={() => {
+                        adminLogout();
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      Admin Logout
+                    </button>
+                  </>
+                ) : user ? (
+                  <>
+                    <div className="py-2 px-2 text-gray-900 font-semibold text-sm">
+                      MY ACCOUNT {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.name || ''}
+                    </div>
+                    <button 
+                      className="block w-full text-left py-2 px-2 text-pink-600 underline font-semibold hover:bg-gray-50 transition rounded"
+                      onClick={() => {
+                        logout();
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link 
+                      href="/login" 
+                      className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link 
+                      href="/register" 
+                      className="block py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Register
+                    </Link>
+                    <Link 
+                      href="/admin/login" 
+                      className="block py-2 px-2 text-pink-700 font-semibold hover:bg-gray-50 hover:text-[#d8b48f] transition rounded"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Admin Login
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
