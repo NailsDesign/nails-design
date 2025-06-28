@@ -49,13 +49,13 @@ export default function Header() {
 
   return (
     <header className="shadow bg-white font-sans sticky top-0 z-50">
-      <div className="flex flex-wrap items-center justify-between px-8 py-3 gap-4">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-4 py-2 gap-4">
+        {/* Logo - Made smaller */}
+        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <img
             src="/logo.png"
             alt="Nails Design logo"
-            className="h-24 w-auto object-contain drop-shadow-xl"
-            style={{ maxHeight: "90px" }}
+            className="h-12 w-auto object-contain drop-shadow-lg"
           />
         </Link>
         
@@ -92,7 +92,7 @@ export default function Header() {
         </div>
 
         {/* Mobile Dropdown Button */}
-        <div className="md:hidden dropdown-container relative">
+        <div className="md:hidden dropdown-container relative flex-shrink-0">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -113,9 +113,9 @@ export default function Header() {
             </svg>
           </button>
 
-          {/* Dropdown Menu */}
+          {/* Dropdown Menu - Fixed positioning and visibility */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+            <div className="absolute right-0 top-full mt-1 w-72 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 max-h-[80vh] overflow-y-auto">
               {/* Navigation Links */}
               <div className="px-4 py-2 border-b border-gray-100">
                 <div className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Navigation</div>
