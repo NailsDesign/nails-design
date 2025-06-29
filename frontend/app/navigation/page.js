@@ -13,6 +13,7 @@ export default function Nav() {
   return (
     <nav className="flex gap-4 p-4 bg-pink-50">
       <Link href="/">Home</Link>
+      <Link href="/about">About</Link>
       <Link href="/booking">Book</Link>
       {user ? (
         <>

@@ -1,7 +1,6 @@
-import Script from 'next/script';
 import './globals.css';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Script from 'next/script';
+import LayoutWithFooter from '../components/LayoutWithFooter';
 
 export const metadata = {
   title: 'Nails Design | Luxury Nail Salon',
@@ -44,9 +43,7 @@ export default function RootLayout({ children }) {
         <meta name="theme-color" content="#ec4899" />
       </head>
       <body className="bg-white text-gray-800">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <LayoutWithFooter>{children}</LayoutWithFooter>
 
         {/* Mobile call-to-action button */}
         <a
@@ -55,6 +52,21 @@ export default function RootLayout({ children }) {
         >
           📞 Call Now
         </a>
+
+        <Script id="brevo-chat-widget" strategy="afterInteractive">
+          {`
+            (function(d, w, c) {
+              w.BrevoConversationsID = '64e6e7e7e6c7e67e7e6e7e6e';
+              w[c] = w[c] || function() {
+                (w[c].q = w[c].q || []).push(arguments);
+              };
+              var s = d.createElement('script');
+              s.async = true;
+              s.src = 'https://conversations-widget.brevo.com/brevo-conversations.js';
+              if (d.head) d.head.appendChild(s);
+            })(document, window, 'BrevoConversations');
+          `}
+        </Script>
       </body>
     </html>
   );
