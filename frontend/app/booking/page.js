@@ -119,7 +119,6 @@ const maniPediServices = [
   { name: "CLASSIC MANICURE - NO COLOUR", description: "Flawless nails, Expert shaping, buffing (with an optional matte or shine finish), cuticle care and moisturising, with no polish or gel for a natural mani alternative.", duration: 30, price: 32, group: "MANI-PEDI — MANICURES" },
   { name: "CLASSIC MANICURE - GEL", description: "Flawless nails, Expert shaping, buffing, cuticle care and moisturising, followed by a chip-resistant gel of your choice from our vibrant Colour Library.", duration: 45, price: 42, group: "MANI-PEDI — MANICURES" },
   // Pedicures
-  { name: "FULL SET GEL EXTENSIONS", description: "Add natural-looking length to your nails with gel enhancements – a less damaging alternative to acrylics. Featuring our Signature Manicure with expert shaping, buffing, cuticle care, moisturising and nail extensions, followed by a polish or gel of your choice from our vibrant Colour Library.  .", duration: 125, price: 88, group: "MANI-PEDI — PEDICURES" },
   { name: "CLASSIC PEDICURE - GEL", description: "Get flawless feet with the . Featuring a soak, expert shaping, buffing, cuticle care, hard skin filing, smoothing and moisturising, followed by your choice of chip-resistant gel from our vibrant Colour Library.", duration: 55, price: 48 },
   { name: "CLASSIC PEDICURE - NO COLOUR", description: "Get flawless feet with the ' Expert shaping, buffing (with an optional matte or shine finish), cuticle care, hard skin filing, smoothing and moisturising, with no polish or gel for a natural mani alternative.", duration: 40, price: 35 },
   { name: "CLASSIC PEDICURE - POLISH", description: "Get flawless feet with the . Featuring a soak, expert shaping, buffing, cuticle care, hard skin filing and smoothing and moisturising, followed by a polish of your choice from our vibrant Colour Library.", duration: 50, price: 44 },
@@ -135,13 +134,112 @@ const nailExtensionEnhancements = [
 ];
 
 // Add-ons for all services
-const addOnOptions = [
-  'BIAB',
-  'French Tip',
-  'Shellac',
-  'Acrylic',
-  'SNS Dipping Powder',
-  'Gel Polish'
+const allAddOns = [
+  {
+    name: 'BIAB',
+    description: 'Builder in a Bottle for extra strength and durability.',
+    duration: 20,
+    price: 15,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
+  {
+    name: 'French tips (Polish or gel)',
+    description: 'Classic French tip in white or any color, available in polish or gel.',
+    duration: 15,
+    price: 10,
+    onlyFor: 'CLASSIC MANICURE - POLISH'
+  },
+  {
+    name: 'Nail art',
+    description: 'Custom nail art design.',
+    duration: 20,
+    price: 15,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
+  {
+    name: 'Ombre',
+    description: 'Beautiful ombre gradient finish.',
+    duration: 20,
+    price: 15,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
+  {
+    name: 'Chrome finish',
+    description: 'Mirror-like chrome effect for your nails.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
+  {
+    name: 'Strengthening base coat',
+    description: 'Extra strengthening base coat for added durability.',
+    duration: 5,
+    price: 5,
+    onlyFor: 'CLASSIC MANICURE - POLISH'
+  },
+  {
+    name: 'Repair and Extension of Single Nail',
+    description: 'Restore and extend a broken or short nail so it blends seamlessly with your manicure. Our high-quality gel enhancements guarantee strength, durability and a flawless finish.',
+    duration: 10,
+    price: 8,
+    onlyFor: 'CLASSIC MANICURE - POLISH'
+  },
+  {
+    name: 'Extended Massage',
+    description: 'Extend any treatment with 10 more minutes of indulgent massage.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'CLASSIC MANICURE - POLISH'
+  },
+  {
+    name: 'French tips',
+    description: 'Classic French tip in white or any color, available in polish or gel.',
+    duration: 15,
+    price: 10,
+    onlyFor: 'CLASSIC PEDICURE - GEL'
+  },
+  {
+    name: 'Extended Massage',
+    description: 'Extend any treatment with 10 more minutes of indulgent massage.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'CLASSIC PEDICURE - GEL'
+  },
+  {
+    name: 'French tips',
+    description: 'Classic French tip in white or any color, available in polish or gel.',
+    duration: 15,
+    price: 10,
+    onlyFor: 'CLASSIC PEDICURE - POLISH'
+  },
+  {
+    name: 'Extended Massage',
+    description: 'Extend any treatment with 10 more minutes of indulgent massage.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'CLASSIC PEDICURE - POLISH'
+  },
+  {
+    name: 'French tips',
+    description: 'Classic French tip in white or any color, available in polish or gel.',
+    duration: 15,
+    price: 10,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
+  {
+    name: 'Repair and Extension of Single Nail',
+    description: 'Restore and extend a broken or short nail so it blends seamlessly with your manicure. Our high-quality gel enhancements guarantee strength, durability and a flawless finish.',
+    duration: 10,
+    price: 8,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
+  {
+    name: 'Extended Massage',
+    description: 'Extend any treatment with 10 more minutes of indulgent massage.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'CLASSIC MANICURE - GEL'
+  },
 ];
 
 // Removal options for all add-ons
@@ -151,47 +249,8 @@ const removalOptions = [
   'Shellac Removal',
   'Acrylic Removal',
   'SNS Dipping Powder Removal',
-  'Gel Polish Removal'
-];
-
-// Example add-ons data (expand as needed)
-const allAddOns = [
-  {
-    name: 'BIAB',
-    description: 'Builder in a Bottle for extra strength and durability.',
-    duration: 20,
-    price: 15
-  },
-  {
-    name: 'French Tip',
-    description: 'Classic French tip in white or any color.',
-    duration: 15,
-    price: 10
-  },
-  {
-    name: 'Shellac',
-    description: 'Long-lasting Shellac polish.',
-    duration: 20,
-    price: 15
-  },
-  {
-    name: 'Acrylic',
-    description: 'Acrylic overlay or extensions.',
-    duration: 30,
-    price: 20
-  },
-  {
-    name: 'SNS Dipping Powder',
-    description: 'Strong, lightweight SNS dipping powder.',
-    duration: 25,
-    price: 18
-  },
-  {
-    name: 'Gel Polish',
-    description: 'Chip-resistant gel polish.',
-    duration: 20,
-    price: 12
-  }
+  'Gel Polish Removal',
+  { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
 ];
 
 export default function BookingPage() {
@@ -439,7 +498,8 @@ export default function BookingPage() {
           }
           setBasket([selectedManiPediManicure, selectedManiPediPedicure]);
           setStep1Stage('addons');
-      setError("");
+          setAddonsStepIndex(0); // Start with mani add-ons
+          setError("");
           return;
         } else {
           if (!selectedService) {
@@ -453,13 +513,35 @@ export default function BookingPage() {
         }
       }
       if (step1Stage === 'addons') {
-        if (!(selectedAddOns.length > 0 || noAddOns)) {
-          setError("Please select at least one add-on or choose 'No Addons'.");
+        if (selectedCategory === 'Mani & Pedi') {
+          if (addonsStepIndex === 0) {
+            // Validate mani add-ons
+            if (!(selectedAddOnsMani.length > 0 || noAddOnsMani)) {
+              setError("Please select at least one add-on or choose 'No Addons' for Manicure.");
+              return;
+            }
+            setError("");
+            setAddonsStepIndex(1); // Move to pedi add-ons
+            return;
+          } else if (addonsStepIndex === 1) {
+            // Validate pedi add-ons
+            if (!(selectedAddOnsPedi.length > 0 || noAddOnsPedi)) {
+              setError("Please select at least one add-on or choose 'No Addons' for Pedicure.");
+              return;
+            }
+            setError("");
+            setStep1Stage('removal');
+            return;
+          }
+        } else {
+          if (!(selectedAddOns.length > 0 || noAddOns)) {
+            setError("Please select at least one add-on or choose 'No Addons'.");
+            return;
+          }
+          setError("");
+          setStep1Stage('removal');
           return;
         }
-        setError("");
-        setStep1Stage('removal');
-        return;
       }
       if (step1Stage === 'removal') {
         if (needsRemoval === false) {
@@ -676,6 +758,15 @@ export default function BookingPage() {
     currentMonth.getMonth() === new Date().getMonth()
   );
 
+  const serviceListRef = useRef(null);
+
+  // Add new state variables
+  const [addonsStepIndex, setAddonsStepIndex] = useState(0); // 0: mani, 1: pedi
+  const [selectedAddOnsMani, setSelectedAddOnsMani] = useState([]);
+  const [selectedAddOnsPedi, setSelectedAddOnsPedi] = useState([]);
+  const [noAddOnsMani, setNoAddOnsMani] = useState(false);
+  const [noAddOnsPedi, setNoAddOnsPedi] = useState(false);
+
   if (success) {
   return (
       <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] flex items-center justify-center p-4">
@@ -706,7 +797,6 @@ export default function BookingPage() {
         {/* Enhanced Header */}
         <div className="text-center mb-8">
           <div className="mb-4">
-            <span className="text-4xl mb-4 block">💅</span>
             <h1 className="text-4xl md:text-5xl font-bold text-[#2d1b0e] mb-4">
               Book Your Appointment
             </h1>
@@ -738,17 +828,15 @@ export default function BookingPage() {
             {/* Progress background */}
             <div className="absolute inset-0 rounded-full overflow-hidden" aria-hidden="true">
               <div 
-                className="h-full transition-all duration-500 bg-gradient-to-r from-[#d4af37] to-[#b87333]" 
-                style={{ width: `${(currentStep/3)*100}%` }}
+                className="h-full bg-gradient-to-r from-[#d4af37] to-[#b87333] transition-all duration-700"
+                style={{ width: `${(currentStep/3)*100}%`, zIndex: 1, position: 'absolute' }}
               ></div>
-              <div className="h-full w-full bg-[#e8dcc0] rounded-full absolute left-0 top-0"></div>
+              <div className="h-full w-full bg-[#e8dcc0] rounded-full absolute left-0 top-0" style={{ zIndex: 0 }}></div>
             </div>
-            
             {/* Progress steps */}
-            <div className="relative flex items-center justify-between w-full px-4 py-3">
+            <div className="relative flex items-center justify-between w-full px-4 py-3 z-10">
               {[1, 2, 3].map((step, idx) => {
                 const stepLabels = ['Services', 'Details', 'Confirm'];
-                const stepIcons = ['💅', '📅', '✅'];
                 const isActive = currentStep === step;
                 const isCompleted = currentStep > step;
                 return (
@@ -763,9 +851,9 @@ export default function BookingPage() {
                       ${isActive ? 'font-bold text-[#2d1b0e]' : 'font-medium text-[#8b7d6b]'}`}
                     >
                       <span className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-lg transition-all duration-300
-                        ${isActive ? 'bg-white text-[#d4af37] shadow-lg' : 
+                        ${isActive ? 'bg-white text-[#d4af37] shadow-lg border-2 border-[#d4af37]' : 
                           isCompleted ? 'bg-[#d4af37] text-white' : 'bg-[#e8dcc0] text-[#8b7d6b]'}`}>
-                        {stepIcons[step-1]}
+                        {step}
                       </span>
                       <span className="hidden sm:block">{stepLabels[step-1]}</span>
                     </span>
@@ -809,138 +897,159 @@ export default function BookingPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
                       {/* MANI */}
                       <button
-                        onClick={() => setSelectedCategory('Mani')}
-                        className={`service-card p-6 text-center transition-all duration-300 group
-                          ${selectedCategory === 'Mani' ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                        onClick={() => {
+                          setSelectedCategory('Mani');
+                          setTimeout(() => {
+                            serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 100);
+                        }}
+                        className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                          ${selectedCategory === 'Mani' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                             'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                        style={selectedCategory === 'Mani' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
-                        <span className="text-5xl mb-4 block group-hover:scale-110 transition-transform duration-300">💅</span>
                         <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Manicure</h3>
                         <p className="text-[#8b7d6b] text-sm">Perfect nails for any occasion</p>
                       </button>
 
                       {/* MANI-PEDI */}
                       <button
-                        onClick={() => setSelectedCategory('Mani & Pedi')}
-                        className={`service-card p-6 text-center transition-all duration-300 group relative
-                          ${selectedCategory === 'Mani & Pedi' ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                        onClick={() => {
+                          setSelectedCategory('Mani & Pedi');
+                          setTimeout(() => {
+                            serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 100);
+                        }}
+                        className={`service-card p-6 text-center transition-all duration-300 group relative bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                          ${selectedCategory === 'Mani & Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                             'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                        style={selectedCategory === 'Mani & Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
                         <span className="absolute top-3 right-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white text-xs font-bold rounded-full px-3 py-1">
                           Most Popular
                         </span>
-                        <span className="text-5xl mb-4 block group-hover:scale-110 transition-transform duration-300">🖐️</span>
                         <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Mani & Pedi</h3>
                         <p className="text-[#8b7d6b] text-sm">Complete nail care experience</p>
                       </button>
 
                       {/* PEDI */}
                       <button
-                        onClick={() => setSelectedCategory('Pedi')}
-                        className={`service-card p-6 text-center transition-all duration-300 group
-                          ${selectedCategory === 'Pedi' ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                        onClick={() => {
+                          setSelectedCategory('Pedi');
+                          setTimeout(() => {
+                            serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 100);
+                        }}
+                        className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                          ${selectedCategory === 'Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                             'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                        style={selectedCategory === 'Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
-                        <span className="text-5xl mb-4 block group-hover:scale-110 transition-transform duration-300">🦶</span>
                         <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Pedicure</h3>
                         <p className="text-[#8b7d6b] text-sm">Beautiful feet for sandal season</p>
                       </button>
 
                       {/* EXTENSIONS */}
                       <button
-                        onClick={() => setSelectedCategory('Nail Extension & Enhancements')}
-                        className={`service-card p-6 text-center transition-all duration-300 group
-                          ${selectedCategory === 'Nail Extension & Enhancements' ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                        onClick={() => {
+                          setSelectedCategory('Nail Extension & Enhancements');
+                          setTimeout(() => {
+                            serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 100);
+                        }}
+                        className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                          ${selectedCategory === 'Nail Extension & Enhancements' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                             'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                        style={selectedCategory === 'Nail Extension & Enhancements' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
-                        <span className="text-5xl mb-4 block group-hover:scale-110 transition-transform duration-300">✨</span>
-                        <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Extensions</h3>
+                        <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Extensions & Enhancement</h3>
                         <p className="text-[#8b7d6b] text-sm">Add length and strength</p>
                       </button>
                     </div>
 
                     {/* Service List */}
-                    {selectedCategory === 'Mani & Pedi' ? (
-                      <div className="space-y-8">
-                        {/* MANI-PEDI — MANICURES */}
-                        <div>
-                          <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
-                            <span>💅</span>
-                            Manicures
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
-                              <div
-                                key={service.name}
-                                className={`service-card p-4 cursor-pointer transition-all duration-300
-                                  ${selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 
-                                    'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
-                                    'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                                onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
-                              >
-                                <div className="flex justify-between items-start mb-2">
-                                  <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
-                                  <div className="price-tag text-xs">
-                                    £{service.price}
+                    <div ref={serviceListRef}>
+                      {selectedCategory === 'Mani & Pedi' ? (
+                        <div className="space-y-8">
+                          {/* MANI-PEDI — MANICURES */}
+                          <div>
+                            <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
+                              Manicures
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
+                                <div
+                                  key={service.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                    ${selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 
+                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                  onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
+                                  style={selectedManiPediManicure && selectedManiPediManicure.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                    <div className="price-tag text-xs">
+                                      £{service.price}
+                                    </div>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                  <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                    <span>⏱️</span>
+                                    <span>{service.duration} mins</span>
                                   </div>
                                 </div>
-                                <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
-                                <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
-                                  <span>⏱️</span>
-                                  <span>{service.duration} mins</span>
-                                </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* MANI-PEDI — PEDICURES */}
-                        <div>
-                          <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
-                            <span>🦶</span>
-                            Pedicures
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
-                              <div
-                                key={service.name}
-                                className={`service-card p-4 cursor-pointer transition-all duration-300
-                                  ${selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 
-                                    'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
-                                    'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                                onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
-                              >
-                                <div className="flex justify-between items-start mb-2">
-                                  <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
-                                  <div className="price-tag text-xs">
-                                    £{service.price}
+                          {/* MANI-PEDI — PEDICURES */}
+                          <div>
+                            <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
+                              Pedicures
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
+                                <div
+                                  key={service.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                    ${selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 
+                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                  onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
+                                  style={selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                    <div className="price-tag text-xs">
+                                      £{service.price}
+                                    </div>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                  <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                    <span>⏱️</span>
+                                    <span>{service.duration} mins</span>
                                   </div>
                                 </div>
-                                <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
-                                <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
-                                  <span>⏱️</span>
-                                  <span>{service.duration} mins</span>
-                                </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ) : selectedCategory === 'Mani' ? (
+                      ) : selectedCategory === 'Mani' ? (
         <div>
                         <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
-                          <span>💅</span>
                           Manicure Services
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {maniServices.map(service => (
                             <div
                               key={service.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300
+                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
                                 ${selectedService && selectedService.name === service.name ? 
-                                  'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                                  'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                                   'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
                               onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                              style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
@@ -960,18 +1069,18 @@ export default function BookingPage() {
                     ) : selectedCategory === 'Pedi' ? (
                       <div>
                         <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
-                          <span>🦶</span>
                           Pedicure Services
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {pediServices.map(service => (
                             <div
                               key={service.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300
+                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
                                 ${selectedService && selectedService.name === service.name ? 
-                                  'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                                  'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                                   'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
                               onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                              style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
@@ -991,18 +1100,18 @@ export default function BookingPage() {
                     ) : selectedCategory === 'Nail Extension & Enhancements' ? (
                       <div>
                         <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
-                          <span>✨</span>
                           Nail Extensions & Enhancements
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {nailExtensionEnhancements.map(service => (
                             <div
                               key={service.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300
+                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
                                 ${selectedService && selectedService.name === service.name ? 
-                                  'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                                  'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                                   'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
                               onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                              style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
@@ -1021,10 +1130,10 @@ export default function BookingPage() {
                       </div>
                     ) : (
                       <div className="text-center text-[#8b7d6b] py-8">
-                        <span className="text-4xl mb-4 block">💅</span>
                         <p className="text-lg">Select a service category above to see available options</p>
                       </div>
                     )}
+                    </div>
 
                     {/* Next Button */}
                     {selectedCategory && (
@@ -1057,61 +1166,196 @@ export default function BookingPage() {
                 >
                   <div className="service-card p-8">
                     <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
-                      Choose Your Add-ons
+                      {selectedCategory === 'Mani & Pedi'
+                        ? addonsStepIndex === 0
+                          ? 'Choose Your Manicure Add-ons'
+                          : 'Choose Your Pedicure Add-ons'
+                        : 'Choose Your Add-ons'}
                     </h2>
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                      {allAddOns.map(addon => (
-                        <div
-                          key={addon.name}
-                          className={`service-card p-4 cursor-pointer transition-all duration-300
-                            ${selectedAddOns.includes(addon.name) ? 
-                              'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
-                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                      {selectedCategory === 'Mani & Pedi'
+                        ? (addonsStepIndex === 0
+                            ? (
+                              (selectedManiPediManicure &&
+                                ((selectedManiPediManicure.name === 'CLASSIC MANICURE - NO COLOUR' || selectedManiPediManicure.name === 'CLASSIC PEDICURE - NO COLOUR')
+                                  ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                                  : selectedManiPediManicure.name === 'CLASSIC MANICURE - GEL'
+                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
+                                    : selectedManiPediManicure.name === 'CLASSIC MANICURE - POLISH'
+                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
+                                      : allAddOns.filter(addon => !addon.onlyFor)
+                                )
+                              ).map(addon => (
+                                <div
+                                  key={addon.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                    ${selectedAddOnsMani.includes(addon.name) ?
+                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                  onClick={() => {
+                                    if (selectedAddOnsMani.includes(addon.name)) {
+                                      setSelectedAddOnsMani(selectedAddOnsMani.filter(a => a !== addon.name));
+                                      setNoAddOnsMani(false);
+                                    } else {
+                                      setSelectedAddOnsMani([...selectedAddOnsMani, addon.name]);
+                                      setNoAddOnsMani(false);
+                                    }
+                                  }}
+                                  style={selectedAddOnsMani.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                    <div className="price-tag text-xs">
+                                      £{addon.price}
+                                    </div>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                                  <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                    <span>⏱️</span>
+                                    <span>{addon.duration} mins</span>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              (selectedManiPediPedicure &&
+                                ((selectedManiPediPedicure.name === 'CLASSIC MANICURE - NO COLOUR' || selectedManiPediPedicure.name === 'CLASSIC PEDICURE - NO COLOUR')
+                                  ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                                  : selectedManiPediPedicure.name === 'CLASSIC PEDICURE - GEL'
+                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
+                                    : selectedManiPediPedicure.name === 'CLASSIC PEDICURE - POLISH'
+                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
+                                      : allAddOns.filter(addon => !addon.onlyFor)
+                                )
+                              ).map(addon => (
+                                <div
+                                  key={addon.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                    ${selectedAddOnsPedi.includes(addon.name) ?
+                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                  onClick={() => {
+                                    if (selectedAddOnsPedi.includes(addon.name)) {
+                                      setSelectedAddOnsPedi(selectedAddOnsPedi.filter(a => a !== addon.name));
+                                      setNoAddOnsPedi(false);
+                                    } else {
+                                      setSelectedAddOnsPedi([...selectedAddOnsPedi, addon.name]);
+                                      setNoAddOnsPedi(false);
+                                    }
+                                  }}
+                                  style={selectedAddOnsPedi.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                    <div className="price-tag text-xs">
+                                      £{addon.price}
+                                    </div>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                                  <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                    <span>⏱️</span>
+                                    <span>{addon.duration} mins</span>
+                                  </div>
+                                </div>
+                              ))
+                            )
+                          )
+                        : (
+                          // Default single-service add-ons logic
+                          (selectedService && (selectedService.name === 'CLASSIC MANICURE - NO COLOUR' || selectedService.name === 'CLASSIC PEDICURE - NO COLOUR')
+                            ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                            : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
+                              ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
+                              : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
+                                ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
+                                : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
+                                  ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
+                                  : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
+                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
+                                  : allAddOns.filter(addon => !addon.onlyFor)
+                          ).map(addon => (
+                            <div
+                              key={addon.name}
+                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                ${selectedAddOns.includes(addon.name) ?
+                                  'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                  'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                              onClick={() => {
+                                if (selectedAddOns.includes(addon.name)) {
+                                  setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
+                                  setNoAddOns(false);
+                                } else {
+                                  setSelectedAddOns([...selectedAddOns, addon.name]);
+                                  setNoAddOns(false);
+                                }
+                              }}
+                              style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                <div className="price-tag text-xs">
+                                  £{addon.price}
+                                </div>
+                              </div>
+                              <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                              <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                <span>⏱️</span>
+                                <span>{addon.duration} mins</span>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                    </div>
+                    {/* No Add-ons Button */}
+                    {selectedCategory === 'Mani & Pedi' ? (
+                      <div className="text-center mb-8">
+                        <button
+                          className={`service-card p-4 w-full transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
+                            (addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi)
+                              ? 'ring-2 ring-[#f6c453] bg-[#f6c453]'
+                              : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
+                          }`}
                           onClick={() => {
-                            if (selectedAddOns.includes(addon.name)) {
-                              setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
-                              setNoAddOns(false);
+                            if (addonsStepIndex === 0) {
+                              setNoAddOnsMani(true);
+                              setSelectedAddOnsMani([]);
                             } else {
-                              setSelectedAddOns([...selectedAddOns, addon.name]);
-                              setNoAddOns(false);
+                              setNoAddOnsPedi(true);
+                              setSelectedAddOnsPedi([]);
                             }
                           }}
+                          style={(addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
-                            <div className="price-tag text-xs">
-                              £{addon.price}
-                            </div>
-                          </div>
-                          <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
-                          <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
-                            <span>⏱️</span>
-                            <span>{addon.duration} mins</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="text-center mb-8">
-                      <button
-                        className={`service-card p-4 w-full transition-all duration-300 ${
-                          noAddOns ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
-                          'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                        }`}
-                        onClick={() => {
-                          setNoAddOns(true);
-                          setSelectedAddOns([]);
-                          setStep1Stage('removal');
-                        }}
-                      >
-                        <span className="text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
-                      </button>
-                    </div>
-
+                          <span className="text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-center mb-8">
+                        <button
+                          className={`service-card p-4 w-full transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
+                            noAddOns ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                            'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
+                          }`}
+                          onClick={() => {
+                            setNoAddOns(true);
+                            setSelectedAddOns([]);
+                            setStep1Stage('removal');
+                          }}
+                          style={noAddOns ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                        >
+                          <span className="text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
+                        </button>
+                      </div>
+                    )}
+                    {/* Navigation Buttons */}
                     <div className="flex justify-between">
                       <button
-                        onClick={() => setStep1Stage('service')}
+                        onClick={() => {
+                          if (selectedCategory === 'Mani & Pedi' && addonsStepIndex === 1) {
+                            setAddonsStepIndex(0);
+                          } else {
+                            setStep1Stage('service');
+                          }
+                        }}
                         className="btn-secondary"
                       >
                         Back to Services
@@ -1119,9 +1363,16 @@ export default function BookingPage() {
                       <button
                         onClick={nextStep}
                         className="btn-primary"
-                        disabled={!(selectedAddOns.length > 0 || noAddOns)}
+                        disabled={selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0
+                              ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
+                              : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
+                          : !(selectedAddOns.length > 0 || noAddOns)
+                        }
                       >
-                        Continue to Removal
+                        {selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
+                          : 'Continue to Removal'}
                       </button>
                     </div>
                   </div>
@@ -1144,29 +1395,29 @@ export default function BookingPage() {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                       <button
-                        className={`service-card p-8 text-center transition-all duration-300 ${
-                          needsRemoval === true ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                        className={`service-card p-8 text-center transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
+                          needsRemoval === true ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                           'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
                         }`}
                         onClick={() => {
                           setNeedsRemoval(true);
                           setStep1Stage('removalType');
                         }}
+                        style={needsRemoval === true ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
-                        <span className="text-2xl mb-4 block">🧽</span>
                         <span className="text-xl font-bold text-[#2d1b0e]">Yes, I need removal</span>
                       </button>
                       <button
-                        className={`service-card p-8 text-center transition-all duration-300 ${
-                          needsRemoval === false ? 'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
+                        className={`service-card p-8 text-center transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
+                          needsRemoval === false ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                           'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
                         }`}
                         onClick={() => {
                           setNeedsRemoval(false);
                           setCurrentStep(2);
                         }}
+                        style={needsRemoval === false ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
-                        <span className="text-2xl mb-4 block">✨</span>
                         <span className="text-xl font-bold text-[#2d1b0e]">No removal needed</span>
                       </button>
                     </div>
@@ -1198,23 +1449,69 @@ export default function BookingPage() {
                     </h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                      {removalOptions.map(option => (
-                        <div
-                          key={option}
-                          className={`service-card p-4 cursor-pointer transition-all duration-300 ${
-                            selectedRemovalType === option ? 
-                              'ring-2 ring-[#d4af37] bg-gradient-to-br from-[#d4af37]/10 to-[#b87333]/10' : 
-                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                          }`}
-                          onClick={() => setSelectedRemovalType(option)}
-                        >
-                          <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">{option}</h5>
-                          <div className="flex justify-between items-center text-xs text-[#8b7d6b]">
-                            <span>Duration varies</span>
-                            <span>Price varies</span>
+                      {(
+                        selectedService && selectedService.name === 'CLASSIC MANICURE - NO COLOUR'
+                          ? [
+                              'BIAB Removal',
+                              'SNS Dipping Powder Removal',
+                              'Gel Polish Removal',
+                              { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
+                            ]
+                        : selectedService && selectedService.name === 'CLASSIC PEDICURE - NO COLOUR'
+                          ? [
+                              'BIAB Removal',
+                              'Gel Polish Removal'
+                            ]
+                        : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
+                            ? [
+                                'BIAB Removal',
+                                'SNS Dipping Powder Removal',
+                                'Gel Polish Removal',
+                                { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
+                              ]
+                            : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
+                              ? [
+                                  'BIAB Removal',
+                                  'SNS Dipping Powder Removal',
+                                  'Gel Polish Removal',
+                                  { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
+                                ]
+                              : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
+                                ? [
+                                    'BIAB Removal',
+                                    'SNS Dipping Powder Removal',
+                                    'Gel Polish Removal'
+                                  ]
+                                : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
+                                  ? [
+                                      'BIAB Removal',
+                                      'SNS Dipping Powder Removal',
+                                      'Gel Polish Removal'
+                                    ]
+                                : removalOptions
+                      ).map(option => {
+                        const isObj = typeof option === 'object';
+                        const label = isObj ? option.name : option;
+                        const duration = isObj ? `${option.duration} mins` : 'Duration varies';
+                        const price = isObj ? `£${option.price}` : 'Price varies';
+                        return (
+                          <div
+                            key={label}
+                            className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                              ${selectedRemovalType === label ?
+                                'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                            onClick={() => setSelectedRemovalType(label)}
+                            style={selectedRemovalType === label ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                          >
+                            <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">{label}</h5>
+                            <div className="flex justify-between items-center text-xs text-[#8b7d6b]">
+                              <span>{duration}</span>
+                              <span>{price}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     {/* Navigation */}
@@ -1272,19 +1569,11 @@ export default function BookingPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {staff.map(member => {
                             const isSelected = form.staff_id === member.id;
-                            
                             return (
                               <div
                                 key={member.id}
-                                style={{
-                                  padding: '16px',
-                                  cursor: 'pointer',
-                                  borderRadius: '12px',
-                                  border: '2px solid',
-                                  backgroundColor: isSelected ? '#fef3c7' : 'white',
-                                  borderColor: isSelected ? '#f59e0b' : '#e5e7eb',
-                                  transition: 'all 0.3s ease'
-                                }}
+                                className={`service-card p-4 cursor-pointer transition-all duration-300 border-2 text-[#2d1b0e] ${isSelected ? 'ring-2 ring-[#e6be7e]' : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                style={isSelected ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                                 onClick={() => {
                                   setForm(prevForm => ({ ...prevForm, staff_id: member.id }));
                                 }}
@@ -1308,7 +1597,6 @@ export default function BookingPage() {
                     {/* Date Selection */}
                     <div className="mb-8">
                       <h3 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
-                        <span>📅</span>
                         Select Your Date
                       </h3>
                       <div className="flex items-center justify-between mb-2">
@@ -1341,10 +1629,10 @@ export default function BookingPage() {
                               <button
                                 key={date.toISOString()}
                                 onClick={() => setSelectedDate(date)}
-                                className={`flex flex-col items-center px-4 py-2 rounded-lg border transition-all duration-200 focus:outline-none ${
+                                className={`flex flex-col items-center px-4 py-2 rounded-lg border-2 transition-all duration-300 focus:outline-none ${
                                   isSelected
-                                    ? 'bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white border-yellow-600 shadow-lg'
-                                    : 'bg-white text-[#2d1b0e] border-gray-200 hover:bg-gray-50'
+                                    ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
+                                    : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
                                 }`}
                                 style={{ minWidth: 64 }}
                               >
@@ -1364,7 +1652,6 @@ export default function BookingPage() {
                     {/* Time Selection */}
                     <div className="mb-8">
                       <h3 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
-                        <span>⏰</span>
                         Select Your Time
                       </h3>
                       {selectedDate ? (
@@ -1384,10 +1671,10 @@ export default function BookingPage() {
                                 onClick={() => {
                                   setForm({ ...form, appointment_datetime: datetimeString });
                                 }}
-                                className={`p-3 text-center rounded-lg transition-all duration-300 border ${
+                                className={`p-3 text-center rounded-lg border-2 transition-all duration-300 ${
                                   form.appointment_datetime === datetimeString
-                                    ? 'bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white'
-                                    : 'bg-white hover:bg-gray-50'
+                                    ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
+                                    : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
                                 }`}
                               >
                                 {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', { 
@@ -1414,7 +1701,7 @@ export default function BookingPage() {
                         className="btn-secondary"
                       >
                         Back to Removal
-                      </button>
+        </button>
                       <button
                         onClick={nextStep}
                         className="btn-primary"

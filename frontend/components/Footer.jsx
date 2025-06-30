@@ -4,7 +4,7 @@ import { FaInstagram } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#f9f4ef] text-gray-700 border-t border-pink-100 mt-12 font-sans shadow-[0_2px_24px_0_rgba(216,180,143,0.07)]">
+    <footer className="bg-[#f9f4ef] text-gray-700 border-t border-pink-100 font-sans shadow-[0_2px_24px_0_rgba(216,180,143,0.07)]">
       <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 text-xs md:text-sm">
         {/* Brand / Intro */}
         <div>
@@ -54,7 +54,7 @@ export default function Footer() {
           <h4 className="text-base font-semibold text-gray-900 mb-2 font-sans">Hours</h4>
           <ul className="space-y-1 text-xs">
             <li>Mon–Sat: 10am – 7pm</li>
-            <li>Sun: 11am – 5pm</li>
+            <li>Sun: 11am – 5:30pm</li>
           </ul>
 
           <div className="mt-3">

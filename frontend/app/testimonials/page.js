@@ -150,12 +150,13 @@ export default function Testimonials() {
                     <div className="w-16 h-16 bg-gradient-to-r from-[#d4af37] to-[#b87333] rounded-full flex items-center justify-center text-white font-bold text-xl mb-3">
                       {reviews[current].name.charAt(0)}
                     </div>
-                    <h3 className="text-lg font-bold text-[#2d1b0e] mb-1">
-                      {reviews[current].name}
-                    </h3>
-                    <p className="text-sm text-[#8b7d6b] mb-2">
-                      {reviews[current].service}
-                    </p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-[#2d1b0e]">{reviews[current].name}</h3>
+                      <div className="flex text-lg md:text-xl lg:text-lg xl:text-base">
+                        {renderStars(reviews[current].rating)}
+                      </div>
+                    </div>
+                    <p className="text-xs text-[#8b7d6b] mb-2">{reviews[current].service}</p>
                     <p className="text-xs text-[#8b7d6b]">
                       {reviews[current].date}
                     </p>
@@ -195,19 +196,14 @@ export default function Testimonials() {
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                   className="testimonial-card p-6"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-[#d4af37] to-[#b87333] rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        {review.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-[#2d1b0e]">{review.name}</h3>
-                        <p className="text-xs text-[#8b7d6b]">{review.service}</p>
+                  <div className="flex flex-col items-start w-full">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-[#2d1b0e]">{review.name}</h3>
+                      <div className="flex text-lg md:text-xl lg:text-lg xl:text-base">
+                        {renderStars(review.rating)}
                       </div>
                     </div>
-                    <div className="flex">
-                      {renderStars(review.rating)}
-                    </div>
+                    <p className="text-xs text-[#8b7d6b] mb-2">{review.service}</p>
                   </div>
                   <p className="text-[#5d4e37] text-sm leading-relaxed mb-3">
                     "{review.review}"

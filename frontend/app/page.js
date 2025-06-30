@@ -139,7 +139,6 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="font-semibold text-[#8B2635]">Sarah Mitchell</p>
-                  <p className="text-sm text-[#6B5B47]">Regular Client</p>
                 </div>
               </div>
             </div>
@@ -160,7 +159,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="font-semibold text-[#8B2635]">Emma Lawson</p>
-                  <p className="text-sm text-[#6B5B47]">BIAB Specialist</p>
+             
                 </div>
               </div>
             </div>

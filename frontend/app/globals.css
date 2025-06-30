@@ -72,8 +72,9 @@ a, button {
 }
 
 a:hover, button:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.05);
+  /* Remove or reduce transform and filter so Tailwind hover backgrounds are visible */
+  /* transform: translateY(-2px); */
+  /* filter: brightness(1.05); */
 }
 
 /* Premium CTA Buttons */
@@ -186,6 +187,7 @@ nav, header, footer {
   padding: 2rem;
   position: relative;
   box-shadow: 0 8px 32px var(--shadow-soft);
+  overflow: hidden;
 }
 
 .testimonial-card::before {
