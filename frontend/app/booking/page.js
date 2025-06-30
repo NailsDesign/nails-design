@@ -792,21 +792,20 @@ export default function BookingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0]">
-      <div className="max-w-7xl mx-auto p-4 sm:p-8">
+    <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] pb-24">
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-8">
         {/* Enhanced Header */}
-        <div className="text-center mb-8">
-          <div className="mb-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#2d1b0e] mb-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="mb-2 sm:mb-4">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#2d1b0e] mb-2 sm:mb-4">
               Book Your Appointment
             </h1>
-            <p className="text-lg md:text-xl text-[#5d4e37] max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-[#5d4e37] max-w-2xl mx-auto">
               Choose your services and secure your spot with our expert technicians
             </p>
           </div>
-          
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center gap-4 mt-6">
+          {/* Trust Indicators - hide on xs, show on sm+ */}
+          <div className="hidden sm:flex flex-wrap justify-center gap-4 mt-4 sm:mt-6">
             <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
               <span>⭐</span>
               <span>5-Star Rated</span>
@@ -822,8 +821,8 @@ export default function BookingPage() {
           </div>
         </div>
 
-        {/* Enhanced Progress Bar */}
-        <div className="flex justify-center w-full mb-8">
+        {/* Enhanced Progress Bar - sticky on mobile */}
+        <div className="flex justify-center w-full mb-6 sm:mb-8 sticky top-0 z-30 bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] pt-2 pb-2 sm:static sm:bg-none">
           <div className="relative w-full max-w-2xl">
             {/* Progress background */}
             <div className="absolute inset-0 rounded-full overflow-hidden" aria-hidden="true">
@@ -834,7 +833,7 @@ export default function BookingPage() {
               <div className="h-full w-full bg-[#e8dcc0] rounded-full absolute left-0 top-0" style={{ zIndex: 0 }}></div>
             </div>
             {/* Progress steps */}
-            <div className="relative flex items-center justify-between w-full px-4 py-3 z-10">
+            <div className="relative flex items-center justify-between w-full px-1 sm:px-4 py-2 sm:py-3 z-10">
               {[1, 2, 3].map((step, idx) => {
                 const stepLabels = ['Services', 'Details', 'Confirm'];
                 const isActive = currentStep === step;
@@ -847,10 +846,10 @@ export default function BookingPage() {
                     onClick={() => { if (isCompleted) setCurrentStep(step); }}
                     disabled={!isCompleted && !isActive}
                   >
-                    <span className={`flex items-center gap-3 text-base md:text-lg transition-all duration-300
+                    <span className={`flex items-center gap-1 sm:gap-3 text-xs sm:text-base md:text-lg transition-all duration-300
                       ${isActive ? 'font-bold text-[#2d1b0e]' : 'font-medium text-[#8b7d6b]'}`}
                     >
-                      <span className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-lg transition-all duration-300
+                      <span className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full font-bold text-base sm:text-lg transition-all duration-300
                         ${isActive ? 'bg-white text-[#d4af37] shadow-lg border-2 border-[#d4af37]' : 
                           isCompleted ? 'bg-[#d4af37] text-white' : 'bg-[#e8dcc0] text-[#8b7d6b]'}`}>
                         {step}
@@ -866,11 +865,11 @@ export default function BookingPage() {
 
         {/* Error Message */}
       {error && (
-          <div className="w-full max-w-2xl mx-auto mb-6">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="w-full max-w-2xl mx-auto mb-4 sm:mb-6">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4">
               <div className="flex items-center gap-2">
                 <span className="text-red-500">⚠️</span>
-                <p className="text-red-600 font-medium">{error}</p>
+                <p className="text-red-600 font-medium text-sm sm:text-base">{error}</p>
               </div>
             </div>
           </div>
@@ -894,7 +893,7 @@ export default function BookingPage() {
                     </h2>
                     
                     {/* Service Categories */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 mb-6 sm:mb-8">
                       {/* MANI */}
                       <button
                         onClick={() => {
@@ -968,7 +967,7 @@ export default function BookingPage() {
                     </div>
 
                     {/* Service List */}
-                    <div ref={serviceListRef}>
+                    <div ref={serviceListRef} className="mt-4 sm:mt-0">
                       {selectedCategory === 'Mani & Pedi' ? (
                         <div className="space-y-8">
                           {/* MANI-PEDI — MANICURES */}
@@ -1137,10 +1136,10 @@ export default function BookingPage() {
 
                     {/* Next Button */}
                     {selectedCategory && (
-                      <div className="mt-8 text-center">
+                      <div className="mt-6 sm:mt-8 text-center">
                         <button
                           onClick={nextStep}
-                          className="btn-primary"
+                          className="btn-primary w-full sm:w-auto py-3 text-base sm:text-lg"
                           disabled={
                             selectedCategory === 'Mani & Pedi' 
                               ? !(selectedManiPediManicure && selectedManiPediPedicure)
@@ -1164,7 +1163,7 @@ export default function BookingPage() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <div className="service-card p-8">
+                  <div className="service-card p-4 sm:p-8">
                     <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
                       {selectedCategory === 'Mani & Pedi'
                         ? addonsStepIndex === 0
@@ -1172,7 +1171,7 @@ export default function BookingPage() {
                           : 'Choose Your Pedicure Add-ons'
                         : 'Choose Your Add-ons'}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 mb-6 sm:mb-8">
                       {selectedCategory === 'Mani & Pedi'
                         ? (addonsStepIndex === 0
                             ? (
@@ -1307,7 +1306,7 @@ export default function BookingPage() {
                     </div>
                     {/* No Add-ons Button */}
                     {selectedCategory === 'Mani & Pedi' ? (
-                      <div className="text-center mb-8">
+                      <div className="text-center mb-6 sm:mb-8">
                         <button
                           className={`service-card p-4 w-full transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
                             (addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi)
@@ -1325,11 +1324,11 @@ export default function BookingPage() {
                           }}
                           style={(addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                         >
-                          <span className="text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
+                          <span className="text-base sm:text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
                         </button>
                       </div>
                     ) : (
-                      <div className="text-center mb-8">
+                      <div className="text-center mb-6 sm:mb-8">
                         <button
                           className={`service-card p-4 w-full transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
                             noAddOns ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' :
@@ -1342,12 +1341,12 @@ export default function BookingPage() {
                           }}
                           style={noAddOns ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                         >
-                          <span className="text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
+                          <span className="text-base sm:text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
                         </button>
                       </div>
                     )}
                     {/* Navigation Buttons */}
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
                       <button
                         onClick={() => {
                           if (selectedCategory === 'Mani & Pedi' && addonsStepIndex === 1) {
@@ -1356,13 +1355,13 @@ export default function BookingPage() {
                             setStep1Stage('service');
                           }
                         }}
-                        className="btn-secondary"
+                        className="btn-secondary w-full sm:w-auto py-3 text-base"
                       >
                         Back to Services
                       </button>
                       <button
                         onClick={nextStep}
-                        className="btn-primary"
+                        className="btn-primary w-full sm:w-auto py-3 text-base"
                         disabled={selectedCategory === 'Mani & Pedi'
                           ? (addonsStepIndex === 0
                               ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
@@ -1595,11 +1594,11 @@ export default function BookingPage() {
                     </div>
                     
                     {/* Date Selection */}
-                    <div className="mb-8">
-                      <h3 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#2d1b0e] mb-2 sm:mb-4 flex items-center gap-2">
                         Select Your Date
                       </h3>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1 sm:mb-2">
                         <button
                           type="button"
                           onClick={goToPrevMonth}
@@ -1609,7 +1608,7 @@ export default function BookingPage() {
                         >
                           <FaChevronLeft />
                         </button>
-                        <div className="text-lg font-bold text-center flex-1">
+                        <div className="text-base sm:text-lg font-bold text-center flex-1">
                           {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
                         </div>
                         <button
@@ -1622,24 +1621,24 @@ export default function BookingPage() {
                         </button>
                       </div>
                       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-                        <div className="flex min-w-max gap-4 pb-2">
+                        <div className="flex min-w-max gap-2 sm:gap-4 pb-2">
                           {getDaysInMonth(currentMonth).map(date => {
                             const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
                             return (
                               <button
                                 key={date.toISOString()}
                                 onClick={() => setSelectedDate(date)}
-                                className={`flex flex-col items-center px-4 py-2 rounded-lg border-2 transition-all duration-300 focus:outline-none ${
+                                className={`flex flex-col items-center px-2 py-2 sm:px-4 sm:py-2 rounded-lg border-2 transition-all duration-300 focus:outline-none ${
                                   isSelected
                                     ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
                                     : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
                                 }`}
-                                style={{ minWidth: 64 }}
+                                style={{ minWidth: 48, maxWidth: 64 }}
                               >
                                 <span className="text-xs font-semibold uppercase tracking-widest">
                                   {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                 </span>
-                                <span className="text-lg font-bold">
+                                <span className="text-base sm:text-lg font-bold">
                                   {date.getDate()}
                                 </span>
                               </button>
@@ -1650,12 +1649,12 @@ export default function BookingPage() {
                     </div>
                     
                     {/* Time Selection */}
-                    <div className="mb-8">
-                      <h3 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#2d1b0e] mb-2 sm:mb-4 flex items-center gap-2">
                         Select Your Time
                       </h3>
                       {selectedDate ? (
-                        <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                           {generateTimeSlotsForDay(selectedDate, openHours).map(time => {
                             const [hours, minutes] = time.split(':').map(Number);
                             const year = selectedDate.getFullYear();
@@ -1664,14 +1663,13 @@ export default function BookingPage() {
                             const hour = String(hours).padStart(2, '0');
                             const minute = String(minutes).padStart(2, '0');
                             const datetimeString = `${year}-${month}-${day}T${hour}:${minute}`;
-                            
                             return (
                               <button
                                 key={time}
                                 onClick={() => {
                                   setForm({ ...form, appointment_datetime: datetimeString });
                                 }}
-                                className={`p-3 text-center rounded-lg border-2 transition-all duration-300 ${
+                                className={`p-2 sm:p-3 text-center rounded-lg border-2 transition-all duration-300 text-xs sm:text-base ${
                                   form.appointment_datetime === datetimeString
                                     ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
                                     : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
@@ -1692,19 +1690,19 @@ export default function BookingPage() {
                     </div>
                     
                     {/* Navigation */}
-                    <div className="flex justify-between mt-8">
+                    <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-6 sm:mt-8">
                       <button
                         onClick={() => {
                           setCurrentStep(1);
                           setStep1Stage('removal');
                         }}
-                        className="btn-secondary"
+                        className="btn-secondary w-full sm:w-auto py-3 text-base"
                       >
                         Back to Removal
         </button>
                       <button
                         onClick={nextStep}
-                        className="btn-primary"
+                        className="btn-primary w-full sm:w-auto py-3 text-base"
                         disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
                       >
                         Continue to Confirmation
@@ -1799,34 +1797,34 @@ export default function BookingPage() {
         </div>
 
                     {/* Agreement */}
-                    <div className="mb-8">
-                      <label className="flex items-start gap-3 cursor-pointer">
+                    <div className="mb-6 sm:mb-8">
+                      <label className="flex items-start gap-2 sm:gap-3 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={agreementChecked}
                           onChange={(e) => setAgreementChecked(e.target.checked)}
                           className="mt-1 w-4 h-4 text-[#d4af37] border-[#d4af37] rounded focus:ring-[#d4af37]"
                         />
-                        <span className="text-[#8b7d6b] text-sm">
+                        <span className="text-[#8b7d6b] text-xs sm:text-sm">
                           I agree to the terms and conditions and confirm that I will arrive on time for my appointment.
                         </span>
                       </label>
                     </div>
 
                     {/* Navigation */}
-                    <div className="flex justify-between mt-8">
+                    <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-6 sm:mt-8">
                       <button
                         onClick={() => {
                           setCurrentStep(1);
                           setStep1Stage('removal');
                         }}
-                        className="btn-secondary"
+                        className="btn-secondary w-full sm:w-auto py-3 text-base"
                       >
                         Back to Removal
         </button>
                       <button
                         type="submit"
-                        className="btn-primary"
+                        className="btn-primary w-full sm:w-auto py-3 text-base"
                         disabled={!agreementChecked}
                       >
                         Confirm Booking
