@@ -1349,32 +1349,30 @@ export default function BookingPage() {
                     )}
                     {/* Navigation Buttons */}
                     <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
-                      <button
-                        onClick={() => {
-                          if (selectedCategory === 'Mani & Pedi' && addonsStepIndex === 1) {
-                            setAddonsStepIndex(0);
-                          } else {
-                            setStep1Stage('service');
+                      <div className="w-full flex">
+                        <button
+                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
+                        >
+                          Back to Add-ons
+                        </button>
+                      </div>
+                      <div className="w-full flex">
+                        <button
+                          onClick={nextStep}
+                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          disabled={selectedCategory === 'Mani & Pedi'
+                            ? (addonsStepIndex === 0
+                                ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
+                                : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
+                            : !(selectedAddOns.length > 0 || noAddOns)
                           }
-                        }}
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                      >
-                        Back to Services
-                      </button>
-                      <button
-                        onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        disabled={selectedCategory === 'Mani & Pedi'
-                          ? (addonsStepIndex === 0
-                              ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
-                              : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
-                          : !(selectedAddOns.length > 0 || noAddOns)
-                        }
-                      >
-                        {selectedCategory === 'Mani & Pedi'
-                          ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
-                          : 'Continue to Removal'}
-                      </button>
+                        >
+                          {selectedCategory === 'Mani & Pedi'
+                            ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
+                            : 'Continue to Removal'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -1517,25 +1515,26 @@ export default function BookingPage() {
 
                     {/* Navigation */}
                     <div className="flex justify-between mt-8">
-                      <button
-                        onClick={() => {
-                          setCurrentStep(1);
-                          setStep1Stage('removal');
-                        }}
-                        className="btn-secondary"
-                      >
-                        Back to Removal
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentStep(2);
-                          setStep1Stage('service');
-                        }}
-                        className="btn-primary"
-                        disabled={!selectedRemovalType}
-                      >
-                        Continue
-                      </button>
+                      <div className="w-full flex">
+                        <button
+                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
+                        >
+                          Back to Removal
+                        </button>
+                      </div>
+                      <div className="w-full flex">
+                        <button
+                          onClick={() => {
+                            setCurrentStep(2);
+                            setStep1Stage('service');
+                          }}
+                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          disabled={!selectedRemovalType}
+                        >
+                          Continue
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -1693,22 +1692,23 @@ export default function BookingPage() {
                     
                     {/* Navigation */}
                     <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-6 sm:mt-8">
-                      <button
-                        onClick={() => {
-                          setCurrentStep(1);
-                          setStep1Stage('removal');
-                        }}
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                      >
-                        Back to Removal
-        </button>
-                      <button
-                        onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
-                      >
-                        Continue to Confirmation
-                      </button>
+                      <div className="w-full flex">
+                        <button
+                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
+                        >
+                          Back to Removal
+                        </button>
+                      </div>
+                      <div className="w-full flex">
+                        <button
+                          onClick={nextStep}
+                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
+                        >
+                          Continue to Confirmation
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -1787,13 +1787,16 @@ export default function BookingPage() {
                           onChange={(e) => setPromoCode(e.target.value)}
                           className="flex-1 p-3 border border-[#d4af37] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4af37]"
                         />
-                        <button
-                          onClick={handleApplyPromo}
-                          className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white font-bold rounded-lg hover:from-[#b87333] hover:to-[#d4af37] transition-all duration-300"
-                        >
-                          Apply
-                        </button>
-          </div>
+                        <div className="w-full flex">
+                          <button
+                            onClick={handleApplyPromo}
+                            className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white font-bold rounded-lg hover:from-[#b87333] hover:to-[#d4af37] transition-all duration-300"
+                            style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
                       {promoError && <p className="text-red-500 text-sm mt-2">{promoError}</p>}
                       {promoMessage && <p className="text-green-600 text-sm mt-2">{promoMessage}</p>}
         </div>
@@ -1815,22 +1818,23 @@ export default function BookingPage() {
 
                     {/* Navigation */}
                     <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-6 sm:mt-8">
-                      <button
-                        onClick={() => {
-                          setCurrentStep(1);
-                          setStep1Stage('removal');
-                        }}
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                      >
-                        Back to Removal
-        </button>
-                      <button
-                        type="submit"
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        disabled={!agreementChecked}
-                      >
-                        Confirm Booking
-                      </button>
+                      <div className="w-full flex">
+                        <button
+                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
+                        >
+                          Back to Removal
+                        </button>
+                      </div>
+                      <div className="w-full flex">
+                        <button
+                          type="submit"
+                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                          disabled={!agreementChecked}
+                        >
+                          Confirm Booking
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
