@@ -919,12 +919,14 @@ export default function BookingPage() {
                             serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                           }, 100);
                         }}
-                        className={`service-card p-6 text-center transition-all duration-300 group relative bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                        className={`service-card pt-7 pb-4 px-4 sm:p-6 text-center transition-all duration-300 group relative bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
                           ${selectedCategory === 'Mani & Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                             'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
                         style={selectedCategory === 'Mani & Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                       >
-                        <span className="absolute top-3 right-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white text-xs font-bold rounded-full px-3 py-1">
+                        <span
+                          className="absolute top-1.5 right-1.5 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white text-[10px] font-bold rounded-full px-2 py-0.5 z-10 pointer-events-none"
+                        >
                           Most Popular
                         </span>
                         <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Mani & Pedi</h3>
