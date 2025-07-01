@@ -1357,13 +1357,13 @@ export default function BookingPage() {
                             setStep1Stage('service');
                           }
                         }}
-                        className="btn-secondary w-full sm:w-auto py-3 text-base"
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                       >
                         Back to Services
                       </button>
                       <button
                         onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base"
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         disabled={selectedCategory === 'Mani & Pedi'
                           ? (addonsStepIndex === 0
                               ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
@@ -1698,13 +1698,13 @@ export default function BookingPage() {
                           setCurrentStep(1);
                           setStep1Stage('removal');
                         }}
-                        className="btn-secondary w-full sm:w-auto py-3 text-base"
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                       >
                         Back to Removal
         </button>
                       <button
                         onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base"
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
                       >
                         Continue to Confirmation
@@ -1789,7 +1789,7 @@ export default function BookingPage() {
                         />
                         <button
                           onClick={handleApplyPromo}
-                          className="px-6 py-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white font-bold rounded-lg hover:from-[#b87333] hover:to-[#d4af37] transition-all duration-300"
+                          className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white font-bold rounded-lg hover:from-[#b87333] hover:to-[#d4af37] transition-all duration-300"
                         >
                           Apply
                         </button>
@@ -1820,13 +1820,13 @@ export default function BookingPage() {
                           setCurrentStep(1);
                           setStep1Stage('removal');
                         }}
-                        className="btn-secondary w-full sm:w-auto py-3 text-base"
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                       >
                         Back to Removal
         </button>
                       <button
                         type="submit"
-                        className="btn-primary w-full sm:w-auto py-3 text-base"
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         disabled={!agreementChecked}
                       >
                         Confirm Booking
