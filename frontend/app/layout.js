@@ -48,9 +48,9 @@ export default function RootLayout({ children }) {
         {/* Mobile call-to-action button */}
         <a
           href="tel:02077920370"
-          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg z-50 text-sm md:hidden transition hover:bg-pink-700"
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg z-50 text-base font-bold flex items-center gap-2 whitespace-nowrap md:hidden transition hover:bg-pink-700"
         >
-          📞 Call Now
+          <span role="img" aria-label="Call">📞</span> <span>Call Now</span>
         </a>
 
         <Script id="brevo-chat-widget" strategy="afterInteractive">
