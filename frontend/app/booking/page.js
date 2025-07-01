@@ -793,6 +793,48 @@ export default function BookingPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] pb-24">
+      {/* Sticky Progress Bar at the very top */}
+      <div className="sticky top-0 z-50 w-full bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] bg-green-200">
+        <div className="relative w-full max-w-2xl mx-auto">
+          {/* Progress background */}
+          <div className="absolute inset-0 rounded-full overflow-hidden" aria-hidden="true">
+            <div 
+              className="h-full bg-gradient-to-r from-[#d4af37] to-[#b87333] transition-all duration-700"
+              style={{ width: `${(currentStep/3)*100}%`, zIndex: 1, position: 'absolute' }}
+            ></div>
+            <div className="h-full w-full bg-[#e8dcc0] rounded-full absolute left-0 top-0" style={{ zIndex: 0 }}></div>
+          </div>
+          {/* Progress steps */}
+          <div className="relative flex items-center justify-between w-full px-1 sm:px-4 py-2 sm:py-3 z-10">
+            {[1, 2, 3].map((step, idx) => {
+              const stepLabels = ['Services', 'Details', 'Confirm'];
+              const isActive = currentStep === step;
+              const isCompleted = currentStep > step;
+              return (
+                <button
+                  key={step}
+                  type="button"
+                  className="flex flex-col items-center flex-1 focus:outline-none"
+                  onClick={() => { if (isCompleted) setCurrentStep(step); }}
+                  disabled={!isCompleted && !isActive}
+                >
+                  <span className={`flex items-center gap-1 sm:gap-3 text-xs sm:text-base md:text-lg transition-all duration-300
+                    ${isActive ? 'font-bold text-[#2d1b0e]' : 'font-medium text-[#8b7d6b]'}`}
+                  >
+                    <span className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full font-bold text-base sm:text-lg transition-all duration-300
+                      ${isActive ? 'bg-white text-[#d4af37] shadow-lg border-2 border-[#d4af37]' : 
+                        isCompleted ? 'bg-[#d4af37] text-white' : 'bg-[#e8dcc0] text-[#8b7d6b]'}`}>
+                    {step}
+                  </span>
+                  <span className="hidden sm:block">{stepLabels[step-1]}</span>
+                </span>
+              </button>
+            );
+          })}
+          </div>
+        </div> {/* Close .relative w-full max-w-2xl mx-auto */}
+      </div> {/* Close sticky progress bar container */}
+
       <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-8">
         {/* Enhanced Header */}
         <div className="text-center mb-6 sm:mb-8">
@@ -817,48 +859,6 @@ export default function BookingPage() {
             <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
               <span>⏰</span>
               <span>On Time</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Progress Bar - sticky on mobile */}
-        <div className="flex justify-center w-full mb-6 sm:mb-8 sticky top-0 z-30 bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] pt-2 pb-2 sm:static sm:bg-none">
-          <div className="relative w-full max-w-2xl">
-            {/* Progress background */}
-            <div className="absolute inset-0 rounded-full overflow-hidden" aria-hidden="true">
-              <div 
-                className="h-full bg-gradient-to-r from-[#d4af37] to-[#b87333] transition-all duration-700"
-                style={{ width: `${(currentStep/3)*100}%`, zIndex: 1, position: 'absolute' }}
-              ></div>
-              <div className="h-full w-full bg-[#e8dcc0] rounded-full absolute left-0 top-0" style={{ zIndex: 0 }}></div>
-            </div>
-            {/* Progress steps */}
-            <div className="relative flex items-center justify-between w-full px-1 sm:px-4 py-2 sm:py-3 z-10">
-              {[1, 2, 3].map((step, idx) => {
-                const stepLabels = ['Services', 'Details', 'Confirm'];
-                const isActive = currentStep === step;
-                const isCompleted = currentStep > step;
-                return (
-                  <button
-                    key={step}
-                    type="button"
-                    className="flex flex-col items-center flex-1 focus:outline-none"
-                    onClick={() => { if (isCompleted) setCurrentStep(step); }}
-                    disabled={!isCompleted && !isActive}
-                  >
-                    <span className={`flex items-center gap-1 sm:gap-3 text-xs sm:text-base md:text-lg transition-all duration-300
-                      ${isActive ? 'font-bold text-[#2d1b0e]' : 'font-medium text-[#8b7d6b]'}`}
-                    >
-                      <span className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full font-bold text-base sm:text-lg transition-all duration-300
-                        ${isActive ? 'bg-white text-[#d4af37] shadow-lg border-2 border-[#d4af37]' : 
-                          isCompleted ? 'bg-[#d4af37] text-white' : 'bg-[#e8dcc0] text-[#8b7d6b]'}`}>
-                        {step}
-                      </span>
-                      <span className="hidden sm:block">{stepLabels[step-1]}</span>
-                    </span>
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
