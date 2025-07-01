@@ -1421,10 +1421,11 @@ export default function BookingPage() {
                       </button>
                     </div>
 
-                    <div className="text-center">
+                    <div className="w-full flex mt-4">
                       <button
+                        className="btn-secondary w-full sm:w-auto px-4 py-3 text-base font-bold"
+                        style={{ width: '100%', minWidth: 0 }}
                         onClick={() => setStep1Stage('addons')}
-                        className="btn-secondary"
                       >
                         Back to Add-ons
                       </button>
@@ -1779,23 +1780,21 @@ export default function BookingPage() {
                     {/* Promo Code */}
                     <div className="mb-8">
                       <h3 className="text-xl font-bold text-[#2d1b0e] mb-4">Promo Code (Optional)</h3>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <input
                           type="text"
                           placeholder="Enter promo code"
                           value={promoCode}
                           onChange={(e) => setPromoCode(e.target.value)}
-                          className="flex-1 p-3 border border-[#d4af37] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4af37]"
+                          className="flex-1 p-3 border border-[#d4af37] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4af37] w-full"
                         />
-                        <div className="w-full flex">
-                          <button
-                            onClick={handleApplyPromo}
-                            className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white font-bold rounded-lg hover:from-[#b87333] hover:to-[#d4af37] transition-all duration-300"
-                            style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
-                          >
-                            Apply
-                          </button>
-                        </div>
+                        <button
+                          onClick={handleApplyPromo}
+                          className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white font-bold rounded-lg hover:from-[#b87333] hover:to-[#d4af37] transition-all duration-300"
+                          style={{ minWidth: 0 }}
+                        >
+                          Apply
+                        </button>
                       </div>
                       {promoError && <p className="text-red-500 text-sm mt-2">{promoError}</p>}
                       {promoMessage && <p className="text-green-600 text-sm mt-2">{promoMessage}</p>}
