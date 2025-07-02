@@ -5,10 +5,14 @@ import { FaInstagram } from 'react-icons/fa';
 export default function Footer() {
   return (
     <footer className="bg-[#f9f4ef] text-gray-700 border-t border-pink-100 font-sans shadow-[0_2px_24px_0_rgba(216,180,143,0.07)]">
-      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 text-xs md:text-sm">
+      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-6 text-xs md:text-sm justify-items-center text-center">
         {/* Brand / Intro */}
         <div>
-          <img src="/logo.png" alt="Nails Design logo" className="h-12 w-auto mb-2" />
+          <div className="hidden sm:block mb-2 text-center w-full">
+            <h1 className="font-bold text-[#2d1b0e] font-['Playfair_Display'] leading-tight text-center" style={{ fontSize: '35px', marginLeft: '2px' }}>Nails Design</h1>
+            <p className="text-xs text-[#8b7d6b] font-medium text-center ml-[4px]">London</p>
+          </div>
+          {/* <img src="/logo.png" alt="Nails Design logo" className="h-12 w-auto mb-2" /> */}
           <p className="text-gray-600 font-medium text-xs">
             London's go-to destination for luxury manicures, BIAB, and nail artistry.
           </p>

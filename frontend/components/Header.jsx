@@ -54,7 +54,7 @@ export default function Header() {
         <div className="flex items-center gap-2 flex-shrink-0 pl-0">
           <Link href="/" className="flex flex-col items-start group">
             <div className="hidden sm:block">
-              <h1 className="text-lg font-bold text-[#2d1b0e] font-['Playfair_Display'] leading-tight text-left">Nails Design</h1>
+              <h1 className="font-bold text-[#2d1b0e] font-['Playfair_Display'] leading-tight text-left" style={{ fontSize: '35px', marginLeft: '2px' }}>Nails Design</h1>
               <p className="text-xs text-[#8b7d6b] font-medium text-left ml-[4px]">London</p>
             </div>
           </Link>

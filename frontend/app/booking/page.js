@@ -107,7 +107,18 @@ const maniServices = [
   { name: "CLASSIC MANICURE - POLISH", description: "Flawless nails, Expert shaping, buffing, cuticle care and moisturising, followed by a polish of your choice from our vibrant Colour Library.", duration: 40, price: 40 },
   { name: "CLASSIC MANICURE - GEL", description: "Flawless nails, Expert shaping, buffing, cuticle care and moisturising, followed by a chip-resistant gel of your choice from our vibrant Colour Library.", duration: 45, price: 42 },
   { name: "CLASSIC MANICURE - NO COLOUR", description: "Flawless nails, Expert shaping, buffing (with an optional matte or shine finish), cuticle care and moisturising, with no polish or gel for a natural mani alternative.", duration: 30, price: 32 },
+  { name: "SNS CLASSIC DIPPING POWDER", description: "Long-lasting, lightweight, and durable manicure using SNS dipping powder. Includes shaping, buffing, and your choice of color.", duration: 60, price: 40 },
+  { name: "CLASSIC MANICURE - BIAB", description: "Builder in a Bottle (BIAB) for extra strength and durability. Choose your BIAB treatment in the next step.", duration: 60, price: 40 },
 ];
+
+const biabVariants = [
+  { name: "BIAB Infill", description: "", duration: 60, price: 37 },
+  { name: "BIAB Only", description: "", duration: 65, price: 45 },
+  { name: "BIAB with Manicure", description: "", duration: 80, price: 59 },
+  { name: "BIAB Removal", description: "", duration: 20, price: 14 },
+  { name: "BIAB Infill with Manicure", description: "", duration: 60, price: 42 },
+];
+
 const pediServices = [
   { name: "COLOUR REFRESH", description: "Our essential 25-minute pedicure includes expert shaping and buffing, followed by a polish of your choice from our vibrant Colour Library.", duration: 30, price: 30 },
   { name: "CLASSIC PEDICURE - POLISH", description: "Get flawless feet with the . Featuring a soak, expert shaping, buffing, cuticle care, hard skin filing and smoothing and moisturising, followed by a polish of your choice from our vibrant Colour Library.", duration: 50, price: 44 },
@@ -127,11 +138,25 @@ const maniPediServices = [
 
 // Nail Extension & Enhancements
 const nailExtensionEnhancements = [
-  { name: "Acrylic Extensions", description: "Classic acrylic nail extensions for added length and strength.", duration: 60, price: 45 },
+  {
+    name: "Acrylic Extensions",
+    description: "Transform your nails with classic acrylic extensions for added length, strength, and a flawless finish. Perfect for those who want durable, beautiful nails that last. Choose your acrylic option in the next step.",
+    duration: 60,
+    price: 45,
+    children: [
+      { name: "Full Set Acrylic", description: "", duration: 60, price: 34 },
+      { name: "Full Set Ombre", description: "", duration: 60, price: 43 },
+      { name: "Full Set Acrylic with gel color", description: "", duration: 60, price: 40 },
+      { name: "Overlays - Acrylic", description: "", duration: 60, price: 29 },
+      { name: "Infills Acrylic", description: "", duration: 45, price: 24 },
+      { name: "Infills Ombre", description: "", duration: 45, price: 35 },
+      { name: "Infills Acrylic with gel color", description: "", duration: 45, price: 33 }
+    ]
+  },
   { name: "Gel Extensions", description: "Flexible and natural-looking gel nail extensions.", duration: 60, price: 50 },
-  { name: "SNS Extensions", description: "Lightweight SNS dipping powder extensions.", duration: 60, price: 48 },
-  { name: "BIAB Enhancements", description: "Builder in a Bottle for extra strength and durability.", duration: 60, price: 52 },
-  { name: "Others (specify if needed)", description: "Custom enhancements or requests.", duration: 60, price: 0 }
+  { name: "SNS Dipping Powder Extensions", description: "Lightweight SNS dipping powder extensions.", duration: 75, price: 42 },
+  { name: "SNS Refill with Same Colour", description: "SNS refill service using the same colour as your previous set. Includes shaping, buffing, and strengthening for a refreshed look.", duration: 60, price: 35 },
+  { name: "BIAB Enhancements", description: "Builder in a Bottle for extra strength and durability.", duration: 60, price: 52 }
 ];
 
 // Add-ons for all services
@@ -241,6 +266,78 @@ const allAddOns = [
     price: 10,
     onlyFor: 'CLASSIC MANICURE - GEL'
   },
+  // SNS Classic Dipping Powder Add-ons
+  {
+    name: 'French Tips',
+    description: 'White or colored tips using dip powder or gel top layer.',
+    duration: 15,
+    price: 10,
+    onlyFor: 'SNS CLASSIC DIPPING POWDER'
+  },
+  {
+    name: 'Nail Art',
+    description: 'Stickers, decals, freehand art, or foil.',
+    duration: 20,
+    price: 10,
+    onlyFor: 'SNS CLASSIC DIPPING POWDER'
+  },
+  {
+    name: 'Chrome Finish',
+    description: 'Mirror-like chrome effect for your nails.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'SNS CLASSIC DIPPING POWDER'
+  },
+  {
+    name: 'Extended Massage',
+    description: 'Extend any treatment with 10 more minutes of indulgent massage.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'SNS CLASSIC DIPPING POWDER'
+  },
+  {
+    name: 'Repair and Extension of Single Nail',
+    description: 'Restore and extend a broken or short nail so it blends seamlessly with your manicure. Our high-quality gel enhancements guarantee strength, durability and a flawless finish.',
+    duration: 10,
+    price: 8,
+    onlyFor: 'SNS CLASSIC DIPPING POWDER'
+  },
+  // BIAB Add-ons
+  {
+    name: 'French Tips',
+    description: 'Classic French tip in white or any color.',
+    duration: 15,
+    price: 5,
+    onlyFor: 'CLASSIC MANICURE - BIAB'
+  },
+  {
+    name: 'Chrome/Glazed Finish',
+    description: 'Mirror-like chrome or glazed effect for your nails.',
+    duration: 10,
+    price: 10,
+    onlyFor: 'CLASSIC MANICURE - BIAB'
+  },
+  {
+    name: 'Nail Art',
+    description: 'Stickers, decals, freehand art, or foil.',
+    duration: 20,
+    price: 'from 5',
+    onlyFor: 'CLASSIC MANICURE - BIAB'
+  },
+  {
+    name: 'Extra Strength Layer',
+    description: 'Extra strength layer for added durability.',
+    duration: 10,
+    price: 5,
+    onlyFor: 'CLASSIC MANICURE - BIAB'
+  },
+  {
+    name: 'Extended Massage',
+    description: 'Extend any treatment with 10 more minutes of indulgent massage.',
+    duration: 10,
+    price: 5,
+    onlyFor: 'CLASSIC MANICURE - BIAB'
+  },
 ];
 
 // Removal options for all add-ons
@@ -314,9 +411,16 @@ export default function BookingPage() {
   // Fetch services and staff on mount
  useEffect(() => {
   axios.get(getApiUrl("/services")).then((res) => setServices(res.data));
-    axios.get(getApiUrl("/staff")).then((res) => setStaff(res.data)).catch(() => {
+    axios.get(getApiUrl("/staff")).then((res) => {
+      // Add 'Any professional' as the first staff option
+      setStaff([
+        { id: 'any', first_name: 'Any', last_name: 'professional', specialization: 'Any available staff' },
+        ...res.data
+      ]);
+    }).catch(() => {
       // Fallback staff data if API fails
       setStaff([
+        { id: 'any', first_name: 'Any', last_name: 'professional', specialization: 'Any available staff' },
         {
           id: 1,
           first_name: "Sarah",
@@ -338,6 +442,11 @@ export default function BookingPage() {
       ]);
     });
 }, []);
+
+  // Set 'Any professional' as the default selected staff
+  useEffect(() => {
+    setForm((prev) => ({ ...prev, staff_id: 'any' }));
+  }, [staff.length]);
 
   // Fetch booked slots for selected staff and date
   useEffect(() => {
@@ -768,6 +877,12 @@ export default function BookingPage() {
   const [noAddOnsMani, setNoAddOnsMani] = useState(false);
   const [noAddOnsPedi, setNoAddOnsPedi] = useState(false);
 
+  // Add state for BIAB variant selection
+  const [selectedBiabVariant, setSelectedBiabVariant] = useState(null);
+
+  // Add state for acrylic option selection
+  const [selectedAcrylicOption, setSelectedAcrylicOption] = useState(null);
+
   if (success) {
   return (
       <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] flex items-center justify-center p-4">
@@ -822,19 +937,6 @@ export default function BookingPage() {
             </div>
           </div>
         </div>
-
-        {/* Error Message */}
-      {error && (
-          <div className="w-full max-w-2xl mx-auto mb-4 sm:mb-6">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4">
-              <div className="flex items-center gap-2">
-                <span className="text-red-500">⚠️</span>
-                <p className="text-red-600 font-medium text-sm sm:text-base">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Main Content */}
         <div className="flex justify-center items-start w-full">
           <div className="w-full max-w-4xl">
@@ -892,7 +994,6 @@ export default function BookingPage() {
                         <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Mani & Pedi</h3>
                         <p className="text-[#8b7d6b] text-sm">Complete nail care experience</p>
                       </button>
-
                       {/* PEDI */}
                       <button
                         onClick={() => {
@@ -1009,7 +1110,14 @@ export default function BookingPage() {
                                 ${selectedService && selectedService.name === service.name ? 
                                   'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                                   'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                              onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                              onClick={() => {
+                                if (service.name === 'CLASSIC MANICURE - BIAB') {
+                                  setSelectedService(service);
+                                  setStep1Stage('biabVariant');
+                                } else {
+                                  setSelectedService(selectedService && selectedService.name === service.name ? null : service);
+                                }
+                              }}
                               style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                             >
                               <div className="flex justify-between items-start mb-2">
@@ -1071,7 +1179,14 @@ export default function BookingPage() {
                                 ${selectedService && selectedService.name === service.name ? 
                                   'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
                                   'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                              onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                              onClick={() => {
+                                if (service.name === 'Acrylic Extensions') {
+                                  setSelectedService(service);
+                                  setStep1Stage('acrylicOptions');
+                                } else {
+                                  setSelectedService(selectedService && selectedService.name === service.name ? null : service);
+                                }
+                              }}
                               style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                             >
                               <div className="flex justify-between items-start mb-2">
@@ -1101,7 +1216,7 @@ export default function BookingPage() {
                       <div className="mt-6 sm:mt-8 text-center">
                         <button
                           onClick={nextStep}
-                          className="btn-primary w-full sm:w-auto py-3 text-base sm:text-lg"
+                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                           disabled={
                             selectedCategory === 'Mani & Pedi' 
                               ? !(selectedManiPediManicure && selectedManiPediPedicure)
@@ -1144,7 +1259,9 @@ export default function BookingPage() {
                                     ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
                                     : selectedManiPediManicure.name === 'CLASSIC MANICURE - POLISH'
                                       ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
-                                      : allAddOns.filter(addon => !addon.onlyFor)
+                                      : selectedManiPediManicure.name === 'SNS CLASSIC DIPPING POWDER'
+                                        ? allAddOns.filter(addon => addon.onlyFor === 'SNS CLASSIC DIPPING POWDER')
+                                        : allAddOns.filter(addon => !addon.onlyFor)
                                 )
                               ).map(addon => (
                                 <div
@@ -1222,48 +1339,82 @@ export default function BookingPage() {
                           )
                         : (
                           // Default single-service add-ons logic
-                          (selectedService && (selectedService.name === 'CLASSIC MANICURE - NO COLOUR' || selectedService.name === 'CLASSIC PEDICURE - NO COLOUR')
-                            ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
-                            : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
-                              ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
-                              : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
-                                ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
-                                : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
-                                  ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
-                                  : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
-                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
-                                  : allAddOns.filter(addon => !addon.onlyFor)
-                          ).map(addon => (
-                            <div
-                              key={addon.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
-                                ${selectedAddOns.includes(addon.name) ?
-                                  'ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                  'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                              onClick={() => {
-                                if (selectedAddOns.includes(addon.name)) {
-                                  setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
-                                  setNoAddOns(false);
-                                } else {
-                                  setSelectedAddOns([...selectedAddOns, addon.name]);
-                                  setNoAddOns(false);
-                                }
-                              }}
-                              style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
-                                <div className="price-tag text-xs">
-                                  £{addon.price}
+                          (selectedService && selectedService.name === 'CLASSIC MANICURE - BIAB' && selectedBiabVariant)
+                            ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - BIAB').map(addon => (
+                                <div
+                                  key={addon.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                    ${selectedAddOns.includes(addon.name) ?
+                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                  onClick={() => {
+                                    if (selectedAddOns.includes(addon.name)) {
+                                      setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
+                                      setNoAddOns(false);
+                                    } else {
+                                      setSelectedAddOns([...selectedAddOns, addon.name]);
+                                      setNoAddOns(false);
+                                    }
+                                  }}
+                                  style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                    <div className="price-tag text-xs">
+                                      £{addon.price}
+                                    </div>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                                  <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                    <span>⏱️</span>
+                                    <span>{addon.duration} mins</span>
+                                  </div>
+                                </div>
+                              ))
+                            : (selectedService && (selectedService.name === 'CLASSIC MANICURE - NO COLOUR' || selectedService.name === 'CLASSIC PEDICURE - NO COLOUR')
+                              ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                              : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
+                                ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
+                                : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
+                                  ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
+                                  : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
+                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
+                                    : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
+                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
+                                      : selectedService && selectedService.name === 'SNS CLASSIC DIPPING POWDER'
+                                        ? allAddOns.filter(addon => addon.onlyFor === 'SNS CLASSIC DIPPING POWDER')
+                                        : allAddOns.filter(addon => !addon.onlyFor)
+                            ).map(addon => (
+                              <div
+                                key={addon.name}
+                                className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                                  ${selectedAddOns.includes(addon.name) ?
+                                    'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                    'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                onClick={() => {
+                                  if (selectedAddOns.includes(addon.name)) {
+                                    setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
+                                    setNoAddOns(false);
+                                  } else {
+                                    setSelectedAddOns([...selectedAddOns, addon.name]);
+                                    setNoAddOns(false);
+                                  }
+                                }}
+                                style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                              >
+                                <div className="flex justify-between items-start mb-2">
+                                  <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                  <div className="price-tag text-xs">
+                                    £{addon.price}
+                                  </div>
+                                </div>
+                                <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                                <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                                  <span>⏱️</span>
+                                  <span>{addon.duration} mins</span>
                                 </div>
                               </div>
-                              <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
-                              <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
-                                <span>⏱️</span>
-                                <span>{addon.duration} mins</span>
-                              </div>
-                            </div>
-                          ))
+                            ))
                         )}
                     </div>
                     {/* No Add-ons Button */}
@@ -1308,31 +1459,35 @@ export default function BookingPage() {
                       </div>
                     )}
                     {/* Navigation Buttons */}
-                    <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
-                      <div className="w-full flex">
-                        <button
-                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
-                        >
-                          Back to Add-ons
-                        </button>
-                      </div>
-                      <div className="w-full flex">
-                        <button
-                          onClick={nextStep}
-                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          disabled={selectedCategory === 'Mani & Pedi'
-                            ? (addonsStepIndex === 0
-                                ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
-                                : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
-                            : !(selectedAddOns.length > 0 || noAddOns)
-                          }
-                        >
-                          {selectedCategory === 'Mani & Pedi'
-                            ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
-                            : 'Continue to Removal'}
-                        </button>
-                      </div>
+                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                      <button
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        onClick={() => {
+                          setStep1Stage('service');
+                          setSelectedAddOns([]);
+                          setNoAddOns(false);
+                          setSelectedAddOnsMani([]);
+                          setSelectedAddOnsPedi([]);
+                          setNoAddOnsMani(false);
+                          setNoAddOnsPedi(false);
+                        }}
+                      >
+                        Back to Services
+                      </button>
+                      <button
+                        onClick={nextStep}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        disabled={selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0
+                              ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
+                              : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
+                          : !(selectedAddOns.length > 0 || noAddOns)
+                        }
+                      >
+                        {selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
+                          : 'Continue to Removal'}
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -1381,13 +1536,19 @@ export default function BookingPage() {
                       </button>
                     </div>
 
-                    <div className="w-full flex mt-4">
+                    {/* Navigation */}
+                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
                       <button
-                        className="btn-secondary w-full sm:w-auto px-4 py-3 text-base font-bold"
-                        style={{ width: '100%', minWidth: 0 }}
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => setStep1Stage('addons')}
                       >
                         Back to Add-ons
+                      </button>
+                      <button
+                        onClick={nextStep}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                      >
+                        Continue
                       </button>
                     </div>
                   </div>
@@ -1442,13 +1603,19 @@ export default function BookingPage() {
                                     'SNS Dipping Powder Removal',
                                     'Gel Polish Removal'
                                   ]
-                                : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
-                                  ? [
-                                      'BIAB Removal',
-                                      'SNS Dipping Powder Removal',
-                                      'Gel Polish Removal'
-                                    ]
-                                : removalOptions
+                              : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
+                                ? [
+                                    'BIAB Removal',
+                                    'SNS Dipping Powder Removal',
+                                    'Gel Polish Removal'
+                                  ]
+                              : selectedService && selectedService.name === 'SNS CLASSIC DIPPING POWDER'
+                                ? [
+                                    'SNS Dipping Powder Removal',
+                                    'Gel Polish Removal',
+                                    { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
+                                  ]
+                              : removalOptions
                       ).map(option => {
                         const isObj = typeof option === 'object';
                         const label = isObj ? option.name : option;
@@ -1461,7 +1628,7 @@ export default function BookingPage() {
                               ${selectedRemovalType === label ?
                                 'ring-2 ring-[#f6c453] bg-[#f6c453]' :
                                 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                            onClick={() => setSelectedRemovalType(label)}
+                            onClick={() => setSelectedRemovalType(selectedRemovalType === label ? null : label)}
                             style={selectedRemovalType === label ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                           >
                             <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">{label}</h5>
@@ -1475,27 +1642,38 @@ export default function BookingPage() {
                     </div>
 
                     {/* Navigation */}
-                    <div className="flex justify-between mt-8">
-                      <div className="w-full flex">
-                        <button
-                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
-                        >
-                          Back to Removal
-                        </button>
+                    {error && (
+                      <div className="w-full mb-4">
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-red-500">⚠️</span>
+                            <p className="text-red-600 font-medium text-sm">{error}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="w-full flex">
-                        <button
-                          onClick={() => {
-                            setCurrentStep(2);
-                            setStep1Stage('service');
-                          }}
-                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          disabled={!selectedRemovalType}
-                        >
-                          Continue
-                        </button>
-                      </div>
+                    )}
+                    <div className="flex justify-end gap-2 mt-8">
+                      <button
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        onClick={() => setStep1Stage('removal')}
+                      >
+                        Back to Removal Question
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (!selectedRemovalType) {
+                            setError('Please select a removal type.');
+                            return;
+                          }
+                          setCurrentStep(2);
+                          setStep1Stage('service');
+                          setError("");
+                        }}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        disabled={false}
+                      >
+                        Continue
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -1652,24 +1830,28 @@ export default function BookingPage() {
                     </div>
                     
                     {/* Navigation */}
-                    <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 mt-6 sm:mt-8">
-                      <div className="w-full flex">
-                        <button
-                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
-                        >
-                          Back to Removal
-                        </button>
-                      </div>
-                      <div className="w-full flex">
-                        <button
-                          onClick={nextStep}
-                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
-                        >
-                          Continue to Confirmation
-                        </button>
-                      </div>
+                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                      <button
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        onClick={() => {
+                          if (needsRemoval === false) {
+                            setCurrentStep(1);
+                            setStep1Stage('removal');
+                          } else {
+                            setCurrentStep(1);
+                            setStep1Stage('removalType');
+                          }
+                        }}
+                      >
+                        Back to Removal
+                      </button>
+                      <button
+                        onClick={nextStep}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
+                      >
+                        Continue to Confirmation
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -1780,9 +1962,11 @@ export default function BookingPage() {
                       <div className="w-full flex">
                         <button
                           className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          style={{ width: '100%', minWidth: 0, background: '#fca5a5' }}
+                          onClick={() => {
+                            setCurrentStep(2);
+                          }}
                         >
-                          Back to Removal
+                          Back to Staff & Time
                         </button>
                       </div>
                       <div className="w-full flex">
@@ -1798,6 +1982,129 @@ export default function BookingPage() {
                   </div>
                 </motion.div>
               )}
+
+              {/* BIAB Variant Selection */}
+              {currentStep === 1 && step1Stage === 'biabVariant' && (
+                <motion.div
+                  key="biabVariant"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="service-card p-8">
+                    <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
+                      Choose Your BIAB Option
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {biabVariants.map(variant => (
+                        <div
+                          key={variant.name}
+                          className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                            ${selectedBiabVariant && selectedBiabVariant.name === variant.name ?
+                              'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                          onClick={() => setSelectedBiabVariant(selectedBiabVariant && selectedBiabVariant.name === variant.name ? null : variant)}
+                          style={selectedBiabVariant && selectedBiabVariant.name === variant.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                      >
+                          <div className="flex justify-between items-start mb-2">
+                            <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{variant.name}</h5>
+                            <div className="price-tag text-xs">
+                              £{variant.price}
+                            </div>
+                          </div>
+                          <p className="text-[#8b7d6b] text-xs mb-2">{variant.description}</p>
+                          <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                            <span>⏱️</span>
+                            <span>{variant.duration} mins</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                      <button
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        onClick={() => setStep1Stage('service')}
+                      >
+                        Back to Services
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (!selectedBiabVariant) return;
+                          if (selectedBiabVariant.name === 'BIAB Removal') {
+                            setCurrentStep(2); // Go directly to confirmation
+                          } else {
+                            setStep1Stage('addons');
+                          }
+                        }}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        disabled={!selectedBiabVariant}
+                      >
+                        Continue{selectedBiabVariant && selectedBiabVariant.name === 'BIAB Removal' ? ' to Confirmation' : ' to Add-ons'}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Acrylic Options Subpage */}
+              {currentStep === 1 && step1Stage === 'acrylicOptions' && selectedService && selectedService.name === 'Acrylic Extensions' && (
+                <motion.div
+                  key="acrylicOptions"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="service-card p-8">
+                    <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
+                      Choose Your Acrylic Extension Option
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                      {selectedService.children && selectedService.children.filter(opt => !opt.removalOptions).map(opt => (
+                        <div
+                          key={opt.name}
+                          className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                            ${selectedAcrylicOption && selectedAcrylicOption.name === opt.name ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                          onClick={() => setSelectedAcrylicOption(selectedAcrylicOption && selectedAcrylicOption.name === opt.name ? null : opt)}
+                          style={selectedAcrylicOption && selectedAcrylicOption.name === opt.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{opt.name}</h5>
+                            <div className="price-tag text-xs">
+                              £{opt.price}
+                            </div>
+                          </div>
+                          <p className="text-[#8b7d6b] text-xs mb-2">{opt.description}</p>
+                          <div className="flex items-center gap-2 text-xs text-[#8b7d6b]">
+                            <span>⏱️</span>
+                            <span>{opt.duration} mins</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                      <button
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        onClick={() => setStep1Stage('service')}
+                      >
+                        Back to Services
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (!selectedAcrylicOption) return;
+                          setBasket([selectedAcrylicOption]);
+                          setStep1Stage('addons');
+                        }}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        disabled={!selectedAcrylicOption}
+                      >
+                        Continue to Add-ons
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>
@@ -1805,6 +2112,7 @@ export default function BookingPage() {
     </main>
   );
 }
+
 
 
 
