@@ -242,12 +242,22 @@ app.get('/staff', async (req, res) => {
 app.get('/appointments/by-day', async (req, res) => {
   try {
     const { date, staff_id } = req.query;
-    const { rows } = await pool.query(
-      `SELECT booking_date 
-       FROM bookings 
-       WHERE DATE(booking_date) = $1 AND staff_id = $2`,
-      [date, staff_id]
-    );
+    let rows;
+    if (staff_id === "any") {
+      // Get all bookings for the date, regardless of staff
+      const result = await pool.query(
+        `SELECT booking_date FROM bookings WHERE DATE(booking_date) = $1`,
+        [date]
+      );
+      rows = result.rows;
+    } else {
+      // Get bookings for the date and specific staff
+      const result = await pool.query(
+        `SELECT booking_date FROM bookings WHERE DATE(booking_date) = $1 AND staff_id = $2`,
+        [date, staff_id]
+      );
+      rows = result.rows;
+    }
     res.json(rows.map(row => row.booking_date));
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -313,20 +323,46 @@ app.post('/api/bookings/finalize', async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  // 2. Check if time slot is still available
+  // 2. Handle "Any professional" staff selection
+  let final_staff_id = staff_id;
+  if (staff_id === "any") {
+    // Find available staff for the appointment time
+    const availableStaffRes = await pool.query(
+      `SELECT st.staff_id 
+       FROM staff st
+       WHERE st.is_active = true 
+       AND st.staff_id NOT IN (
+         SELECT DISTINCT b.staff_id 
+         FROM bookings b 
+         WHERE b.appointment_datetime = $1 
+         AND b.status != 'cancelled'
+       )
+       ORDER BY st.first_name, st.last_name
+       LIMIT 1`,
+      [appointment_datetime]
+    );
+
+    if (availableStaffRes.rows.length === 0) {
+      return res.status(409).json({ error: "No staff available for this time slot" });
+    }
+
+    final_staff_id = availableStaffRes.rows[0].staff_id;
+  }
+
+  // 3. Check if time slot is still available for the selected staff
   const slotCheck = await pool.query(
-    `SELECT 1 FROM bookings WHERE staff_id = $1 AND appointment_datetime = $2`,
-    [staff_id, appointment_datetime]
+    `SELECT 1 FROM bookings WHERE staff_id = $1 AND appointment_datetime = $2 AND status != 'cancelled'`,
+    [final_staff_id, appointment_datetime]
   );
   if (slotCheck.rowCount > 0) {
     return res.status(409).json({ error: "Time slot already booked" });
   }
 
-  // 3. Validate promo code (if provided)
+  // 4. Validate promo code (if provided)
   let discount = 0;
   if (promo_code) {
     const promoRes = await pool.query(
-      `SELECT * FROM discounts WHERE code = $1 AND valid_from <= CURRENT_DATE AND (valid_until IS NULL OR valid_until >= CURRENT_DATE)` ,
+      `SELECT * FROM discounts WHERE code = $1 AND valid_from <= CURRENT_DATE AND (valid_until IS NULL OR valid_until >= CURRENT_DATE)`,
       [promo_code]
     );
     const promo = promoRes.rows[0];
@@ -337,20 +373,21 @@ app.post('/api/bookings/finalize', async (req, res) => {
     // Optionally: mark promo as used for this customer (not implemented here)
   }
 
-  // 4. Calculate total price
+  // 5. Calculate total price
   const serviceRes = await pool.query(
     `SELECT price FROM services WHERE service_id = ANY($1::uuid[])`,
     [service_ids]
   );
   const total = serviceRes.rows.reduce((sum, s) => sum + Number(s.price), 0) - discount;
 
-  // 5. Create booking record (no payment for now)
+  // 6. Create booking record (no payment for now)
   const booking_id = uuidv4();
   await pool.query(
-    `INSERT INTO bookings (booking_id, customer_id, staff_id, appointment_datetime, total, promo_code, discount)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [booking_id, customer_id, staff_id, appointment_datetime, total, promo_code, discount]
+    `INSERT INTO bookings (booking_id, customer_id, staff_id, appointment_datetime, total, promo_code, discount, status)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, 'confirmed')`,
+    [booking_id, customer_id, final_staff_id, appointment_datetime, total, promo_code, discount]
   );
+  
   // Link services to booking
   for (const service_id of service_ids) {
     await pool.query(
@@ -359,8 +396,20 @@ app.post('/api/bookings/finalize', async (req, res) => {
     );
   }
 
-  // 6. Respond with booking ID
-  res.json({ success: true, booking_id });
+  // 7. Get staff name for response
+  const staffRes = await pool.query(
+    `SELECT CONCAT(first_name, ' ', last_name) as staff_name FROM staff WHERE staff_id = $1`,
+    [final_staff_id]
+  );
+  const staff_name = staffRes.rows[0]?.staff_name || 'Unknown';
+
+  // 8. Respond with booking ID and assigned staff
+  res.json({ 
+    success: true, 
+    booking_id,
+    assigned_staff_id: final_staff_id,
+    assigned_staff_name: staff_name
+  });
 });
 
 app.get('/', (req, res) => {
