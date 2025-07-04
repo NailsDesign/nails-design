@@ -1026,87 +1026,25 @@ export default function BookingPage() {
 
   const pathname = usePathname();
 
-  // --- Clear localStorage on booking completion or reset ---
-  const clearBookingLocalStorage = () => {
-    [
-      'booking_currentStep',
-      'booking_step1Stage',
-      'booking_selectedCategory',
-      'booking_selectedService',
-      'booking_selectedManiPediManicure',
-      'booking_selectedManiPediPedicure',
-      'booking_basket',
-      'booking_selectedAddOns',
-      'booking_selectedAddOnsMani',
-      'booking_selectedAddOnsPedi',
-      'booking_noAddOns',
-      'booking_noAddOnsMani',
-      'booking_noAddOnsPedi',
-      'booking_needsRemoval',
-      'booking_selectedRemovalType',
-      'booking_selectedDate',
-      'booking_form',
-      'booking_addonsStepIndex',
-      'booking_selectedBiabVariant',
-      'booking_selectedAcrylicOption'
-    ].forEach(key => localStorage.removeItem(key));
-    
-    // Reset component state
-    setCurrentStep(1);
-    setStep1Stage('service');
-    setSelectedCategory(null);
-    setSelectedService(null);
-    setSelectedManiPediManicure(null);
-    setSelectedManiPediPedicure(null);
-    setBasket([]);
-    setSelectedAddOns([]);
-    setSelectedAddOnsMani([]);
-    setSelectedAddOnsPedi([]);
-    setNoAddOns(false);
-    setNoAddOnsMani(false);
-    setNoAddOnsPedi(false);
-    setNeedsRemoval(null);
-    setSelectedRemovalType(null);
-    setSelectedDate(null);
-    setForm({
-      name: "",
-      email: "",
-      phone: "",
-      staff_id: "",
-      appointment_datetime: ""
-    });
-    setAddonsStepIndex(0);
-    setSelectedBiabVariant(null);
-    setSelectedAcrylicOption(null);
-    setServices([]);
-  };
-
   // --- Reset booking state on navigation away ---
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
-    // Track the previous pathname to detect navigation away from booking page
-    const prevPathnameRef = useRef(pathname);
-    const isInitialMount = useRef(true);
-    
-    // Only run this effect after the component has mounted and hydrated
-    if (!hydrated) return;
-    
-    // Skip the first render to avoid clearing on initial mount
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      prevPathnameRef.current = pathname;
-      return;
-    }
-    
-    // Check if we navigated away from booking page
-    if (prevPathnameRef.current === '/booking' && pathname !== '/booking') {
-      clearBookingLocalStorage();
-    }
-    
-    // Update the ref for next comparison
-    prevPathnameRef.current = pathname;
-  }, [pathname, hydrated]);
+    // Only run this effect if the component is mounted
+    const handleRouteChange = () => {
+      if (window.location.pathname !== '/booking') {
+        clearBookingLocalStorage();
+      }
+    };
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('pushstate', handleRouteChange);
+    window.addEventListener('replacestate', handleRouteChange);
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+      window.removeEventListener('pushstate', handleRouteChange);
+      window.removeEventListener('replacestate', handleRouteChange);
+      // Removed clearBookingLocalStorage from cleanup to avoid clearing on refresh
+    };
+  }, [pathname]);
 
   // Persist booking state to localStorage on change
   useEffect(() => {
@@ -2808,4 +2746,29 @@ export default function BookingPage() {
   );
 }
 
-
+// --- Clear localStorage on booking completion or reset ---
+function clearBookingLocalStorage() {
+  [
+    'booking_currentStep',
+    'booking_step1Stage',
+    'booking_selectedCategory',
+    'booking_selectedService',
+    'booking_selectedManiPediManicure',
+    'booking_selectedManiPediPedicure',
+    'booking_basket',
+    'booking_selectedAddOns',
+    'booking_selectedAddOnsMani',
+    'booking_selectedAddOnsPedi',
+    'booking_noAddOns',
+    'booking_noAddOnsMani',
+    'booking_noAddOnsPedi',
+    'booking_needsRemoval',
+    'booking_selectedRemovalType',
+    'booking_selectedDate',
+    'booking_form',
+    'booking_addonsStepIndex',
+    'booking_selectedBiabVariant',
+    'booking_selectedAcrylicOption'
+  ].forEach(key => localStorage.removeItem(key));
+  setServices([]); // Reset services state as well
+}
