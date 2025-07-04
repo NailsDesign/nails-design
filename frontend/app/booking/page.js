@@ -1580,7 +1580,7 @@ export default function BookingPage() {
                                     </div>
                                     <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
                                     <div className="flex">
-                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                         <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
                                         <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
                                       </div>
@@ -1611,7 +1611,7 @@ export default function BookingPage() {
                                     </div>
                                     <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
                                     <div className="flex">
-                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                         <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
                                         <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
                                       </div>
@@ -1649,7 +1649,7 @@ export default function BookingPage() {
                               </div>
                               <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
                               <div className="flex">
-                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                   <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
                                   <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
                                 </div>
@@ -1679,7 +1679,7 @@ export default function BookingPage() {
                               </div>
                               <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
                               <div className="flex">
-                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                   <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
                                   <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
                                 </div>
@@ -1716,7 +1716,7 @@ export default function BookingPage() {
                               </div>
                               <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
                               <div className="flex">
-                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                   <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
                                   <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
                                 </div>
@@ -1807,7 +1807,7 @@ export default function BookingPage() {
                                   </div>
                                   <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
                                   <div className="flex">
-                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                       <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
                                       <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
                                     </div>
@@ -1847,7 +1847,7 @@ export default function BookingPage() {
                                   </div>
                                   <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
                                   <div className="flex">
-                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                       <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
                                       <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
                                     </div>
@@ -1882,7 +1882,7 @@ export default function BookingPage() {
                                   </div>
                                   <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
                                   <div className="flex">
-                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                       <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
                                       <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
                                     </div>
@@ -1925,7 +1925,7 @@ export default function BookingPage() {
                                 </div>
                                 <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
                                 <div className="flex">
-                                  <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto">
+                                  <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
                                     <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
                                     <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
                                   </div>
