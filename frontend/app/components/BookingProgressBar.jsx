@@ -6,7 +6,7 @@ const steps = [
   { id: 3, name: "Confirmation" },
 ];
 
-export default function BookingProgressBar({ currentStep }) {
+export default function BookingProgressBar({ currentStep, onStepClick }) {
   return (
     <div className="flex justify-between items-center px-4 py-6 relative w-full max-w-xl mx-auto">
       {steps.map((step, index) => (
@@ -23,15 +23,19 @@ export default function BookingProgressBar({ currentStep }) {
             />
           )}
 
-          {/* Step circle */}
+          {/* Step circle (clickable) */}
           <div
-            className={`z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 ${
+            className={`z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-colors duration-150 ${
               currentStep === step.id
                 ? "bg-[#d4af37] text-[#2d1b0e] border-[#d4af37]"
                 : currentStep > step.id
                 ? "bg-[#b87333] text-white border-[#b87333]"
                 : "bg-[#e8dcc0] text-[#8b7d6b] border-[#e8dcc0]"
-            }`}
+            } ${onStepClick ? 'cursor-pointer hover:ring-2 hover:ring-[#d4af37]' : ''}`}
+            onClick={onStepClick ? () => onStepClick(step.id) : undefined}
+            tabIndex={onStepClick ? 0 : undefined}
+            role={onStepClick ? 'button' : undefined}
+            aria-label={`Go to ${step.name}`}
           >
             {currentStep > step.id ? (
               <svg
@@ -63,8 +67,14 @@ export default function BookingProgressBar({ currentStep }) {
             />
           )}
 
-          {/* Label */}
-          <span className="mt-2 text-sm text-center text-[#2d1b0e]">
+          {/* Label (clickable) */}
+          <span
+            className={`mt-2 text-sm text-center text-[#2d1b0e] ${onStepClick ? 'cursor-pointer hover:underline' : ''}`}
+            onClick={onStepClick ? () => onStepClick(step.id) : undefined}
+            tabIndex={onStepClick ? 0 : undefined}
+            role={onStepClick ? 'button' : undefined}
+            aria-label={`Go to ${step.name}`}
+          >
             {step.name}
           </span>
         </div>

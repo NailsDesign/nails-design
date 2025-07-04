@@ -1435,34 +1435,43 @@ export default function BookingPage() {
       </Dialog>
       {/* End Auth Modal */}
       <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] pb-24">
-        <BookingProgressBar currentStep={currentStep} />
+        <BookingProgressBar currentStep={currentStep} onStepClick={(step) => {
+          // Only allow going back to previous steps
+          if (step < currentStep) {
+            setCurrentStep(step);
+            // Optionally reset step1Stage for step 1
+            if (step === 1) setStep1Stage('service');
+          }
+        }} />
         <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-8">
-          {/* Enhanced Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="mb-2 sm:mb-4">
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#2d1b0e] mb-2 sm:mb-4">
-                Book Your Appointment
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-[#5d4e37] max-w-2xl mx-auto">
-                Choose your services and secure your spot with our expert technicians
-              </p>
+          {/* Enhanced Header - Only show on main service page */}
+          {currentStep === 1 && step1Stage === 'service' && (
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="mb-2 sm:mb-4">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#2d1b0e] mb-2 sm:mb-4">
+                  Book Your Appointment
+                </h1>
+                <p className="text-base sm:text-lg md:text-xl text-[#5d4e37] max-w-2xl mx-auto">
+                  Choose your services and secure your spot with our expert technicians
+                </p>
+              </div>
+              {/* Trust Indicators - hide on xs, show on sm+ */}
+              <div className="hidden sm:flex flex-wrap justify-center gap-4 mt-4 sm:mt-6">
+                <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
+                  <span>⭐</span>
+                  <span>5-Star Rated</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
+                  <span>🧼</span>
+                  <span>Hygiene First</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
+                  <span>⏰</span>
+                  <span>On Time</span>
+                </div>
+              </div>
             </div>
-            {/* Trust Indicators - hide on xs, show on sm+ */}
-            <div className="hidden sm:flex flex-wrap justify-center gap-4 mt-4 sm:mt-6">
-              <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
-                <span>⭐</span>
-                <span>5-Star Rated</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
-                <span>🧼</span>
-                <span>Hygiene First</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-[#8b7d6b]">
-                <span>⏰</span>
-                <span>On Time</span>
-              </div>
-            </div>
-          </div>
+          )}
           {/* Main Content */}
           <div className="flex justify-center items-start w-full">
             <div className="w-full max-w-4xl">
@@ -1976,9 +1985,35 @@ export default function BookingPage() {
                       </div>
                     )}
                     {/* Navigation Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8">
-                      <button className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold">Back to Services</button>
-                      <button className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold">Continue to Removal</button>
+                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                      <button
+                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        onClick={() => {
+                          setStep1Stage('service');
+                          setSelectedAddOns([]);
+                          setNoAddOns(false);
+                          setSelectedAddOnsMani([]);
+                          setSelectedAddOnsPedi([]);
+                          setNoAddOnsMani(false);
+                          setNoAddOnsPedi(false);
+                        }}
+                      >
+                        Back to Services
+                      </button>
+                      <button
+                        onClick={nextStep}
+                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
+                        disabled={selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0
+                              ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
+                              : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
+                          : !(selectedAddOns.length > 0 || noAddOns)
+                        }
+                      >
+                        {selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
+                          : 'Continue to Removal'}
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -2028,7 +2063,7 @@ export default function BookingPage() {
                     </div>
 
                     {/* Navigation */}
-                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-2 mt-6 sm:mt-8">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => setStep1Stage('addons')}
@@ -2155,10 +2190,12 @@ export default function BookingPage() {
                                 <span>{price}</span>
                               </div>
                             )}
-                            {/* Duration & Price bottom right (keep for all, unless you want to remove for this option as well) */}
-                            <div className="flex justify-end items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2">
-                              <span className="text-xs text-[#8b7d6b]">{duration}</span>
-                              <span className="text-xs font-bold text-[#2d1b0e]">{price}</span>
+                            {/* Duration & Price bottom right */}
+                            <div className="flex justify-end mt-2">
+                              <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm">
+                                <span className="text-xs text-[#8b7d6b]">{duration}</span>
+                                <span className="text-xs font-bold text-[#2d1b0e]">{price}</span>
+                              </div>
                             </div>
                           </div>
                         );
@@ -2176,7 +2213,7 @@ export default function BookingPage() {
                         </div>
                       </div>
                     )}
-                    <div className="flex justify-end gap-2 mt-8">
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-2 mt-6 sm:mt-8">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => { setStep1Stage('removal'); setError(""); }}
@@ -2385,7 +2422,7 @@ export default function BookingPage() {
 
 
                     {/* Navigation */}
-                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-2 mt-6 sm:mt-8">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => {
@@ -2619,7 +2656,7 @@ export default function BookingPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => setStep1Stage('service')}
@@ -2678,7 +2715,7 @@ export default function BookingPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => setStep1Stage('service')}
