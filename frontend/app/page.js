@@ -156,7 +156,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section - Premium Card Style */}
+      {/* Testimonials Section - Match Review Page Style */}
       <section className="py-24 bg-gradient-to-br from-[#faf6f0] to-[#fef9f5] border-b border-[#e8dcc0]">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-16">
@@ -167,43 +167,37 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-10">
-            <div className="testimonial-card">
-              <div className="flex items-center mb-4">
-                <div className="flex text-2xl mr-3 text-[#d4af37]">
-                  <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+            {/* Review 1 */}
+            <div className="testimonial-card text-center p-8 flex flex-col items-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h3 className="font-bold text-[#2d1b0e] text-lg">Sarah</h3>
+                <div className="flex text-lg">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className="text-yellow-400">⭐</span>
+                  ))}
                 </div>
-                <span className="text-[#d4af37] font-semibold">5.0</span>
               </div>
-              <p className="text-lg italic mb-4 text-[#5d4e37] leading-relaxed">
+              <p className="text-xs text-[#8b7d6b] mb-2">Gel Manicure</p>
+              <p className="text-xs text-[#8b7d6b] mb-4">1 month ago</p>
+              <p className="text-xl md:text-2xl italic text-[#2d1b0e] leading-relaxed mb-2">
                 "Always a pleasant and super professional and clean service. I got a pedicure and manicure (normal polish) and it was amazing. Always coming back here 🙂"
               </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-[#d4af37] flex items-center justify-center text-white font-bold mr-4 rounded-full">
-                  SM
-                </div>
-                <div>
-                  <p className="font-semibold text-[#2d1b0e]">Sarah Mitchell</p>
-                </div>
-              </div>
             </div>
-            <div className="testimonial-card">
-              <div className="flex items-center mb-4">
-                <div className="flex text-2xl mr-3 text-[#d4af37]">
-                  <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+            {/* Review 2 */}
+            <div className="testimonial-card text-center p-8 flex flex-col items-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h3 className="font-bold text-[#2d1b0e] text-lg">Emma</h3>
+                <div className="flex text-lg">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className="text-yellow-400">⭐</span>
+                  ))}
                 </div>
-                <span className="text-[#d4af37] font-semibold">5.0</span>
               </div>
-              <p className="text-lg italic mb-4 text-[#5d4e37] leading-relaxed">
+              <p className="text-xs text-[#8b7d6b] mb-2">BIAB Gel Nails</p>
+              <p className="text-xs text-[#8b7d6b] mb-4">2 months ago</p>
+              <p className="text-xl md:text-2xl italic text-[#2d1b0e] leading-relaxed mb-2">
                 "Great care, effort and detail taken on my BIAB gel nails! Can't wait to go back and try other colours and designs."
               </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-[#d4af37] flex items-center justify-center text-white font-bold mr-4 rounded-full">
-                  EL
-                </div>
-                <div>
-                  <p className="font-semibold text-[#2d1b0e]">Emma Lawson</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -287,3 +281,4 @@ export default function Home() {
     </main>
   );
 }
+
