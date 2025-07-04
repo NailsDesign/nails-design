@@ -50,17 +50,19 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#e8dcc0] shadow-sm">
       <div className="w-full flex items-center justify-between px-0 py-2 gap-4 relative">
+        {/* Mobile Logo/Title - always visible */}
+        <div className="sm:hidden flex items-center gap-2 pl-2 py-1 bg-white rounded-lg" style={{ minWidth: 0 }}>
+          <Link href="/" className="flex flex-col items-start">
+            <span className="font-extrabold text-[#2d1b0e] text-lg leading-tight tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>Nails Design</span>
+            <span className="text-xs text-[#b87333] font-semibold leading-none ml-[1px]">London</span>
+          </Link>
+        </div>
         {/* Left: Logo - Desktop */}
-        <div className="flex items-center gap-2 flex-shrink-0 pl-0">
+        <div className="hidden sm:flex items-center gap-2 flex-shrink-0 pl-0">
           <Link href="/" className="flex flex-col items-start group">
-            <div className="hidden sm:block">
+            <div>
               <h1 className="font-bold text-[#2d1b0e] font-['Playfair_Display'] leading-tight text-left" style={{ fontSize: '35px', marginLeft: '2px' }}>Nails Design</h1>
               <p className="text-xs text-[#8b7d6b] font-medium text-left ml-[4px]">London</p>
-            </div>
-            {/* Mobile Logo/Title */}
-            <div className="sm:hidden flex flex-col items-start">
-              <span className="font-extrabold text-[#2d1b0e] text-lg leading-tight tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>Nails Design</span>
-              <span className="text-xs text-[#b87333] font-semibold leading-none ml-[1px]">London</span>
             </div>
           </Link>
         </div>
