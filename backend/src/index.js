@@ -374,19 +374,20 @@ app.post('/api/bookings/finalize', async (req, res) => {
     // Optionally: mark promo as used for this customer (not implemented here)
   }
 
-  // 5. Calculate total price
+  // 5. Calculate total price and duration
   const serviceRes = await pool.query(
-    `SELECT price FROM services WHERE service_id = ANY($1::uuid[])`,
+    `SELECT price, duration_minutes FROM services WHERE service_id = ANY($1::uuid[])`,
     [service_ids]
   );
   const total = serviceRes.rows.reduce((sum, s) => sum + Number(s.price), 0) - discount;
+  const duration = serviceRes.rows.reduce((sum, s) => sum + Number(s.duration_minutes), 0);
 
   // 6. Create booking record (no payment for now)
   const booking_id = uuidv4();
   await pool.query(
-    `INSERT INTO bookings (booking_id, customer_id, staff_id, booking_date, total, promo_code, discount, status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, 'confirmed')`,
-    [booking_id, customer_id, final_staff_id, appointment_datetime, total, promo_code, discount]
+    `INSERT INTO bookings (booking_id, customer_id, staff_id, booking_date, total, promo_code, discount, duration_minutes, status)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'confirmed')`,
+    [booking_id, customer_id, final_staff_id, appointment_datetime, total, promo_code, discount, duration]
   );
   
   // Link services to booking
