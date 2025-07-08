@@ -397,9 +397,15 @@ app.post('/api/bookings/finalize', async (req, res) => {
   
   // Link services to booking
   for (const service_id of service_ids) {
+    // Get the price for this service
+    const priceRes = await pool.query(
+      `SELECT price FROM services WHERE service_id = $1`,
+      [service_id]
+    );
+    const price = priceRes.rows[0]?.price ?? 0;
     await pool.query(
-      `INSERT INTO booking_services (booking_id, service_id) VALUES ($1, $2)`,
-      [booking_id, service_id]
+      `INSERT INTO booking_services (booking_id, service_id, price_at_booking) VALUES ($1, $2, $3)`,
+      [booking_id, service_id, price]
     );
   }
 
