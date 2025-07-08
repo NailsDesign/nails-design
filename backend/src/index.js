@@ -13,6 +13,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "your_default_jwt_secret_here";
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const { v4: uuidv4 } = require('uuid');
 
 const allowedOrigins = [
   'https://nails-design.vercel.app', // production domain
@@ -334,7 +335,7 @@ app.post('/api/bookings/finalize', async (req, res) => {
        AND st.staff_id NOT IN (
          SELECT DISTINCT b.staff_id 
          FROM bookings b 
-         WHERE b.appointment_datetime = $1 
+         WHERE b.booking_date = $1 
          AND b.status != 'cancelled'
        )
        ORDER BY st.first_name, st.last_name
@@ -351,7 +352,7 @@ app.post('/api/bookings/finalize', async (req, res) => {
 
   // 3. Check if time slot is still available for the selected staff
   const slotCheck = await pool.query(
-    `SELECT 1 FROM bookings WHERE staff_id = $1 AND appointment_datetime = $2 AND status != 'cancelled'`,
+    `SELECT 1 FROM bookings WHERE staff_id = $1 AND booking_date = $2 AND status != 'cancelled'`,
     [final_staff_id, appointment_datetime]
   );
   if (slotCheck.rowCount > 0) {
@@ -383,7 +384,7 @@ app.post('/api/bookings/finalize', async (req, res) => {
   // 6. Create booking record (no payment for now)
   const booking_id = uuidv4();
   await pool.query(
-    `INSERT INTO bookings (booking_id, customer_id, staff_id, appointment_datetime, total, promo_code, discount, status)
+    `INSERT INTO bookings (booking_id, customer_id, staff_id, booking_date, total, promo_code, discount, status)
      VALUES ($1, $2, $3, $4, $5, $6, $7, 'confirmed')`,
     [booking_id, customer_id, final_staff_id, appointment_datetime, total, promo_code, discount]
   );
