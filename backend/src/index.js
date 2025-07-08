@@ -13,7 +13,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "your_default_jwt_secret_here";
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const { v4: uuidv4 } = require('uuid');
+
 
 const allowedOrigins = [
   'https://nails-design.vercel.app', // production domain
