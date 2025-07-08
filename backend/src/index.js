@@ -382,6 +382,11 @@ app.post('/api/bookings/finalize', async (req, res) => {
   const total = serviceRes.rows.reduce((sum, s) => sum + Number(s.price), 0) - discount;
   const duration = serviceRes.rows.reduce((sum, s) => sum + Number(s.duration_minutes), 0);
 
+  // Validation: duration must be > 0 and services must be valid
+  if (!duration || serviceRes.rows.length === 0) {
+    return res.status(400).json({ error: "Invalid service selection: duration is zero or services not found." });
+  }
+
   // 6. Create booking record (no payment for now)
   const booking_id = uuidv4();
   await pool.query(
