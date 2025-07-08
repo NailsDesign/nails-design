@@ -259,6 +259,8 @@ app.get('/appointments/by-day', async (req, res) => {
       );
       rows = result.rows;
     }
+    // Add this log for debugging
+    console.log('API /appointments/by-day', { date, staff_id }, rows.map(row => row.booking_date));
     res.json(rows.map(row => row.booking_date));
   } catch (err) {
     res.status(500).json({ error: err.message });
