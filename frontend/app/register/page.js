@@ -3,21 +3,17 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { getApiUrl } from '../../config/api';
+import AuthForm from "../../components/AuthForm";
 
 export default function Register() {
   const router = useRouter();
-  const [form, setForm] = useState({ first_name: "", last_name: "", email: "", phone: "", birth_date: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setError('');
+  const handleRegister = async (form) => {
+    setError("");
     setLoading(true);
-
     try {
       await axios.post(getApiUrl('/customers/register'), form);
       setSuccess(true);
@@ -39,24 +35,15 @@ export default function Register() {
       {success ? (
         <p className="text-green-600">Account created! Redirecting to login...</p>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <p className="text-red-600">{error}</p>}
-          <input name="first_name" placeholder="First Name" required className="w-full p-2 border rounded" onChange={handleChange} />
-          <input name="last_name" placeholder="Last Name" required className="w-full p-2 border rounded" onChange={handleChange} />
-          <input name="email" type="email" placeholder="Email" required className="w-full p-2 border rounded" onChange={handleChange} />
-          <input name="phone" placeholder="Phone" className="w-full p-2 border rounded" onChange={handleChange} />
-          <input
-            name="birth_date"
-            type="date"
-            placeholder="Date of Birth"
-            required
-            className="w-full p-2 border rounded"
-            onChange={handleChange}
-            max={new Date().toISOString().split("T")[0]} // No future dates
-          />
-          <input name="password" type="password" placeholder="Password" required className="w-full p-2 border rounded" onChange={handleChange} />
-          <button className="w-full bg-pink-600 text-white py-2 rounded">Create Account</button>
-        </form>
+        <>
+          <AuthForm mode="register" onSubmit={handleRegister} loading={loading} error={error} />
+          <div className="mt-4 text-center">
+            <span className="text-gray-600 text-sm">Already have an account?</span>
+            <a href="/login" className="ml-1 text-pink-600 hover:text-pink-800 underline text-base transition-colors font-semibold">
+              Login
+            </a>
+          </div>
+        </>
       )}
     </main>
   );

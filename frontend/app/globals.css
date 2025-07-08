@@ -127,6 +127,16 @@ a:hover, button:hover {
   transform: translateY(-2px);
 }
 
+.btn-primary:disabled, .btn-primary[disabled] {
+  background: #e5e5e5 !important;
+  color: #b0a99f !important;
+  border-color: #e5e5e5 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
 /* Enhanced Form Styling */
 input, select, textarea {
   font-family: 'Inter', system-ui, Arial, Helvetica, sans-serif;
@@ -186,6 +196,10 @@ nav, header, footer {
 
 .service-card:hover::before {
   transform: scaleX(1);
+}
+
+.no-zoom.service-card:hover {
+  transform: none !important;
 }
 
 /* Testimonial Styling */

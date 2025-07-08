@@ -16,6 +16,10 @@ export default function CustomerDashboard() {
       return;
     }
     setUser(JSON.parse(localStorage.getItem("user")));
+    // Dispatch authChanged event to update header
+    if (localStorage.getItem("user")) {
+      window.dispatchEvent(new Event('authChanged'));
+    }
     axios.get(getApiUrl('/my-bookings'), {
       headers: { Authorization: "Bearer " + token }
     }).then(res => setBookings(res.data));

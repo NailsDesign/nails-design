@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FaUserCircle, FaBars } from 'react-icons/fa';
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -31,6 +32,15 @@ export default function Header() {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Add Escape key handler to close dropdown
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setIsDropdownOpen(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
   const logout = () => {
@@ -148,176 +158,81 @@ export default function Header() {
         </div>
 
         {/* Mobile Dropdown Button - Enhanced design */}
-        <div className="lg:hidden dropdown-container relative flex-shrink-0">
+        <div className="lg:hidden flex items-center gap-2 dropdown-container relative flex-shrink-0">
+          {/* Book Now button next to avatar/menu icon */}
+          <Link
+            href="/booking"
+            className="btn-primary px-3 py-2 text-xs font-bold rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform duration-200"
+            style={{ marginRight: 4 }}
+          >
+            Book Now
+          </Link>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-[#fef9f5] to-[#faf6f0] hover:from-[#faf6f0] hover:to-[#f5f0e8] transition-all duration-300 border border-[#e8dcc0] shadow-sm"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#fef9f5] to-[#faf6f0] hover:from-[#faf6f0] hover:to-[#f5f0e8] transition-all duration-300 border border-[#e8dcc0] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37]"
             aria-label="Menu"
+            aria-haspopup="true"
+            aria-expanded={isDropdownOpen}
+            tabIndex={0}
           >
-            <svg
-              className={`w-5 h-5 text-[#5d4e37] transition-transform duration-300 ${isDropdownOpen ? 'rotate-90' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            {user ? (
+              <FaUserCircle className="w-7 h-7 text-[#b87333]" />
+            ) : (
+              <FaBars className="w-6 h-6 text-[#5d4e37]" />
+            )}
           </button>
 
-          {/* Enhanced Dropdown Menu */}
-          {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#e8dcc0] py-4 z-50 max-h-[85vh] overflow-y-auto">
-              {/* Navigation Links */}
-              <div className="px-6 py-3 border-b border-[#e8dcc0]/50">
-                <div className="text-sm font-semibold text-[#8b7d6b] uppercase tracking-wide mb-3">Navigation</div>
-                <div className="space-y-2">
-                  <Link 
-                    href="/" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">🏠</span>
-                    Home
-                  </Link>
-                  <Link 
-                    href="/about" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">ℹ️</span>
-                    About
-                  </Link>
-                  <Link 
-                    href="/services" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">💅</span>
-                    Services
-                  </Link>
-                  <Link 
-                    href="/gallery" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">✨</span>
-                    Gallery
-                  </Link>
-                  <Link 
-                    href="/booking" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">📅</span>
-                    Booking
-                  </Link>
-                  <Link 
-                    href="/contact" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">📞</span>
-                    Contact
-                  </Link>
-                  <Link 
-                    href="/testimonials" 
-                    className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span className="mr-3">⭐</span>
-                    Reviews
-                  </Link>
+          {/* Animated Dropdown Menu */}
+          <div
+            className={`absolute right-0 top-full mt-2 w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#e8dcc0] py-4 z-50 max-h-[85vh] overflow-y-auto transition-all duration-300 ease-in-out ${isDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
+            role="menu"
+            aria-label="Main menu"
+            tabIndex={-1}
+          >
+            {/* User Info (if logged in) */}
+            {user && (
+              <div className="flex items-center gap-3 px-6 py-4 border-b border-[#e8dcc0]/50 mb-2">
+                <FaUserCircle className="w-10 h-10 text-[#b87333]" />
+                <div>
+                  <div className="font-bold text-[#2d1b0e] text-base">{user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.name || 'Guest'}</div>
+                  {user.email && <div className="text-xs text-[#8b7d6b]">{user.email}</div>}
                 </div>
               </div>
-
-              {/* User Actions */}
-              <div className="px-6 py-3">
-                <div className="text-sm font-semibold text-[#8b7d6b] uppercase tracking-wide mb-3">Account</div>
-                {admin ? (
-                  <div className="space-y-2">
-                    <Link 
-                      href="/admin/dashboard" 
-                      className="flex items-center py-3 px-3 text-[#b87333] font-semibold hover:bg-[#fef9f5] transition-all duration-300 rounded-xl"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <span className="mr-3">👑</span>
-                      Admin Dashboard
-                    </Link>
-                    <button 
-                      className="flex items-center w-full py-3 px-3 text-[#b87333] underline hover:bg-[#fef9f5] transition-all duration-300 rounded-xl font-medium"
-                      onClick={() => {
-                        adminLogout();
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      <span className="mr-3">🚪</span>
-                      Admin Logout
-                    </button>
-                  </div>
-                ) : user ? (
-                  <div className="space-y-3">
-                    <div className="py-3 px-3 bg-gradient-to-r from-[#fef9f5] to-[#faf6f0] rounded-xl border border-[#e8dcc0]/50">
-                      <div className="text-sm text-[#2d1b0e] font-semibold">
-                        Welcome back, {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name || user.name || 'Guest'}
-                      </div>
-                      <div className="text-xs text-[#8b7d6b] mt-1">Ready for your next appointment?</div>
-                    </div>
-                    <button 
-                      className="flex items-center w-full py-3 px-3 text-[#b87333] underline hover:bg-[#fef9f5] transition-all duration-300 rounded-xl font-medium"
-                      onClick={() => {
-                        logout();
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      <span className="mr-3">🚪</span>
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Link 
-                      href="/login" 
-                      className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <span className="mr-3">🔑</span>
-                      Login
-                    </Link>
-                    <Link 
-                      href="/register" 
-                      className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-300 rounded-xl font-medium"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <span className="mr-3">📝</span>
-                      Register
-                    </Link>
-                    <Link 
-                      href="/admin/login" 
-                      className="flex items-center py-3 px-3 text-[#b87333] font-semibold hover:bg-[#fef9f5] transition-all duration-300 rounded-xl"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      <span className="mr-3">👑</span>
-                      Admin Login
-                    </Link>
-                    <div className="pt-2">
-                      <Link 
-                        href="/booking" 
-                        className="btn-primary w-full text-center py-3 px-4 text-sm"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        Book Your Appointment
-                      </Link>
-                    </div>
-                  </div>
-                )}
+            )}
+            {/* Navigation Links */}
+            <div className="px-6 py-3 border-b border-[#e8dcc0]/50">
+              <div className="text-xs font-semibold text-[#8b7d6b] uppercase tracking-wide mb-3">Navigation</div>
+              <div className="space-y-2">
+                <Link href="/" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">🏠</span>Home</Link>
+                <Link href="/about" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">ℹ️</span>About</Link>
+                <Link href="/services" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">💅</span>Services</Link>
+                <Link href="/gallery" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">✨</span>Gallery</Link>
+                <Link href="/booking" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">📅</span>Booking</Link>
+                <Link href="/contact" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">📞</span>Contact</Link>
+                <Link href="/testimonials" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">⭐</span>Reviews</Link>
               </div>
             </div>
-          )}
+            {/* Account Section */}
+            <div className="px-6 py-3">
+              <div className="text-xs font-semibold text-[#8b7d6b] uppercase tracking-wide mb-3">Account</div>
+              {admin ? (
+                <div className="space-y-2">
+                  <Link href="/admin/dashboard" className="flex items-center py-3 px-3 text-[#b87333] font-semibold hover:bg-[#fef9f5] transition-all duration-200 rounded-xl active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">👑</span>Admin Dashboard</Link>
+                  <button className="flex items-center w-full py-3 px-3 text-[#b87333] underline hover:bg-[#fef9f5] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => { adminLogout(); setIsDropdownOpen(false); }} tabIndex={0} role="menuitem"><span className="mr-3">🚪</span>Admin Logout</button>
+                </div>
+              ) : user ? (
+                <div className="space-y-3">
+                  <button className="flex items-center w-full py-3 px-3 text-[#b87333] underline hover:bg-[#fef9f5] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => { logout(); setIsDropdownOpen(false); }} tabIndex={0} role="menuitem"><span className="mr-3">🚪</span>Logout</button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Link href="/login" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">🔑</span>Login</Link>
+                  <Link href="/register" className="flex items-center py-3 px-3 text-[#5d4e37] hover:bg-[#fef9f5] hover:text-[#d4af37] transition-all duration-200 rounded-xl font-medium active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">📝</span>Register</Link>
+                  <Link href="/admin/login" className="flex items-center py-3 px-3 text-[#b87333] font-semibold hover:bg-[#fef9f5] transition-all duration-200 rounded-xl active:bg-[#f6c453]/30 focus:bg-[#f6c453]/30 outline-none" onClick={() => setIsDropdownOpen(false)} tabIndex={0} role="menuitem"><span className="mr-3">👑</span>Admin Login</Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </header>

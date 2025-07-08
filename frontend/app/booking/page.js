@@ -17,6 +17,7 @@ import { getApiUrl } from '../../config/api';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import BookingProgressBar from "../components/BookingProgressBar";
 import { usePathname } from 'next/navigation';
+import AuthModal from "../../components/AuthModal";
 
 // Example holidays (yyyy-mm-dd)
 const holidays = [
@@ -320,7 +321,7 @@ const allAddOns = [
     name: 'Nail Art',
     description: 'Stickers, decals, freehand art, or foil.',
     duration: 20,
-    price: 'from 5',
+    price: 10,
     onlyFor: 'CLASSIC MANICURE - BIAB'
   },
   {
@@ -342,9 +343,6 @@ const allAddOns = [
 // Removal options for all add-ons
 const removalOptions = [
   'BIAB Removal',
-  'French Tip Removal',
-  'Shellac Removal',
-  'Acrylic Removal',
   'SNS Dipping Powder Removal',
   'Gel Polish Removal',
   { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
@@ -844,12 +842,11 @@ export default function BookingPage() {
     setAuthError("");
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (formData) => {
     try {
       const res = await axios.post(getApiUrl("/customers/login"), {
-        email: authForm.email,
-        password: authForm.password
+        email: formData.email,
+        password: formData.password
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -863,21 +860,20 @@ export default function BookingPage() {
     }
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const handleRegister = async (formData) => {
     try {
       await axios.post(getApiUrl("/customers/register"), {
-        first_name: authForm.first_name,
-        last_name: authForm.last_name,
-        email: authForm.email,
-        phone: authForm.phone,
-        birth_date: authForm.birth_date,
-        password: authForm.password
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone: formData.phone,
+        birth_date: formData.birth_date,
+        password: formData.password
       });
       // Now log in the user
       const res = await axios.post(getApiUrl("/customers/login"), {
-        email: authForm.email,
-        password: authForm.password
+        email: formData.email,
+        password: formData.password
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -1127,147 +1123,15 @@ export default function BookingPage() {
     return (
       <>
         {/* Auth Modal */}
-        <Dialog open={showAuthModal} onClose={() => setShowAuthModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4">
-            <div className="fixed inset-0 bg-black bg-opacity-30" aria-hidden="true" />
-            <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full mx-auto p-6 z-10">
-              <button
-                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl font-bold"
-                onClick={() => setShowAuthModal(false)}
-                aria-label="Close"
-              >
-                ×
-              </button>
-              <Tab.Group selectedIndex={authTab} onChange={setAuthTab}>
-                <Tab.List className="flex space-x-2 mb-6">
-                  <Tab className={({ selected }) =>
-                    `flex-1 py-2 rounded-lg font-bold text-lg ${selected ? 'bg-[#f6c453] text-[#2d1b0e]' : 'bg-gray-100 text-gray-500'}`
-                  }>Login</Tab>
-                  <Tab className={({ selected }) =>
-                    `flex-1 py-2 rounded-lg font-bold text-lg ${selected ? 'bg-[#f6c453] text-[#2d1b0e]' : 'bg-gray-100 text-gray-500'}`
-                  }>Register</Tab>
-                </Tab.List>
-                <Tab.Panels>
-                  {/* Login Panel */}
-                  <Tab.Panel>
-                    <form onSubmit={handleLogin} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={authForm.email}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                          type="password"
-                          name="password"
-                          value={authForm.password}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      {authError && <div className="text-red-500 text-sm">{authError}</div>}
-                      <button
-                        type="submit"
-                        className="w-full py-2 px-4 bg-[#f6c453] text-[#2d1b0e] font-bold rounded-lg hover:bg-[#e6be7e] transition"
-                      >
-                        Login
-                      </button>
-                    </form>
-                  </Tab.Panel>
-                  {/* Register Panel */}
-                  <Tab.Panel>
-                    <form onSubmit={handleRegister} className="space-y-4">
-                      <div className="flex gap-2">
-                        <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700">First Name</label>
-                          <input
-                            type="text"
-                            name="first_name"
-                            value={authForm.first_name}
-                            onChange={handleAuthChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                            required
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                          <input
-                            type="text"
-                            name="last_name"
-                            value={authForm.last_name}
-                            onChange={handleAuthChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={authForm.email}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Phone</label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={authForm.phone}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Birth Date</label>
-                        <input
-                          type="date"
-                          name="birth_date"
-                          value={authForm.birth_date}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                          type="password"
-                          name="password"
-                          value={authForm.password}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      {authError && <div className="text-red-500 text-sm">{authError}</div>}
-                      <button
-                        type="submit"
-                        className="w-full py-2 px-4 bg-[#f6c453] text-[#2d1b0e] font-bold rounded-lg hover:bg-[#e6be7e] transition"
-                      >
-                        Register
-                      </button>
-                    </form>
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
-          </div>
-        </Dialog>
-        {/* End Auth Modal */}
+        <AuthModal
+          open={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          defaultTab={authTab === 1 ? 'register' : 'login'}
+          onLogin={handleLogin}
+          onRegister={handleRegister}
+          loading={isLoading}
+          error={authError}
+        />
         <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] flex items-center justify-center p-4">
           <div className="max-w-md mx-auto">
             <div className="service-card p-8 text-center">
@@ -1293,147 +1157,15 @@ export default function BookingPage() {
   return (
     <>
       {/* Auth Modal */}
-      <Dialog open={showAuthModal} onClose={() => setShowAuthModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4">
-          <div className="fixed inset-0 bg-black bg-opacity-30" aria-hidden="true" />
-          <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full mx-auto p-6 z-10">
-            <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl font-bold"
-              onClick={() => setShowAuthModal(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <Tab.Group selectedIndex={authTab} onChange={setAuthTab}>
-              <Tab.List className="flex space-x-2 mb-6">
-                <Tab className={({ selected }) =>
-                  `flex-1 py-2 rounded-lg font-bold text-lg ${selected ? 'bg-[#f6c453] text-[#2d1b0e]' : 'bg-gray-100 text-gray-500'}`
-                }>Login</Tab>
-                <Tab className={({ selected }) =>
-                  `flex-1 py-2 rounded-lg font-bold text-lg ${selected ? 'bg-[#f6c453] text-[#2d1b0e]' : 'bg-gray-100 text-gray-500'}`
-                }>Register</Tab>
-              </Tab.List>
-              <Tab.Panels>
-                {/* Login Panel */}
-                <Tab.Panel>
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={authForm.email}
-                        onChange={handleAuthChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Password</label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={authForm.password}
-                        onChange={handleAuthChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                        required
-                      />
-                    </div>
-                    {authError && <div className="text-red-500 text-sm">{authError}</div>}
-                    <button
-                      type="submit"
-                      className="w-full py-2 px-4 bg-[#f6c453] text-[#2d1b0e] font-bold rounded-lg hover:bg-[#e6be7e] transition"
-                    >
-                      Login
-                    </button>
-                  </form>
-                </Tab.Panel>
-                {/* Register Panel */}
-                <Tab.Panel>
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700">First Name</label>
-                        <input
-                          type="text"
-                          name="first_name"
-                          value={authForm.first_name}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                        <input
-                          type="text"
-                          name="last_name"
-                          value={authForm.last_name}
-                          onChange={handleAuthChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={authForm.email}
-                        onChange={handleAuthChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Phone</label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={authForm.phone}
-                        onChange={handleAuthChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Birth Date</label>
-                      <input
-                        type="date"
-                        name="birth_date"
-                        value={authForm.birth_date}
-                        onChange={handleAuthChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Password</label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={authForm.password}
-                        onChange={handleAuthChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-[#f6c453] focus:border-[#f6c453]"
-                        required
-                      />
-                    </div>
-                    {authError && <div className="text-red-500 text-sm">{authError}</div>}
-                    <button
-                      type="submit"
-                      className="w-full py-2 px-4 bg-[#f6c453] text-[#2d1b0e] font-bold rounded-lg hover:bg-[#e6be7e] transition"
-                    >
-                      Register
-                    </button>
-                  </form>
-                </Tab.Panel>
-              </Tab.Panels>
-            </Tab.Group>
-          </div>
-        </div>
-      </Dialog>
-      {/* End Auth Modal */}
+      <AuthModal
+        open={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab={authTab === 1 ? 'register' : 'login'}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+        loading={isLoading}
+        error={authError}
+      />
       <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] pb-24">
         <BookingProgressBar currentStep={currentStep} onStepClick={(step) => {
           // Only allow going back to previous steps
@@ -1477,398 +1209,459 @@ export default function BookingPage() {
             <div className="w-full max-w-4xl">
               <AnimatePresence mode="wait">
                 {currentStep === 1 && step1Stage === 'service' && (
+                  <>
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <div className="service-card p-8">
+                        <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
+                          Choose Your Service
+                        </h2>
+                        
+                        {/* Service Categories */}
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 mb-6 sm:mb-8">
+                          {/* MANI */}
+                          <button
+                            onClick={() => {
+                              setSelectedCategory('Mani');
+                              setTimeout(() => {
+                                serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 100);
+                            }}
+                            className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                              ${selectedCategory === 'Mani' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                            style={selectedCategory === 'Mani' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                          >
+                            <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Manicure</h3>
+                            <p className="text-[#8b7d6b] text-sm">Perfect nails for any occasion</p>
+                          </button>
+
+                          {/* MANI-PEDI */}
+                          <button
+                            onClick={() => {
+                              setSelectedCategory('Mani & Pedi');
+                              setTimeout(() => {
+                                serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 100);
+                            }}
+                            className={`service-card pt-7 pb-4 px-4 sm:p-6 text-center transition-all duration-300 group relative bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                              ${selectedCategory === 'Mani & Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                            style={selectedCategory === 'Mani & Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                          >
+                            <span
+                              className="absolute top-1.5 right-1.5 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white text-[10px] font-bold rounded-full px-2 py-0.5 z-10 pointer-events-none"
+                            >
+                              Most Popular
+                            </span>
+                            <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Mani & Pedi</h3>
+                            <p className="text-[#8b7d6b] text-sm">Complete nail care experience</p>
+                          </button>
+                          {/* PEDI */}
+                          <button
+                            onClick={() => {
+                              setSelectedCategory('Pedi');
+                              setTimeout(() => {
+                                serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 100);
+                            }}
+                            className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                              ${selectedCategory === 'Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                            style={selectedCategory === 'Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                          >
+                            <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Pedicure</h3>
+                            <p className="text-[#8b7d6b] text-sm">Beautiful feet for sandal season</p>
+                          </button>
+
+                          {/* EXTENSIONS */}
+                          <button
+                            onClick={() => {
+                              setSelectedCategory('Nail Extension & Enhancements');
+                              setTimeout(() => {
+                                serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 100);
+                            }}
+                            className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
+                              ${selectedCategory === 'Nail Extension & Enhancements' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                            style={selectedCategory === 'Nail Extension & Enhancements' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                          >
+                            <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Extensions & Enhancement</h3>
+                            <p className="text-[#8b7d6b] text-sm">Add length and strength</p>
+                          </button>
+                        </div>
+
+                        {/* Service List */}
+                        <div ref={serviceListRef} className="mt-4 sm:mt-0">
+                          {selectedCategory === 'Mani & Pedi' ? (
+                            <div className="space-y-8">
+                              {/* MANI-PEDI — MANICURES */}
+                              <div>
+                                <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
+                                  Manicures
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
+                                    <div
+                                      key={service.name}
+                                      className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                        (selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 
+                                          'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                          'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                      onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
+                                      style={selectedManiPediManicure && selectedManiPediManicure.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                    >
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                      </div>
+                                      <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                      <div className="flex">
+                                        <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                          <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
+                                          <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* MANI-PEDI — PEDICURES */}
+                              <div>
+                                <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
+                                  Pedicures
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
+                                    <div
+                                      key={service.name}
+                                      className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                        (selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 
+                                          'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                          'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                      onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
+                                      style={selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                    >
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                      </div>
+                                      <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                      <div className="flex">
+                                        <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                          <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
+                                          <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          ) : selectedCategory === 'Mani' ? (
+        <div>
+                            <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
+                              Manicure Services
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {maniServices.map(service => (
+                                <div
+                                  key={service.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                    (selectedService && selectedService.name === service.name ?
+                                      ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                      ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                  onClick={() => {
+                                    if (service.name === 'CLASSIC MANICURE - BIAB') {
+                                      setSelectedService(service);
+                                      setStep1Stage('biabVariant');
+                                    } else {
+                                      setSelectedService(selectedService && selectedService.name === service.name ? null : service);
+                                    }
+                                  }}
+                                  style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                  <div className="flex">
+                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                      <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
+                                      <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : selectedCategory === 'Pedi' ? (
+                          <div>
+                            <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
+                              Pedicure Services
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {pediServices.map(service => (
+                                <div
+                                  key={service.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                    (selectedService && selectedService.name === service.name ?
+                                      ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                      ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                  onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
+                                  style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                  <div className="flex">
+                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                      <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
+                                      <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : selectedCategory === 'Nail Extension & Enhancements' ? (
+                          <div>
+                            <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
+                              Nail Extensions & Enhancements
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {nailExtensionEnhancements.map(service => (
+                                <div
+                                  key={service.name}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                    (selectedService && selectedService.name === service.name ?
+                                      ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                      ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                  onClick={() => {
+                                    if (service.name === 'Acrylic Extensions') {
+                                      setSelectedService(service);
+                                      setStep1Stage('acrylicOptions');
+                                    } else {
+                                      setSelectedService(selectedService && selectedService.name === service.name ? null : service);
+                                    }
+                                  }}
+                                  style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                  </div>
+                                  <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                  <div className="flex">
+                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                      <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
+                                      <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center text-[#8b7d6b] py-8">
+                            <p className="text-lg">Select a service category above to see available options</p>
+                          </div>
+                        )}
+                        </div>
+
+                        {/* Next Button */}
+                      
+                      </div>
+                    </motion.div>
+                    {/* Sticky Footer */}
+                    <div className="fixed bottom-0 left-0 w-full z-50">
+                      <div className="w-full">
+                        <div style={{ background: 'linear-gradient(135deg, #fef9f5 0%, #faf6f0 100%)' }}>
+                          <div className="max-w-2xl mx-auto w-full px-4 flex flex-col items-center pt-2 pb-0">
+                            <div className="h-3" />
+                          </div>
+                        </div>
+                        <div className="bg-white border-t border-[#e5e5e5]">
+                          <div className="max-w-2xl mx-auto w-full px-4 flex justify-end gap-2 pb-2 pt-2">
+                            <button
+                              className={`btn-primary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full transition-colors duration-200 ${
+                                (selectedCategory === 'Mani & Pedi'
+                                  ? !(selectedManiPediManicure && selectedManiPediPedicure)
+                                  : !selectedService)
+                                  ? 'bg-gray-300 text-gray-400 cursor-not-allowed border-gray-300 hover:bg-gray-300 hover:text-gray-400 hover:border-gray-300'
+                                  : ''
+                              }`}
+                              onClick={nextStep}
+                              disabled={selectedCategory === 'Mani & Pedi' 
+                                ? !(selectedManiPediManicure && selectedManiPediPedicure)
+                                : !selectedService}
+                            >
+                              Continue to Add-ons
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+              {/* Add-ons Step */}
+              {currentStep === 1 && step1Stage === 'addons' && (
+                <>
                   <motion.div
-                    key="step1"
+                    key="addons"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <div className="service-card p-8">
+                    <div className="service-card p-8 max-w-2xl mx-auto">
                       <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
-                        Choose Your Service
+                        {selectedCategory === 'Mani & Pedi'
+                          ? addonsStepIndex === 0
+                            ? 'Choose Your Manicure Add-ons'
+                            : 'Choose Your Pedicure Add-ons'
+                          : 'Choose Your Add-ons'}
                       </h2>
-                      
-                      {/* Service Categories */}
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 mb-6 sm:mb-8">
-                        {/* MANI */}
-                        <button
-                          onClick={() => {
-                            setSelectedCategory('Mani');
-                            setTimeout(() => {
-                              serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          }}
-                          className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
-                            ${selectedCategory === 'Mani' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                          style={selectedCategory === 'Mani' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                        >
-                          <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Manicure</h3>
-                          <p className="text-[#8b7d6b] text-sm">Perfect nails for any occasion</p>
-                        </button>
-
-                        {/* MANI-PEDI */}
-                        <button
-                          onClick={() => {
-                            setSelectedCategory('Mani & Pedi');
-                            setTimeout(() => {
-                              serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          }}
-                          className={`service-card pt-7 pb-4 px-4 sm:p-6 text-center transition-all duration-300 group relative bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
-                            ${selectedCategory === 'Mani & Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                          style={selectedCategory === 'Mani & Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                        >
-                          <span
-                            className="absolute top-1.5 right-1.5 bg-gradient-to-r from-[#d4af37] to-[#b87333] text-white text-[10px] font-bold rounded-full px-2 py-0.5 z-10 pointer-events-none"
-                          >
-                            Most Popular
-                          </span>
-                          <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Mani & Pedi</h3>
-                          <p className="text-[#8b7d6b] text-sm">Complete nail care experience</p>
-                        </button>
-                        {/* PEDI */}
-                        <button
-                          onClick={() => {
-                            setSelectedCategory('Pedi');
-                            setTimeout(() => {
-                              serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          }}
-                          className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
-                            ${selectedCategory === 'Pedi' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                          style={selectedCategory === 'Pedi' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                        >
-                          <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Pedicure</h3>
-                          <p className="text-[#8b7d6b] text-sm">Beautiful feet for sandal season</p>
-                        </button>
-
-                        {/* EXTENSIONS */}
-                        <button
-                          onClick={() => {
-                            setSelectedCategory('Nail Extension & Enhancements');
-                            setTimeout(() => {
-                              serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          }}
-                          className={`service-card p-6 text-center transition-all duration-300 group bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e]
-                            ${selectedCategory === 'Nail Extension & Enhancements' ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                              'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                          style={selectedCategory === 'Nail Extension & Enhancements' ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                        >
-                          <h3 className="text-xl md:text-2xl font-bold text-[#2d1b0e] mb-2">Extensions & Enhancement</h3>
-                          <p className="text-[#8b7d6b] text-sm">Add length and strength</p>
-                        </button>
-                      </div>
-
-                      {/* Service List */}
-                      <div ref={serviceListRef} className="mt-4 sm:mt-0">
-                        {selectedCategory === 'Mani & Pedi' ? (
-                          <div className="space-y-8">
-                            {/* MANI-PEDI — MANICURES */}
-                            <div>
-                              <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
-                                Manicures
-                              </h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {maniPediServices.filter(s => s.group === 'MANI-PEDI — MANICURES').map(service => (
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 mb-6 sm:mb-8">
+                        {selectedCategory === 'Mani & Pedi'
+                          ? (addonsStepIndex === 0
+                              ? (
+                                (selectedManiPediManicure &&
+                                  ((selectedManiPediManicure.name === 'CLASSIC MANICURE - NO COLOUR' || selectedManiPediManicure.name === 'CLASSIC PEDICURE - NO COLOUR')
+                                    ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                                    : selectedManiPediManicure.name === 'CLASSIC MANICURE - GEL'
+                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
+                                      : selectedManiPediManicure.name === 'CLASSIC MANICURE - POLISH'
+                                        ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
+                                        : selectedManiPediManicure.name === 'SNS CLASSIC DIPPING POWDER'
+                                          ? allAddOns.filter(addon => addon.onlyFor === 'SNS CLASSIC DIPPING POWDER')
+                                          : allAddOns.filter(addon => !addon.onlyFor)
+                                  )
+                                ).map(addon => (
                                   <div
-                                    key={service.name}
+                                    key={addon.name}
                                     className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                      (selectedManiPediManicure && selectedManiPediManicure.name === service.name ? 
-                                        'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                                      (selectedAddOnsMani.includes(addon.name) ?
+                                        'ring-2 ring-[#f6c453] bg-[#f6c453]' :
                                         'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                                    onClick={() => setSelectedManiPediManicure(selectedManiPediManicure && selectedManiPediManicure.name === service.name ? null : service)}
-                                    style={selectedManiPediManicure && selectedManiPediManicure.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                    onClick={() => {
+                                      if (selectedAddOnsMani.includes(addon.name)) {
+                                        setSelectedAddOnsMani(selectedAddOnsMani.filter(a => a !== addon.name));
+                                        setNoAddOnsMani(false);
+                                      } else {
+                                        setSelectedAddOnsMani([...selectedAddOnsMani, addon.name]);
+                                        setNoAddOnsMani(false);
+                                      }
+                                    }}
+                                    style={selectedAddOnsMani.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                                   >
                                     <div className="flex justify-between items-start mb-2">
-                                      <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
+                                      <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
                                     </div>
-                                    <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
+                                    <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
                                     <div className="flex">
                                       <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                        <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
-                                        <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
+                                        <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
+                                        <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
                                       </div>
                                     </div>
                                   </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* MANI-PEDI — PEDICURES */}
-                            <div>
-                              <h4 className="text-xl font-bold text-[#2d1b0e] mb-4 flex items-center gap-2">
-                                Pedicures
-                              </h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {maniPediServices.filter(s => s.group === 'MANI-PEDI — PEDICURES' || !s.group).map(service => (
-                                  <div
-                                    key={service.name}
-                                    className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                      (selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? 
-                                        'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                                        'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                                    onClick={() => setSelectedManiPediPedicure(selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? null : service)}
-                                    style={selectedManiPediPedicure && selectedManiPediPedicure.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                                  >
-                                    <div className="flex justify-between items-start mb-2">
-                                      <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
-                                    </div>
-                                    <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
-                                    <div className="flex">
-                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                        <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
-                                        <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        ) : selectedCategory === 'Mani' ? (
-        <div>
-                        <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
-                          Manicure Services
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {maniServices.map(service => (
-                            <div
-                              key={service.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                (selectedService && selectedService.name === service.name ?
-                                  ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                  ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                              onClick={() => {
-                                if (service.name === 'CLASSIC MANICURE - BIAB') {
-                                  setSelectedService(service);
-                                  setStep1Stage('biabVariant');
-                                } else {
-                                  setSelectedService(selectedService && selectedService.name === service.name ? null : service);
-                                }
-                              }}
-                              style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                            >
-                              <div className="mb-2">
-                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
-                              </div>
-                              <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
-                              <div className="flex">
-                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                  <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
-                                  <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : selectedCategory === 'Pedi' ? (
-                      <div>
-                        <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
-                          Pedicure Services
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {pediServices.map(service => (
-                            <div
-                              key={service.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                (selectedService && selectedService.name === service.name ?
-                                  ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                  ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                              onClick={() => setSelectedService(selectedService && selectedService.name === service.name ? null : service)}
-                              style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
-                              </div>
-                              <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
-                              <div className="flex">
-                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                  <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
-                                  <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : selectedCategory === 'Nail Extension & Enhancements' ? (
-                      <div>
-                        <h4 className="text-xl font-bold text-[#2d1b0e] mb-6 flex items-center gap-2">
-                          Nail Extensions & Enhancements
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {nailExtensionEnhancements.map(service => (
-                            <div
-                              key={service.name}
-                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                (selectedService && selectedService.name === service.name ?
-                                  ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                  ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                              onClick={() => {
-                                if (service.name === 'Acrylic Extensions') {
-                                  setSelectedService(service);
-                                  setStep1Stage('acrylicOptions');
-                                } else {
-                                  setSelectedService(selectedService && selectedService.name === service.name ? null : service);
-                                }
-                              }}
-                              style={selectedService && selectedService.name === service.name ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{service.name}</h5>
-                              </div>
-                              <p className="text-[#8b7d6b] text-xs mb-2">{service.description}</p>
-                              <div className="flex">
-                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                  <span className="text-xs text-[#8b7d6b]">{service.duration} mins</span>
-                                  <span className="text-xs font-bold text-[#2d1b0e]">{typeof service.price === 'number' ? `£${service.price}` : service.price}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center text-[#8b7d6b] py-8">
-                        <p className="text-lg">Select a service category above to see available options</p>
-                      </div>
-                    )}
-                    </div>
-
-                    {/* Next Button */}
-                    {selectedCategory && (
-                      <div className="mt-6 sm:mt-8 text-center">
-                        <button
-                          onClick={nextStep}
-                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          disabled={
-                            selectedCategory === 'Mani & Pedi' 
-                              ? !(selectedManiPediManicure && selectedManiPediPedicure)
-                              : !selectedService
-                          }
-                        >
-                          Continue to Add-ons
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Add-ons Step */}
-              {currentStep === 1 && step1Stage === 'addons' && (
-                <motion.div
-                  key="addons"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="service-card p-4 sm:p-8">
-                    <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
-                      {selectedCategory === 'Mani & Pedi'
-                        ? addonsStepIndex === 0
-                          ? 'Choose Your Manicure Add-ons'
-                          : 'Choose Your Pedicure Add-ons'
-                        : 'Choose Your Add-ons'}
-                    </h2>
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 mb-6 sm:mb-8">
-                      {selectedCategory === 'Mani & Pedi'
-                        ? (addonsStepIndex === 0
-                            ? (
-                              (selectedManiPediManicure &&
-                                ((selectedManiPediManicure.name === 'CLASSIC MANICURE - NO COLOUR' || selectedManiPediManicure.name === 'CLASSIC PEDICURE - NO COLOUR')
-                                  ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
-                                  : selectedManiPediManicure.name === 'CLASSIC MANICURE - GEL'
-                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
-                                    : selectedManiPediManicure.name === 'CLASSIC MANICURE - POLISH'
-                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
-                                      : selectedManiPediManicure.name === 'SNS CLASSIC DIPPING POWDER'
-                                        ? allAddOns.filter(addon => addon.onlyFor === 'SNS CLASSIC DIPPING POWDER')
+                                ))
+                              ) : (
+                                (selectedManiPediPedicure &&
+                                  ((selectedManiPediPedicure.name === 'CLASSIC MANICURE - NO COLOUR' || selectedManiPediPedicure.name === 'CLASSIC PEDICURE - NO COLOUR')
+                                    ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                                    : selectedManiPediPedicure.name === 'CLASSIC PEDICURE - GEL'
+                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
+                                      : selectedManiPediPedicure.name === 'CLASSIC PEDICURE - POLISH'
+                                        ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
                                         : allAddOns.filter(addon => !addon.onlyFor)
-                                )
-                              ).map(addon => (
-                                <div
-                                  key={addon.name}
-                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                    (selectedAddOnsMani.includes(addon.name) ?
-                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                                  onClick={() => {
-                                    if (selectedAddOnsMani.includes(addon.name)) {
-                                      setSelectedAddOnsMani(selectedAddOnsMani.filter(a => a !== addon.name));
-                                      setNoAddOnsMani(false);
-                                    } else {
-                                      setSelectedAddOnsMani([...selectedAddOnsMani, addon.name]);
-                                      setNoAddOnsMani(false);
-                                    }
-                                  }}
-                                  style={selectedAddOnsMani.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                                >
-                                  <div className="flex justify-between items-start mb-2">
-                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
-                                  </div>
-                                  <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
-                                  <div className="flex">
-                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                      <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
-                                      <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
+                                  )
+                                ).map(addon => (
+                                  <div
+                                    key={addon.name}
+                                    className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                      (selectedAddOnsPedi.includes(addon.name) ?
+                                        'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                        'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                    onClick={() => {
+                                      if (selectedAddOnsPedi.includes(addon.name)) {
+                                        setSelectedAddOnsPedi(selectedAddOnsPedi.filter(a => a !== addon.name));
+                                        setNoAddOnsPedi(false);
+                                      } else {
+                                        setSelectedAddOnsPedi([...selectedAddOnsPedi, addon.name]);
+                                        setNoAddOnsPedi(false);
+                                      }
+                                    }}
+                                    style={selectedAddOnsPedi.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                  >
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                    </div>
+                                    <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                                    <div className="flex">
+                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                        <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
+                                        <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              ))
-                            ) : (
-                              (selectedManiPediPedicure &&
-                                ((selectedManiPediPedicure.name === 'CLASSIC MANICURE - NO COLOUR' || selectedManiPediPedicure.name === 'CLASSIC PEDICURE - NO COLOUR')
-                                  ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
-                                  : selectedManiPediPedicure.name === 'CLASSIC PEDICURE - GEL'
-                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
-                                    : selectedManiPediPedicure.name === 'CLASSIC PEDICURE - POLISH'
-                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
-                                      : allAddOns.filter(addon => !addon.onlyFor)
-                                )
-                              ).map(addon => (
-                                <div
-                                  key={addon.name}
-                                  className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                    (selectedAddOnsPedi.includes(addon.name) ?
-                                      'ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                      'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                                  onClick={() => {
-                                    if (selectedAddOnsPedi.includes(addon.name)) {
-                                      setSelectedAddOnsPedi(selectedAddOnsPedi.filter(a => a !== addon.name));
-                                      setNoAddOnsPedi(false);
-                                    } else {
-                                      setSelectedAddOnsPedi([...selectedAddOnsPedi, addon.name]);
-                                      setNoAddOnsPedi(false);
-                                    }
-                                  }}
-                                  style={selectedAddOnsPedi.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                                >
-                                  <div className="flex justify-between items-start mb-2">
-                                    <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
-                                  </div>
-                                  <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
-                                  <div className="flex">
-                                    <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                      <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
-                                      <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))
+                                ))
+                              )
                             )
-                          )
-                        : (
-                          // Default single-service add-ons logic
-                          (selectedService && selectedService.name === 'CLASSIC MANICURE - BIAB' && selectedBiabVariant)
-                            ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - BIAB').map(addon => (
+                          : (
+                            // Default single-service add-ons logic
+                            (selectedService && selectedService.name === 'CLASSIC MANICURE - BIAB' && selectedBiabVariant)
+                              ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - BIAB').map(addon => (
+                                  <div
+                                    key={addon.name}
+                                    className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                      (selectedAddOns.includes(addon.name) ?
+                                        'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                        'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                                    onClick={() => {
+                                      if (selectedAddOns.includes(addon.name)) {
+                                        setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
+                                        setNoAddOns(false);
+                                      } else {
+                                        setSelectedAddOns([...selectedAddOns, addon.name]);
+                                        setNoAddOns(false);
+                                      }
+                                    }}
+                                    style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                  >
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
+                                    </div>
+                                    <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
+                                    <div className="flex">
+                                      <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
+                                        <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
+                                        <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))
+                              : (selectedService && (selectedService.name === 'CLASSIC MANICURE - NO COLOUR' || selectedService.name === 'CLASSIC PEDICURE - NO COLOUR')
+                                ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
+                                : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
+                                  ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
+                                  : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
+                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
+                                    : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
+                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
+                                      : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
+                                        ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
+                                        : selectedService && selectedService.name === 'SNS CLASSIC DIPPING POWDER'
+                                          ? allAddOns.filter(addon => addon.onlyFor === 'SNS CLASSIC DIPPING POWDER')
+                                          : allAddOns.filter(addon => !addon.onlyFor)
+                              ).map(addon => (
                                 <div
                                   key={addon.name}
                                   className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
@@ -1898,555 +1691,550 @@ export default function BookingPage() {
                                   </div>
                                 </div>
                               ))
-                            : (selectedService && (selectedService.name === 'CLASSIC MANICURE - NO COLOUR' || selectedService.name === 'CLASSIC PEDICURE - NO COLOUR')
-                              ? allAddOns.filter((addon, idx, arr) => addon.name === 'Extended Massage' && arr.findIndex(a => a.name === 'Extended Massage') === idx)
-                              : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
-                                ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - GEL')
-                                : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
-                                  ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - POLISH')
-                                  : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
-                                    ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - GEL')
-                                    : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
-                                      ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC PEDICURE - POLISH')
-                                      : selectedService && selectedService.name === 'SNS CLASSIC DIPPING POWDER'
-                                        ? allAddOns.filter(addon => addon.onlyFor === 'SNS CLASSIC DIPPING POWDER')
-                                        : allAddOns.filter(addon => !addon.onlyFor)
-                            ).map(addon => (
-                              <div
-                                key={addon.name}
-                                className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                                  (selectedAddOns.includes(addon.name) ?
-                                    'ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                    'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                                onClick={() => {
-                                  if (selectedAddOns.includes(addon.name)) {
-                                    setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
-                                    setNoAddOns(false);
-                                  } else {
-                                    setSelectedAddOns([...selectedAddOns, addon.name]);
-                                    setNoAddOns(false);
-                                  }
-                                }}
-                                style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                              >
-                                <div className="flex justify-between items-start mb-2">
-                                  <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{addon.name}</h5>
-                                </div>
-                                <p className="text-[#8b7d6b] text-xs mb-2">{addon.description}</p>
-                                <div className="flex">
-                                  <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 ml-auto max-w-max">
-                                    <span className="text-xs text-[#8b7d6b]">{addon.duration} mins</span>
-                                    <span className="text-xs font-bold text-[#2d1b0e]">{typeof addon.price === 'number' ? `£${addon.price}` : addon.price}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))
-                        )}
+                          )}
+                      </div>
+                      <div className="h-8" /> {/* Reduced spacer for sticky footer */}
                     </div>
-                    {/* No Add-ons Button */}
-                    {selectedCategory === 'Mani & Pedi' ? (
-                      <div className="text-center mb-6 sm:mb-8">
-                        <button
-                          className={`service-card p-4 w-full transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
-                            (addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi)
-                              ? 'ring-2 ring-[#f6c453] bg-[#f6c453]'
-                              : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                          }`}
-                          onClick={() => {
-                            if (addonsStepIndex === 0) {
-                              setNoAddOnsMani(true);
+                  </motion.div>
+                  <div className="fixed bottom-0 left-0 w-full z-50">
+                    <div className="w-full">
+                      {/* Top half: No Add-ons Needed button, page background color */}
+                      <div style={{ background: 'linear-gradient(135deg, #fef9f5 0%, #faf6f0 100%)' }}>
+                        <div className="max-w-2xl mx-auto w-full px-4 flex flex-col items-center pt-2 pb-0">
+                          {selectedCategory === 'Mani & Pedi' ? (
+                            <button
+                              className={`no-zoom service-card border border-[#bfa77a] bg-transparent text-[#2d1b0e] max-w-max px-8 py-2 mx-auto font-bold rounded-full shadow-none transition-all duration-200 ${
+                                (addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi)
+                                  ? 'ring-2 ring-[#f6c453] bg-[#f6c453]'
+                                  : 'hover:border-[#d4af37] hover:bg-[#f6c453]/20'
+                              }`}
+                              style={{boxShadow: 'none'}}
+                              onClick={() => {
+                                if (addonsStepIndex === 0) {
+                                  setNoAddOnsMani(true);
+                                  setSelectedAddOnsMani([]);
+                                } else {
+                                  setNoAddOnsPedi(true);
+                                  setSelectedAddOnsPedi([]);
+                                }
+                              }}
+                            >
+                              <span className="text-base sm:text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
+                            </button>
+                          ) : (
+                            <button
+                              className={`no-zoom service-card border border-[#bfa77a] bg-transparent text-[#2d1b0e] max-w-max px-8 py-2 mx-auto font-bold rounded-full shadow-none transition-all duration-200 ${
+                                noAddOns ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                'hover:border-[#d4af37] hover:bg-[#f6c453]/20'
+                              }`}
+                              style={{boxShadow: 'none'}}
+                              onClick={() => {
+                                setNoAddOns(true);
+                                setSelectedAddOns([]);
+                                setStep1Stage('removal');
+                              }}
+                            >
+                              <span className="text-base sm:text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
+                            </button>
+                          )}
+                          <div className="h-3" />
+                        </div>
+                      </div>
+                      {/* Bottom half: Navigation buttons, white background, border-top */}
+                      <div className="bg-white border-t border-[#e5e5e5]">
+                        <div className="max-w-2xl mx-auto w-full px-4 flex justify-between gap-2 pb-2 pt-2">
+                          <button
+                            className="btn-secondary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                            onClick={() => {
+                              setStep1Stage('service');
+                              setSelectedAddOns([]);
+                              setNoAddOns(false);
                               setSelectedAddOnsMani([]);
-                            } else {
-                              setNoAddOnsPedi(true);
                               setSelectedAddOnsPedi([]);
+                              setNoAddOnsMani(false);
+                              setNoAddOnsPedi(false);
+                            }}
+                          >
+                            Back to Services
+                          </button>
+                          <button
+                            onClick={nextStep}
+                            className="btn-primary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                            disabled={selectedCategory === 'Mani & Pedi'
+                              ? (addonsStepIndex === 0
+                                  ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
+                                  : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
+                              : !(selectedAddOns.length > 0 || noAddOns)
                             }
-                          }}
-                          style={(addonsStepIndex === 0 ? noAddOnsMani : noAddOnsPedi) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                        >
-                          <span className="text-base sm:text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
-                        </button>
+                          >
+                            {selectedCategory === 'Mani & Pedi'
+                              ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
+                              : 'Continue to Removal'}
+                          </button>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="text-center mb-6 sm:mb-8">
-                        <button
-                          className={`service-card p-4 w-full transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
-                            noAddOns ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                            'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                          }`}
-                          onClick={() => {
-                            setNoAddOns(true);
-                            setSelectedAddOns([]);
-                            setStep1Stage('removal');
-                          }}
-                          style={noAddOns ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                        >
-                          <span className="text-base sm:text-lg font-bold text-[#2d1b0e]">No Add-ons Needed</span>
-                        </button>
-                      </div>
-                    )}
-                    {/* Navigation Buttons */}
-                    <div className="flex justify-end gap-2 mt-6 sm:mt-8">
-                      <button
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        onClick={() => {
-                          setStep1Stage('service');
-                          setSelectedAddOns([]);
-                          setNoAddOns(false);
-                          setSelectedAddOnsMani([]);
-                          setSelectedAddOnsPedi([]);
-                          setNoAddOnsMani(false);
-                          setNoAddOnsPedi(false);
-                        }}
-                      >
-                        Back to Services
-                      </button>
-                      <button
-                        onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        disabled={selectedCategory === 'Mani & Pedi'
-                          ? (addonsStepIndex === 0
-                              ? !(selectedAddOnsMani.length > 0 || noAddOnsMani)
-                              : !(selectedAddOnsPedi.length > 0 || noAddOnsPedi))
-                          : !(selectedAddOns.length > 0 || noAddOns)
-                        }
-                      >
-                        {selectedCategory === 'Mani & Pedi'
-                          ? (addonsStepIndex === 0 ? 'Continue to Pedicure Add-ons' : 'Continue to Removal')
-                          : 'Continue to Removal'}
-                      </button>
                     </div>
                   </div>
-                </motion.div>
+                </>
               )}
 
               {/* Removal Step */}
               {currentStep === 1 && step1Stage === 'removal' && (
-                <motion.div
-                  key="removal"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="service-card p-8">
-                    <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
-                      Do You Need Removal?
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      <button
-                        className={`service-card p-8 text-center transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
-                          needsRemoval === true ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                          'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                        }`}
-                        onClick={() => {
-                          setNeedsRemoval(true);
-                          setStep1Stage('removalType');
-                        }}
-                        style={needsRemoval === true ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                      >
-                        <span className="text-xl font-bold text-[#2d1b0e]">Yes, I need removal</span>
-                      </button>
-                      <button
-                        className={`service-card p-8 text-center transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
-                          needsRemoval === false ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
-                          'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                        }`}
-                        onClick={() => {
-                          setNeedsRemoval(false);
-                          setCurrentStep(2);
-                        }}
-                        style={needsRemoval === false ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                      >
-                        <span className="text-xl font-bold text-[#2d1b0e]">No removal needed</span>
-                      </button>
+                <>
+                  <motion.div
+                    key="removal"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div className="service-card p-8">
+                      <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
+                        Do You Need Removal?
+                      </h2>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <button
+                          className={`service-card p-8 text-center transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
+                            needsRemoval === true ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                            'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
+                          }`}
+                          onClick={() => {
+                            setNeedsRemoval(true);
+                            setStep1Stage('removalType');
+                          }}
+                          style={needsRemoval === true ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                        >
+                          <span className="text-xl font-bold text-[#2d1b0e]">Yes, I need removal</span>
+                        </button>
+                        <button
+                          className={`service-card p-8 text-center transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] ${
+                            needsRemoval === false ? 'ring-2 ring-[#f6c453] bg-[#f6c453]' : 
+                            'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
+                          }`}
+                          onClick={() => {
+                            setNeedsRemoval(false);
+                            setCurrentStep(2);
+                          }}
+                          style={needsRemoval === false ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                        >
+                          <span className="text-xl font-bold text-[#2d1b0e]">No removal needed</span>
+                        </button>
+                      </div>
                     </div>
-
-                    {/* Navigation */}
-                    <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-2 mt-6 sm:mt-8">
-                      <button
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        onClick={() => setStep1Stage('addons')}
-                      >
-                        Back to Add-ons
-                      </button>
-                      <button
-                        onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                      >
-                        Continue
-                      </button>
+                  </motion.div>
+                  {/* Sticky Footer for Removal Step */}
+                  <div className="fixed bottom-0 left-0 w-full z-50">
+                    <div className="w-full">
+                      <div style={{ background: 'linear-gradient(135deg, #fef9f5 0%, #faf6f0 100%)' }}>
+                        <div className="max-w-2xl mx-auto w-full px-4 flex flex-col items-center pt-2 pb-0">
+                          <div className="h-3" />
+                        </div>
+                      </div>
+                      <div className="bg-white border-t border-[#e5e5e5]">
+                        <div className="max-w-2xl mx-auto w-full px-4 flex justify-between gap-2 pb-2 pt-2">
+                          <button
+                            className="btn-secondary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                            onClick={() => { setStep1Stage('addons'); setNoAddOns(false); setNoAddOnsMani(false); setNoAddOnsPedi(false); }}
+                          >
+                            Back to Add-ons
+                          </button>
+                          <button
+                            className="btn-primary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                            onClick={nextStep}
+                          >
+                            Continue
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </motion.div>
+                </>
               )}
 
               {/* Removal Type Step */}
               {currentStep === 1 && step1Stage === 'removalType' && (
-                <motion.div
-                  key="removalType"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="service-card p-8">
-                    <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
-                      What Type of Removal?
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                      {(
-                        selectedService && selectedService.name === 'CLASSIC MANICURE - NO COLOUR'
-                          ? [
-                              'BIAB Removal',
-                              'SNS Dipping Powder Removal',
-                              'Gel Polish Removal',
-                              { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
-                            ]
-                        : selectedService && selectedService.name === 'CLASSIC PEDICURE - NO COLOUR'
-                          ? [
-                              'BIAB Removal',
-                              'Gel Polish Removal'
-                            ]
-                        : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
+                <>
+                  <motion.div
+                    key="removalType"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div className="service-card p-8">
+                      <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
+                        What Type of Removal?
+                      </h2>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        {(
+                          selectedService && selectedService.name === 'CLASSIC MANICURE - NO COLOUR'
                             ? [
                                 'BIAB Removal',
                                 'SNS Dipping Powder Removal',
                                 'Gel Polish Removal',
                                 { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
                               ]
-                            : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
+                          : selectedService && selectedService.name === 'CLASSIC PEDICURE - NO COLOUR'
+                            ? [
+                                'BIAB Removal',
+                                'Gel Polish Removal'
+                              ]
+                          : selectedService && selectedService.name === 'CLASSIC MANICURE - GEL'
                               ? [
                                   'BIAB Removal',
                                   'SNS Dipping Powder Removal',
                                   'Gel Polish Removal',
                                   { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
                                 ]
-                              : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
+                              : selectedService && selectedService.name === 'CLASSIC MANICURE - POLISH'
                                 ? [
                                     'BIAB Removal',
-                                    'SNS Dipping Powder Removal',
-                                    'Gel Polish Removal'
-                                  ]
-                              : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
-                                ? [
-                                    'BIAB Removal',
-                                    'SNS Dipping Powder Removal',
-                                    'Gel Polish Removal'
-                                  ]
-                              : selectedService && selectedService.name === 'SNS CLASSIC DIPPING POWDER'
-                                ? [
                                     'SNS Dipping Powder Removal',
                                     'Gel Polish Removal',
                                     { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
                                   ]
-                              : removalOptions
-                      ).map(option => {
-                        const isObj = typeof option === 'object';
-                        const label = isObj ? option.name : option;
-                        let price = option.price;
-                        let duration = isObj ? (option.duration ? `${option.duration} mins` : 'Duration varies') : 'Duration varies';
-                        if (typeof price === 'number') price = `£${price}`;
-                        if (label === 'BIAB Removal') {
-                          duration = '20 mins';
-                          price = '£14';
-                        }
-                        if (label === 'SNS Dipping Powder Removal') {
-                          duration = '15 mins';
-                          price = '£10';
-                        }
-                        if (label === 'Gel Polish Removal') {
-                          duration = '15 mins';
-                          price = '£10';
-                        }
-                        if (label === 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS') {
-                          duration = '25 mins';
-                          price = '£20';
-                        }
-                        return (
-                          <div
-                            key={label}
-                            className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
-                              (selectedRemovalType === label ?
-                                'ring-2 ring-[#f6c453] bg-[#f6c453]' :
-                                'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                            onClick={() => setSelectedRemovalType(selectedRemovalType === label ? null : label)}
-                            style={selectedRemovalType === label ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                          >
-                            {/* Special case: split label for REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS */}
-                            {label === 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS' ? (
-                              <>
-                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-0">Removal of Hard gel,</h5>
-                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">Extensions or Acrylics</h5>
-                              </>
-                            ) : (
-                              <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">{label}</h5>
-                            )}
-                            {/* Only show duration/price block if not 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS' */}
-                            {label !== 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS' && !['BIAB Removal', 'SNS Dipping Powder Removal', 'Gel Polish Removal'].includes(label) && (
-                              <div className="flex justify-between items-center text-xs text-[#8b7d6b]">
-                                <span>{duration}</span>
-                                <span>{price}</span>
-                              </div>
-                            )}
-                            {/* Duration & Price bottom right */}
-                            <div className="flex justify-end mt-2">
-                              <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm">
-                                <span className="text-xs text-[#8b7d6b]">{duration}</span>
-                                <span className="text-xs font-bold text-[#2d1b0e]">{price}</span>
+                                : selectedService && selectedService.name === 'CLASSIC PEDICURE - GEL'
+                                  ? [
+                                      'BIAB Removal',
+                                      'SNS Dipping Powder Removal',
+                                      'Gel Polish Removal'
+                                    ]
+                                : selectedService && selectedService.name === 'CLASSIC PEDICURE - POLISH'
+                                  ? [
+                                      'BIAB Removal',
+                                      'SNS Dipping Powder Removal',
+                                      'Gel Polish Removal'
+                                    ]
+                                : selectedService && selectedService.name === 'SNS CLASSIC DIPPING POWDER'
+                                  ? [
+                                      'SNS Dipping Powder Removal',
+                                      'Gel Polish Removal',
+                                      { name: 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS', duration: 40, price: 30 }
+                                    ]
+                                : removalOptions
+                        ).map(option => {
+                          const isObj = typeof option === 'object';
+                          const label = isObj ? option.name : option;
+                          let price = option.price;
+                          let duration = isObj ? (option.duration ? `${option.duration} mins` : 'Duration varies') : 'Duration varies';
+                          if (typeof price === 'number') price = `£${price}`;
+                          if (label === 'BIAB Removal') {
+                            duration = '20 mins';
+                            price = '£14';
+                          }
+                          if (label === 'SNS Dipping Powder Removal') {
+                            duration = '15 mins';
+                            price = '£10';
+                          }
+                          if (label === 'Gel Polish Removal') {
+                            duration = '15 mins';
+                            price = '£10';
+                          }
+                          if (label === 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS') {
+                            duration = '25 mins';
+                            price = '£20';
+                          }
+                          return (
+                            <div
+                              key={label}
+                              className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
+                                (selectedRemovalType === label ?
+                                  'ring-2 ring-[#f6c453] bg-[#f6c453]' :
+                                  'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
+                              onClick={() => setSelectedRemovalType(selectedRemovalType === label ? null : label)}
+                              style={selectedRemovalType === label ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                            >
+                              {/* Special case: split label for REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS */}
+                              {label === 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS' ? (
+                                <>
+                                  <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-0">Removal of Hard gel,</h5>
+                                  <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">Extensions or Acrylics</h5>
+                                </>
+                              ) : (
+                                <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base mb-2">{label}</h5>
+                              )}
+                              {/* Only show duration/price block if not 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS' */}
+                              {label !== 'REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS' && !['BIAB Removal', 'SNS Dipping Powder Removal', 'Gel Polish Removal'].includes(label) && (
+                                <div className="flex justify-between items-center text-xs text-[#8b7d6b]">
+                                  <span>{duration}</span>
+                                  <span>{price}</span>
+                                </div>
+                              )}
+                              {/* Duration & Price bottom right */}
+                              <div className="flex justify-end mt-2">
+                                <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm">
+                                  <span className="text-xs text-[#8b7d6b]">{duration}</span>
+                                  <span className="text-xs font-bold text-[#2d1b0e]">{price}</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-
-                    {/* Navigation */}
-                    {error && currentStep === 2 && (
-                      <div className="w-full mb-4">
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                          <div className="flex items-center gap-2">
-                            <span className="text-red-500">⚠️</span>
-                            <p className="text-red-600 font-medium text-sm">{error}</p>
-                          </div>
+                  </motion.div>
+                  {/* Sticky Footer for Removal Type Step */}
+                  <div className="fixed bottom-0 left-0 w-full z-50">
+                    <div className="w-full">
+                      <div style={{ background: 'linear-gradient(135deg, #fef9f5 0%, #faf6f0 100%)' }}>
+                        <div className="max-w-2xl mx-auto w-full px-4 flex flex-col items-center pt-2 pb-0">
+                          <div className="h-3" />
                         </div>
                       </div>
-                    )}
-                    <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-2 mt-6 sm:mt-8">
-                      <button
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        onClick={() => { setStep1Stage('removal'); setError(""); }}
-                      >
-                        Back to Removal Question
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (!selectedRemovalType) {
-                            setError('Please select a removal type.');
-                            return;
-                          }
-                          setCurrentStep(2);
-                          setStep1Stage('service');
-                          setError("");
-                        }}
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        disabled={false}
-                      >
-                        Continue
-                      </button>
+                      <div className="bg-white border-t border-[#e5e5e5]">
+                        <div className="max-w-2xl mx-auto w-full px-4 flex justify-between gap-2 pb-2 pt-2">
+                          <button
+                            className="btn-secondary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                            onClick={() => { setStep1Stage('removal'); setError(""); }}
+                          >
+                            Back to Removal Question
+                          </button>
+                          <button
+                            className="btn-primary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                            onClick={() => {
+                              if (!selectedRemovalType) {
+                                setError('Please select a removal type.');
+                                return;
+                              }
+                              setCurrentStep(2);
+                              setStep1Stage('service');
+                              setError("");
+                            }}
+                          >
+                            Continue
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </motion.div>
+                </>
               )}
 
               {/* Step 2: Staff & Time Selection */}
               {currentStep === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="service-card p-8">
-                    <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
-                      Choose Your Staff & Time
-                    </h2>
-                    
-                    {/* Step 2 Content */}
-                    <div className="text-center mb-8">
-                      <h3 className="text-2xl font-bold text-[#2d1b0e] mb-2">Choose Your Details</h3>
-                      <p className="text-[#8b7d6b]">Select your preferred staff member, date, and time</p>
-                    </div>
-                    
-                    {/* Staff Selection */}
-                    <div className="mb-8">
-                      <h3 className="text-xl font-bold text-[#2d1b0e] mb-4">Available Staff:</h3>
-                      {staff.length === 0 ? (
-                        <p className="text-[#8b7d6b]">No staff available</p>
-                      ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {staff.map(member => {
-                            const isSelected = form.staff_id === member.id;
-                            return (
-                              <div
-                                key={member.id}
-                                className={`service-card p-4 cursor-pointer transition-all duration-300 border-2 text-[#2d1b0e] ${isSelected ? 'ring-2 ring-[#e6be7e]' : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
-                                style={isSelected ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
-                                onClick={() => {
-                                  setForm(prevForm => ({ ...prevForm, staff_id: member.id }));
-                                }}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 bg-gradient-to-r from-[#d4af37] to-[#b87333] rounded-full flex items-center justify-center text-white font-bold text-lg">
-                                    {member.first_name.charAt(0)}{member.last_name.charAt(0)}
-                                  </div>
-                                  <div>
-                                    <h4 className="font-bold text-[#2d1b0e]">
-                                      {member.id === 'any'
-                                        ? 'Any professional'
-                                        : member.first_name}
-                                    </h4>
-                                    <p className="text-[#8b7d6b] text-sm">{member.specialization || 'Nail Specialist'}</p>
+                <>
+                  <motion.div
+                    key="step2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div className="service-card p-8">
+                      <h2 className="text-center text-3xl md:text-4xl font-bold text-[#2d1b0e] mb-8">
+                        Choose Your Staff & Time
+                      </h2>
+                      
+                      {/* Step 2 Content */}
+                      <div className="text-center mb-8">
+                        <h3 className="text-2xl font-bold text-[#2d1b0e] mb-2">Choose Your Details</h3>
+                        <p className="text-[#8b7d6b]">Select your preferred staff member, date, and time</p>
+                      </div>
+                      
+                      {/* Staff Selection */}
+                      <div className="mb-8">
+                        <h3 className="text-xl font-bold text-[#2d1b0e] mb-4">Available Staff:</h3>
+                        {staff.length === 0 ? (
+                          <p className="text-[#8b7d6b]">No staff available</p>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {staff.map(member => {
+                              const isSelected = form.staff_id === member.id;
+                              return (
+                                <div
+                                  key={member.id}
+                                  className={`service-card p-4 cursor-pointer transition-all duration-300 border-2 text-[#2d1b0e] ${isSelected ? 'ring-2 ring-[#e6be7e]' : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'}`}
+                                  style={isSelected ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
+                                  onClick={() => {
+                                    setForm(prevForm => ({ ...prevForm, staff_id: member.id }));
+                                  }}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-gradient-to-r from-[#d4af37] to-[#b87333] rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                      {member.first_name.charAt(0)}{member.last_name.charAt(0)}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-[#2d1b0e]">
+                                        {member.id === 'any'
+                                          ? 'Any professional'
+                                          : member.first_name}
+                                      </h4>
+                                      <p className="text-[#8b7d6b] text-sm">{member.specialization || 'Nail Specialist'}</p>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Date Selection */}
-                    <div className="mb-6 sm:mb-8">
-                      <h3 className="text-lg sm:text-xl font-bold text-[#2d1b0e] mb-2 sm:mb-4 flex items-center gap-2">
-                        Select Your Date
-                      </h3>
-                      <div className="flex items-center justify-between mb-1 sm:mb-2">
-                        <button
-                          type="button"
-                          onClick={goToPrevMonth}
-                          className={`p-2 rounded-full hover:bg-gray-100 ${isCurrentMonth ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          aria-label="Previous Month"
-                          disabled={isCurrentMonth}
-                        >
-                          <FaChevronLeft />
-                        </button>
-                        <div className="text-base sm:text-lg font-bold text-center flex-1">
-                          {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={goToNextMonth}
-                          className="p-2 rounded-full hover:bg-gray-100"
-                          aria-label="Next Month"
-                        >
-                          <FaChevronRight />
-                        </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-                      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-                        <div className="flex min-w-max gap-2 sm:gap-4 pb-2">
-                          {getDaysInMonth(currentMonth).map(date => {
-                            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-                            return (
-                              <button
-                                key={date.toISOString()}
-                                onClick={() => setSelectedDate(date)}
-                                className={`flex flex-col items-center px-2 py-2 sm:px-4 sm:py-2 rounded-lg border-2 transition-all duration-300 focus:outline-none ${
-                                  isSelected
-                                    ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
-                                    : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                                }`}
-                                style={{ minWidth: 48, maxWidth: 64 }}
-                              >
-                                <span className="text-xs font-semibold uppercase tracking-widest">
-                                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                                </span>
-                                <span className="text-base sm:text-lg font-bold">
-                                  {date.getDate()}
-                                </span>
-                              </button>
-                            );
-                          })}
+                      
+                      {/* Date Selection */}
+                      <div className="mb-6 sm:mb-8">
+                        <h3 className="text-lg sm:text-xl font-bold text-[#2d1b0e] mb-2 sm:mb-4 flex items-center gap-2">
+                          Select Your Date
+                        </h3>
+                        <div className="flex items-center justify-between mb-1 sm:mb-2">
+                          <button
+                            type="button"
+                            onClick={goToPrevMonth}
+                            className={`p-2 rounded-full hover:bg-gray-100 ${isCurrentMonth ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            aria-label="Previous Month"
+                            disabled={isCurrentMonth}
+                          >
+                            <FaChevronLeft />
+                          </button>
+                          <div className="text-base sm:text-lg font-bold text-center flex-1">
+                            {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={goToNextMonth}
+                            className="p-2 rounded-full hover:bg-gray-100"
+                            aria-label="Next Month"
+                          >
+                            <FaChevronRight />
+                          </button>
                         </div>
-                      </div>
-                    </div>
-                    
-                    {/* Time Selection */}
-                    <div className="mb-6 sm:mb-8">
-                      <h3 className="text-lg sm:text-xl font-bold text-[#2d1b0e] mb-2 sm:mb-4 flex items-center gap-2">
-                        Select Your Time
-                      </h3>
-                      {selectedDate ? (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                          {generateTimeSlotsForDay(selectedDate, openHours).map(time => {
-                            const [hours, minutes] = time.split(':').map(Number);
-                            const year = selectedDate.getFullYear();
-                            const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                            const day = String(selectedDate.getDate()).padStart(2, '0');
-                            const hour = String(hours).padStart(2, '0');
-                            const minute = String(minutes).padStart(2, '0');
-                            const datetimeString = `${year}-${month}-${day}T${hour}:${minute}`;
-
-                            // --- Real-time disabling logic ---
-                            const isToday = selectedDate.getFullYear() === now.getFullYear() &&
-                              selectedDate.getMonth() === now.getMonth() &&
-                              selectedDate.getDate() === now.getDate();
-                            let slotDate = new Date(selectedDate);
-                            slotDate.setHours(hours, minutes, 0, 0);
-                            const isPast = isToday && slotDate < now;
-                            // --- End real-time disabling logic ---
-
-                            return (
-                              <button
-                                key={time}
-                                onClick={() => {
-                                  if (!isPast) {
-                                    setForm({ ...form, appointment_datetime: datetimeString });
-                                  }
-                                }}
-                                className={`p-2 sm:p-3 text-center rounded-lg border-2 transition-all duration-300 text-xs sm:text-base ${
-                                  form.appointment_datetime === datetimeString
-                                    ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
-                                    : isPast
-                                      ? 'opacity-50 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400'
+                        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                          <div className="flex min-w-max gap-2 sm:gap-4 pb-2">
+                            {getDaysInMonth(currentMonth).map(date => {
+                              const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+                              return (
+                                <button
+                                  key={date.toISOString()}
+                                  onClick={() => setSelectedDate(date)}
+                                  className={`flex flex-col items-center px-2 py-2 sm:px-4 sm:py-2 rounded-lg border-2 transition-all duration-300 focus:outline-none ${
+                                    isSelected
+                                      ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
                                       : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                                }`}
-                                disabled={isPast}
-                              >
-                                {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', { 
-                                  hour: 'numeric', 
-                                  minute: '2-digit',
-                                  hour12: true 
-                                })}
-                              </button>
-                            );
-                          })}
+                                  }`}
+                                  style={{ minWidth: 48, maxWidth: 64 }}
+                                >
+                                  <span className="text-xs font-semibold uppercase tracking-widest">
+                                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                  </span>
+                                  <span className="text-base sm:text-lg font-bold">
+                                    {date.getDate()}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
-                      ) : (
-                        <p className="text-[#8b7d6b] text-center py-4">Please select a date first to see available time slots</p>
-                      )}
-                    </div>
-                    {/* Error message block goes here */}
-      {error && (
-        <div className="w-full mb-4">
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-            <div className="flex items-center gap-2">
-              <span className="text-red-500">⚠️</span>
-              <p className="text-red-600 font-medium text-sm">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
+                      </div>
+                      
+                      {/* Time Selection */}
+                      <div className="mb-6 sm:mb-8">
+                        <h3 className="text-lg sm:text-xl font-bold text-[#2d1b0e] mb-2 sm:mb-4 flex items-center gap-2">
+                          Select Your Time
+                        </h3>
+                        {selectedDate ? (
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                            {generateTimeSlotsForDay(selectedDate, openHours).map(time => {
+                              const [hours, minutes] = time.split(':').map(Number);
+                              const year = selectedDate.getFullYear();
+                              const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                              const day = String(selectedDate.getDate()).padStart(2, '0');
+                              const hour = String(hours).padStart(2, '0');
+                              const minute = String(minutes).padStart(2, '0');
+                              const datetimeString = `${year}-${month}-${day}T${hour}:${minute}`;
 
+                              // --- Real-time disabling logic ---
+                              const isToday = selectedDate.getFullYear() === now.getFullYear() &&
+                                selectedDate.getMonth() === now.getMonth() &&
+                                selectedDate.getDate() === now.getDate();
+                              let slotDate = new Date(selectedDate);
+                              slotDate.setHours(hours, minutes, 0, 0);
+                              const isPast = isToday && slotDate < now;
+                              // --- End real-time disabling logic ---
 
-                    {/* Navigation */}
-                    <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-2 mt-6 sm:mt-8">
-                      <button
-                        className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        onClick={() => {
-                          if (needsRemoval === false) {
-                            setCurrentStep(1);
-                            setStep1Stage('removal');
-                          } else {
-                            setCurrentStep(1);
-                            setStep1Stage('removalType');
-                          }
-                        }}
-                      >
-                        Back to Removal
-                      </button>
-                      <button
-                        onClick={nextStep}
-                        className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                        disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
-                      >
-                        Continue to Confirmation
-                      </button>
-                    </div>
+                              return (
+                                <button
+                                  key={time}
+                                  onClick={() => {
+                                    if (!isPast) {
+                                      setForm({ ...form, appointment_datetime: datetimeString });
+                                    }
+                                  }}
+                                  className={`p-2 sm:p-3 text-center rounded-lg border-2 transition-all duration-300 text-xs sm:text-base ${
+                                    form.appointment_datetime === datetimeString
+                                      ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
+                                      : isPast
+                                        ? 'opacity-50 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400'
+                                        : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
+                                  }`}
+                                  disabled={isPast}
+                                >
+                                  {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    hour12: true 
+                                  })}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="text-[#8b7d6b] text-center py-4">Please select a date first to see available time slots</p>
+                        )}
+                      </div>
+                      {/* Error message block goes here */}
+            {error && (
+              <div className="w-full mb-4">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-red-500">⚠️</span>
+                    <p className="text-red-600 font-medium text-sm">{error}</p>
                   </div>
-                </motion.div>
+                </div>
+              </div>
+            )}
+
+
+                      {/* Navigation */}
+                      
+                    </div>
+                  </motion.div>
+{currentStep === 2 && (
+  <div className="fixed bottom-0 left-0 w-full z-50">
+    <div className="w-full">
+      <div style={{ background: 'linear-gradient(135deg, #fef9f5 0%, #faf6f0 100%)' }}>
+        <div className="max-w-2xl mx-auto w-full px-4 flex flex-col items-center pt-2 pb-0">
+          <div className="h-3" />
+        </div>
+      </div>
+      <div className="bg-white border-t border-[#e5e5e5]">
+        <div className="max-w-2xl mx-auto w-full px-4 flex justify-between gap-2 pb-2 pt-2">
+          <button
+            className="btn-secondary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+            onClick={() => {
+              if (needsRemoval === false) {
+                setCurrentStep(1);
+                setStep1Stage('removal');
+              } else {
+                setCurrentStep(1);
+                setStep1Stage('removalType');
+              }
+            }}
+          >
+            Back to Removal
+          </button>
+          <button
+            className="btn-primary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+            onClick={nextStep}
+            disabled={!form.staff_id || !selectedDate || !form.appointment_datetime}
+          >
+            Continue to Confirmation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+                </>
               )}
 
               {/* Step 3: Confirmation */}
@@ -2591,32 +2379,12 @@ export default function BookingPage() {
                           className="mt-1 w-4 h-4 text-[#d4af37] border-[#d4af37] rounded focus:ring-[#d4af37]"
                         />
                         <span className="text-[#8b7d6b] text-xs sm:text-sm">
-                          I agree to the terms and conditions and confirm that I will arrive on time for my appointment.
+                          I agree to the terms and conditions and confirm that I will arrive on time for my appointment. We require card details to hold your booking - you will not be charged. You are free to cancel/change your appointment up to 12 hours before with no charge. Cancellations/changes with less than 12 hours notice and no shows are charged in full using the card on file.
                         </span>
                       </label>
                     </div>
                     {/* Navigation */}
-                    <div className="flex flex-col sm:flex-row justify-between gap-4 sm:gap-0 mt-8">
-                      <div className="w-full flex">
-                        <button
-                          className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          onClick={() => {
-                            setCurrentStep(2);
-                          }}
-                        >
-                          Back to Staff & Time
-                        </button>
-                      </div>
-                      <div className="w-full flex">
-                        <button
-                          type="submit"
-                          className="btn-primary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
-                          disabled={!agreementChecked}
-                        >
-                          Confirm Booking
-                        </button>
-                      </div>
-                    </div>
+                    
                   </div>
                 </motion.div>
               )}
@@ -2649,14 +2417,16 @@ export default function BookingPage() {
                             <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{variant.name}</h5>
                           </div>
                           <p className="text-[#8b7d6b] text-xs mb-2">{variant.description}</p>
-                          <div className="flex justify-end items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2">
-                            <span className="text-xs text-[#8b7d6b]">{variant.duration} mins</span>
-                            <span className="text-xs font-bold text-[#2d1b0e]">{typeof variant.price === 'number' ? `£${variant.price}` : variant.price}</span>
+                          <div className="flex justify-end">
+                            <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 max-w-max ml-auto">
+                              <span className="text-xs text-[#8b7d6b]">{variant.duration} mins</span>
+                              <span className="text-xs font-bold text-[#2d1b0e]">{typeof variant.price === 'number' ? `£${variant.price}` : variant.price}</span>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8 sm:justify-end">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => setStep1Stage('service')}
@@ -2708,14 +2478,16 @@ export default function BookingPage() {
                             <h5 className="font-bold text-[#2d1b0e] text-sm md:text-base">{opt.name}</h5>
                           </div>
                           <p className="text-[#8b7d6b] text-xs mb-2">{opt.description}</p>
-                          <div className="flex justify-end items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2">
-                            <span className="text-xs text-[#8b7d6b]">{opt.duration} mins</span>
-                            <span className="text-xs font-bold text-[#2d1b0e]">{typeof opt.price === 'number' ? `£${opt.price}` : opt.price}</span>
+                          <div className="flex justify-end">
+                            <div className="flex items-center gap-2 bg-white/80 rounded-lg px-2 py-1 shadow-sm mt-2 max-w-max ml-auto">
+                              <span className="text-xs text-[#8b7d6b]">{opt.duration} mins</span>
+                              <span className="text-xs font-bold text-[#2d1b0e]">{typeof opt.price === 'number' ? `£${opt.price}` : opt.price}</span>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mt-6 sm:mt-8 sm:justify-end">
                       <button
                         className="btn-secondary w-full sm:w-auto py-3 text-base min-w-[160px] px-6 font-bold"
                         onClick={() => setStep1Stage('service')}
@@ -2742,6 +2514,35 @@ export default function BookingPage() {
         </div>
       </div>
     </main>
+    {currentStep === 3 && (
+      <div className="fixed bottom-0 left-0 w-full z-50">
+        <div className="w-full">
+          <div style={{ background: 'linear-gradient(135deg, #fef9f5 0%, #faf6f0 100%)' }}>
+            <div className="max-w-2xl mx-auto w-full px-4 flex flex-col items-center pt-2 pb-0">
+              <div className="h-3" />
+            </div>
+          </div>
+          <div className="bg-white border-t border-[#e5e5e5]">
+            <div className="max-w-2xl mx-auto w-full px-4 flex justify-between gap-2 pb-2 pt-2">
+              <button
+                className="btn-secondary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                onClick={() => setCurrentStep(2)}
+              >
+                Back to Staff & Time
+              </button>
+              <button
+                type="submit"
+                className="btn-primary w-auto py-2 text-base min-w-[160px] px-6 font-bold rounded-full"
+                onClick={handleSubmit}
+                disabled={!agreementChecked}
+              >
+                Confirm Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
   </>
   );
 }
