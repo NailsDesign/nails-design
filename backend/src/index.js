@@ -247,21 +247,21 @@ app.get('/appointments/by-day', async (req, res) => {
     if (staff_id === "any") {
       // Get all bookings for the date, regardless of staff
       const result = await pool.query(
-        `SELECT booking_date FROM bookings WHERE DATE(booking_date) = $1`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1`,
         [date]
       );
       rows = result.rows;
     } else {
       // Get bookings for the date and specific staff
       const result = await pool.query(
-        `SELECT booking_date FROM bookings WHERE DATE(booking_date) = $1 AND staff_id = $2`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1 AND staff_id = $2`,
         [date, staff_id]
       );
       rows = result.rows;
     }
-    // Add this log for debugging
-    console.log('API /appointments/by-day', { date, staff_id }, rows.map(row => row.booking_date));
-    res.json(rows.map(row => row.booking_date));
+    // Debug log
+    console.log('API /appointments/by-day', { date, staff_id }, rows);
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
