@@ -18,6 +18,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import BookingProgressBar from "../components/BookingProgressBar";
 import { usePathname } from 'next/navigation';
 import AuthModal from "../../components/AuthModal";
+import { useRouter } from 'next/navigation';
 
 // Example holidays (yyyy-mm-dd)
 const holidays = [
@@ -38,6 +39,7 @@ function isOpen(date) {
   const day = date.getDay();
   const { start, end } = openHours[day];
   const h = date.getHours();
+  console.log('isOpen check:', { day, start, end, h, date: date.toString() });
   return h >= start && h < end;
 }
 
@@ -105,11 +107,11 @@ function generateTimeSlotsForDay(date, openHours) {
 
 // --- Service data (from screenshot) ---
 const maniServices = [
-  { name: "CLASSIC MANICURE - POLISH", description: "Flawless nails, Expert shaping, buffing, cuticle care and moisturising, followed by a polish of your choice from our vibrant Colour Library.", duration: 40, price: 40 },
   { name: "CLASSIC MANICURE - GEL", description: "Flawless nails, Expert shaping, buffing, cuticle care and moisturising, followed by a chip-resistant gel of your choice from our vibrant Colour Library.", duration: 45, price: 42 },
+  { name: "CLASSIC MANICURE - POLISH", description: "Flawless nails, Expert shaping, buffing, cuticle care and moisturising, followed by a polish of your choice from our vibrant Colour Library.", duration: 40, price: 40 },
   { name: "CLASSIC MANICURE - NO COLOUR", description: "Flawless nails, Expert shaping, buffing (with an optional matte or shine finish), cuticle care and moisturising, with no polish or gel for a natural mani alternative.", duration: 30, price: 32 },
   { name: "SNS CLASSIC DIPPING POWDER", description: "Long-lasting, lightweight, and durable manicure using SNS dipping powder. Includes shaping, buffing, and your choice of color.", duration: 60, price: 40 },
-  { name: "CLASSIC MANICURE - BIAB", description: "Builder in a Bottle (BIAB) for extra strength and durability. Choose your BIAB treatment in the next step.", duration: 60, price: 40 },
+  { name: "BIAB", description: "Builder in a Bottle (BIAB) for extra strength and durability. Choose your BIAB treatment in the next step.", duration: 60, price: 40 },
 ];
 
 const biabVariants = [
@@ -308,35 +310,35 @@ const allAddOns = [
     description: 'Classic French tip in white or any color.',
     duration: 15,
     price: 5,
-    onlyFor: 'CLASSIC MANICURE - BIAB'
+    onlyFor: 'BIAB'
   },
   {
     name: 'Chrome/Glazed Finish',
     description: 'Mirror-like chrome or glazed effect for your nails.',
     duration: 10,
     price: 10,
-    onlyFor: 'CLASSIC MANICURE - BIAB'
+    onlyFor: 'BIAB'
   },
   {
     name: 'Nail Art',
     description: 'Stickers, decals, freehand art, or foil.',
     duration: 20,
     price: 10,
-    onlyFor: 'CLASSIC MANICURE - BIAB'
+    onlyFor: 'BIAB'
   },
   {
     name: 'Extra Strength Layer',
     description: 'Extra strength layer for added durability.',
     duration: 10,
     price: 5,
-    onlyFor: 'CLASSIC MANICURE - BIAB'
+    onlyFor: 'BIAB'
   },
   {
     name: 'Extended Massage',
     description: 'Extend any treatment with 10 more minutes of indulgent massage.',
     duration: 10,
     price: 5,
-    onlyFor: 'CLASSIC MANICURE - BIAB'
+    onlyFor: 'BIAB'
   },
 ];
 
@@ -609,8 +611,39 @@ export default function BookingPage() {
   };
 
   const addToBasket = (service) => {
-    if (!basket.find(s => s.id === service.id)) {
-      setBasket([...basket, service]);
+    const realService = services.find(s => s.name && s.name.trim().toLowerCase() === service.name.trim().toLowerCase());
+    if (realService && !basket.find(s => s.id === realService.id)) {
+      setBasket([...basket, realService]);
+    }
+  };
+
+  const addAddOnToBasket = (addon) => {
+    const addonName = typeof addon === 'string' ? addon : addon.name;
+    const realAddOn = services.find(
+      s =>
+        s.name &&
+        s.name.trim().toLowerCase() === addonName.trim().toLowerCase() &&
+        s.category &&
+        s.category.toLowerCase() === 'add-on'
+    );
+    if (realAddOn && !basket.find(s => s.service_id === realAddOn.service_id)) {
+      setBasket([...basket, realAddOn]);
+    }
+  };
+
+  const addRemovalToBasket = (removal) => {
+    const removalName = typeof removal === 'string' ? removal : removal.name;
+    const realRemoval = services.find(
+      s =>
+        s.name &&
+        s.name.trim().toLowerCase() === removalName.trim().toLowerCase() &&
+        s.category &&
+        s.category.toLowerCase() === 'removal'
+    );
+    if (realRemoval && !basket.find(s => s.service_id === realRemoval.service_id)) {
+      setBasket([...basket, realRemoval]);
+    } else if (!realRemoval) {
+      // Optionally: fallback logic here
     }
   };
 
@@ -628,6 +661,13 @@ export default function BookingPage() {
     appointment_datetime,
     promo_code
   }) {
+    console.log('About to POST to', getApiUrl("/api/bookings/finalize"), {
+      customer_id,
+      staff_id,
+      service_ids,
+      appointment_datetime,
+      promo_code
+    });
     try {
       const res = await axios.post(getApiUrl("/api/bookings/finalize"), {
         customer_id,
@@ -638,6 +678,11 @@ export default function BookingPage() {
       });
       return res.data; // { success: true, booking_id }
     } catch (err) {
+      // Improved error logging for debugging
+      console.error('Booking error:', err);
+      if (err.response) {
+        console.error('Backend error response:', err.response.data);
+      }
       if (err.response && err.response.data && err.response.data.error) {
         throw new Error(err.response.data.error);
       }
@@ -650,22 +695,29 @@ export default function BookingPage() {
     setError("");
     setSuccess(false);
 
+    console.log('handleSubmit called');
+
     if (!isFormComplete(form, basket)) {
+      console.log('Form not complete', form, basket);
       return;
     }
     if (!selectedDate) {
+      console.log('No selectedDate');
       setError("Please select a date and time.");
       return;
     }
     if (selectedDate < new Date()) {
+      console.log('Selected date is in the past');
       setError("Please select a date and time in the future.");
       return;
     }
-    if (!isOpen(selectedDate)) {
+    if (!isOpen(new Date(form.appointment_datetime))) {
+      console.log('Selected date is not within opening hours');
       setError("Please pick a time during our opening hours: Mon–Sat: 10am–7pm, Sun: 11am–5:30pm.");
       return;
     }
     if (selectedDate.getMinutes() % 5 !== 0) {
+      console.log('Selected time is not on a 5-minute interval');
       setError("Please select a time that is on a 5-minute interval (e.g. 10:00, 10:05, etc.).");
       return;
     }
@@ -673,6 +725,7 @@ export default function BookingPage() {
     const m = selectedDate.getMinutes();
     const slotString = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
     if (bookedSlots.includes(slotString)) {
+      console.log('Slot is already booked', slotString);
       setError("Sorry, this slot is already booked for the staff selected. Please pick another time.");
       return;
     }
@@ -680,10 +733,35 @@ export default function BookingPage() {
     try {
       // Replace with actual customer_id (from logged-in user)
       const customer_id = user?.id;
-      const staff_id = form.staff_id;
-      const service_ids = basket.map(s => s.id);
+      let staff_id = form.staff_id;
+      const service_ids = basket.map(s => s.id); // Use 'id' instead of 'service_id'
       const appointment_datetime = form.appointment_datetime;
       const promo_code = appliedPromo ? promoCode : null;
+
+      // If 'Any Professional', find an available staff for the selected slot
+      if (staff_id === 'any') {
+        const [datePart, timePart] = appointment_datetime.split('T');
+        const [hours, minutes] = timePart.split(':').map(Number);
+        const slotStart = new Date(Date.UTC(
+          selectedDate.getUTCFullYear(),
+          selectedDate.getUTCMonth(),
+          selectedDate.getUTCDate(),
+          hours, minutes, 0, 0
+        ));
+        const selectedServiceObj = basket[0] || selectedService || selectedManiPediManicure || selectedManiPediPedicure;
+        const duration = selectedServiceObj?.duration_minutes || selectedServiceObj?.duration || 30;
+        const slotEnd = new Date(slotStart.getTime() + duration * 60000);
+        const availableStaff = findAvailableStaffForSlot(slotStart, slotEnd, allBookings, staff);
+        if (!availableStaff) {
+          setError('No staff available for this time slot.');
+          return;
+        }
+        staff_id = availableStaff.id;
+      }
+
+      // Debug log
+      console.log('Basket:', basket);
+      console.log('Service IDs:', service_ids);
 
       const result = await finalizeBooking({
         customer_id,
@@ -693,10 +771,10 @@ export default function BookingPage() {
         promo_code
       });
 
+      console.log('Booking API result:', result);
       if (result.success) {
-      setSuccess(true);
-        // Optionally redirect to confirmation page:
-        // router.push(`/booking/confirmation?booking_id=${result.booking_id}`);
+        router.push(`/booking/confirmation?booking_id=${result.booking_id}`);
+        return;
       }
     } catch (err) {
       setError(err.message);
@@ -711,7 +789,10 @@ export default function BookingPage() {
             setError("Please select one manicure and one pedicure to continue.");
             return;
           }
-          setBasket([selectedManiPediManicure, selectedManiPediPedicure]);
+          // Find real backend services
+          const realMani = services.find(s => s.name && s.name.trim().toLowerCase() === selectedManiPediManicure.name.trim().toLowerCase());
+          const realPedi = services.find(s => s.name && s.name.trim().toLowerCase() === selectedManiPediPedicure.name.trim().toLowerCase());
+          setBasket([realMani, realPedi].filter(Boolean));
           setStep1Stage('addons');
           setAddonsStepIndex(0); // Start with mani add-ons
           setError("");
@@ -721,7 +802,9 @@ export default function BookingPage() {
             setError("Please select a service to continue.");
             return;
           }
-          setBasket([selectedService]);
+          // Find real backend service
+          const realService = services.find(s => s.name && s.name.trim().toLowerCase() === selectedService.name.trim().toLowerCase());
+          setBasket(realService ? [realService] : []);
           setStep1Stage('addons');
           setError("");
           return;
@@ -851,6 +934,12 @@ export default function BookingPage() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setUser(res.data.user);
+      setForm(prev => ({
+        ...prev,
+        name: `${res.data.user.first_name} ${res.data.user.last_name}`,
+        email: res.data.user.email,
+        phone: res.data.user.phone || ''
+      }));
       setAuthError("");
       setShowAuthModal(false); // Close modal
       setCurrentStep(3); // Advance to step 3
@@ -878,6 +967,12 @@ export default function BookingPage() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setUser(res.data.user);
+      setForm(prev => ({
+        ...prev,
+        name: `${res.data.user.first_name} ${res.data.user.last_name}`,
+        email: res.data.user.email,
+        phone: res.data.user.phone || ''
+      }));
       setAuthError("");
       setShowAuthModal(false); // Close modal
       setCurrentStep(3); // Advance to step 3
@@ -1096,10 +1191,6 @@ export default function BookingPage() {
   }, [needsRemoval]);
 
   useEffect(() => {
-    localStorage.setItem('booking_selectedRemovalType', selectedRemovalType);
-  }, [selectedRemovalType]);
-
-  useEffect(() => {
     localStorage.setItem('booking_selectedDate', selectedDate ? selectedDate.toISOString() : '');
   }, [selectedDate]);
 
@@ -1119,41 +1210,130 @@ export default function BookingPage() {
     localStorage.setItem('booking_selectedAcrylicOption', JSON.stringify(selectedAcrylicOption));
   }, [selectedAcrylicOption]);
 
-  if (success) {
-    return (
-      <>
-        {/* Auth Modal */}
-        <AuthModal
-          open={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          defaultTab={authTab === 1 ? 'register' : 'login'}
-          onLogin={handleLogin}
-          onRegister={handleRegister}
-          loading={isLoading}
-          error={authError}
-        />
-        <main className="min-h-screen bg-gradient-to-br from-[#fef9f5] to-[#faf6f0] flex items-center justify-center p-4">
-          <div className="max-w-md mx-auto">
-            <div className="service-card p-8 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-bold text-[#2d1b0e] mb-4">Booking Confirmed! 🎉</h2>
-              <p className="text-[#5d4e37] mb-8 text-lg">We'll contact you soon to confirm your appointment details.</p>
-              <button
-                onClick={() => { clearBookingLocalStorage(); window.location.reload(); }}
-                className="btn-primary"
-              >
-                Book Another Appointment
-              </button>
-            </div>
-          </div>
-        </main>
-      </>
-    );
+  const router = useRouter();
+
+  // Add this useEffect to sync form with user after login/register
+  useEffect(() => {
+    if (user) {
+      setForm(prev => {
+        const updated = {
+          ...prev,
+          name: `${user.first_name} ${user.last_name}`,
+          email: user.email,
+          phone: user.phone || ''
+        };
+        localStorage.setItem('booking_form', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  }, [user]);
+
+  // 1. State for all bookings
+  const [allBookings, setAllBookings] = useState([]);
+
+  // 2. Fetch bookings for selected date and staff (or all staff if 'any')
+  useEffect(() => {
+    if (!selectedDate) return;
+    const dayString = selectedDate.toISOString().slice(0, 10);
+    const staffParam = form.staff_id && form.staff_id !== 'any' ? `&staff_id=${form.staff_id}` : '';
+    axios
+      .get(getApiUrl(`/appointments/by-day?date=${dayString}${staffParam}`))
+      .then(res => {
+        setAllBookings(res.data); // [{staff_id, booking_date, duration_minutes}]
+      });
+  }, [selectedDate, form.staff_id]);
+
+  // 3. Helper: Check if slot is available for selected staff or any professional
+  function isSlotAvailable(slotStart, slotEnd, allBookings, staffList, selectedStaffId) {
+    if (selectedStaffId && selectedStaffId !== 'any') {
+      // Only check for the selected staff
+      const bookings = allBookings.filter(b => b.staff_id === selectedStaffId);
+      return !bookings.some(booking => {
+        const bookingStart = new Date(booking.booking_date);
+        const bookingEnd = new Date(bookingStart.getTime() + booking.duration_minutes * 60000);
+        // Debug log
+        console.log('Checking overlap:', {
+          slotStart: slotStart.toString(),
+          slotEnd: slotEnd.toString(),
+          bookingStart: bookingStart.toString(),
+          bookingEnd: bookingEnd.toString(),
+          slotStartRaw: slotStart,
+          slotEndRaw: slotEnd,
+          bookingStartRaw: bookingStart,
+          bookingEndRaw: bookingEnd
+        });
+        return (slotStart < bookingEnd) && (slotEnd > bookingStart);
+      });
+    } else {
+      // 'Any Professional': at least one staff must be free
+      return staffList
+        .filter(staff => staff.id !== 'any')
+        .some(staff => {
+          const bookings = allBookings.filter(b => b.staff_id === staff.id);
+          return !bookings.some(booking => {
+            const bookingStart = new Date(booking.booking_date);
+            const bookingEnd = new Date(bookingStart.getTime() + booking.duration_minutes * 60000);
+            // Debug log
+            console.log('Checking overlap (any):', {
+              staff: staff.id,
+              slotStart: slotStart.toString(),
+              slotEnd: slotEnd.toString(),
+              bookingStart: bookingStart.toString(),
+              bookingEnd: bookingEnd.toString(),
+              slotStartRaw: slotStart,
+              slotEndRaw: slotEnd,
+              bookingStartRaw: bookingStart,
+              bookingEndRaw: bookingEnd
+            });
+            return (slotStart < bookingEnd) && (slotEnd > bookingStart);
+          });
+        });
+    }
   }
+
+  // 4. Helper: Find available staff for a slot (for 'Any Professional' booking)
+  function findAvailableStaffForSlot(slotStart, slotEnd, allBookings, staffList) {
+    return staffList
+      .filter(staff => staff.id !== 'any')
+      .find(staff => {
+        const bookings = allBookings.filter(b => b.staff_id === staff.id);
+        return !bookings.some(booking => {
+          const bookingStart = new Date(booking.booking_date);
+          const bookingEnd = new Date(bookingStart.getTime() + booking.duration_minutes * 60000);
+          return (slotStart < bookingEnd) && (slotEnd > bookingStart);
+        });
+      });
+  }
+
+  // 5. Update time slot rendering to use isSlotAvailable
+  // ...
+  // In your time slot rendering (inside the JSX):
+  //
+  // {generateTimeSlotsForDay(selectedDate, openHours).map(time => {
+  //   const [hours, minutes] = time.split(':').map(Number);
+  //   const slotStart = new Date(Date.UTC(
+  //     selectedDate.getUTCFullYear(),
+  //     selectedDate.getUTCMonth(),
+  //     selectedDate.getUTCDate(),
+  //     hours, minutes, 0, 0
+  //   ));
+  //   const selectedServiceObj = basket[0] || selectedService || selectedManiPediManicure || selectedManiPediPedicure;
+  //   const duration = selectedServiceObj?.duration_minutes || selectedServiceObj?.duration || 30;
+  //   const slotEnd = new Date(slotStart.getTime() + duration * 60000);
+  //   const available = isSlotAvailable(slotStart, slotEnd, allBookings, staff, form.staff_id);
+  //   return (
+  //     <button
+  //       key={time}
+  //       disabled={!available}
+  //       // ...rest of your button code
+  //     >
+  //       {/* ... */}
+  //     </button>
+  //   );
+  // })}
+  //
+  // ...
+
   return (
     <>
       {/* Auth Modal */}
@@ -1228,6 +1408,10 @@ export default function BookingPage() {
                           <button
                             onClick={() => {
                               setSelectedCategory('Mani');
+                              setSelectedService(null);
+                              setSelectedBiabVariant(null);
+                              setSelectedAcrylicOption(null);
+                              setBasket([]);
                               setTimeout(() => {
                                 serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                               }, 100);
@@ -1245,6 +1429,10 @@ export default function BookingPage() {
                           <button
                             onClick={() => {
                               setSelectedCategory('Mani & Pedi');
+                              setSelectedService(null);
+                              setSelectedBiabVariant(null);
+                              setSelectedAcrylicOption(null);
+                              setBasket([]);
                               setTimeout(() => {
                                 serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                               }, 100);
@@ -1266,6 +1454,10 @@ export default function BookingPage() {
                           <button
                             onClick={() => {
                               setSelectedCategory('Pedi');
+                              setSelectedService(null);
+                              setSelectedBiabVariant(null);
+                              setSelectedAcrylicOption(null);
+                              setBasket([]);
                               setTimeout(() => {
                                 serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                               }, 100);
@@ -1283,6 +1475,10 @@ export default function BookingPage() {
                           <button
                             onClick={() => {
                               setSelectedCategory('Nail Extension & Enhancements');
+                              setSelectedService(null);
+                              setSelectedBiabVariant(null);
+                              setSelectedAcrylicOption(null);
+                              setBasket([]);
                               setTimeout(() => {
                                 serviceListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                               }, 100);
@@ -1377,7 +1573,7 @@ export default function BookingPage() {
                                       ' ring-2 ring-[#f6c453] bg-[#f6c453]' :
                                       ' hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
                                   onClick={() => {
-                                    if (service.name === 'CLASSIC MANICURE - BIAB') {
+                                    if (service.name === 'BIAB') {
                                       setSelectedService(service);
                                       setStep1Stage('biabVariant');
                                     } else {
@@ -1552,11 +1748,11 @@ export default function BookingPage() {
                                         'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
                                     onClick={() => {
                                       if (selectedAddOnsMani.includes(addon.name)) {
-                                        setSelectedAddOnsMani(selectedAddOnsMani.filter(a => a !== addon.name));
-                                        setNoAddOnsMani(false);
+                                        setSelectedAddOnsMani(selectedAddOnsMani.filter(name => name !== addon.name));
+                                        setBasket(basket.filter(s => s.name !== addon.name));
                                       } else {
                                         setSelectedAddOnsMani([...selectedAddOnsMani, addon.name]);
-                                        setNoAddOnsMani(false);
+                                        addAddOnToBasket(addon);
                                       }
                                     }}
                                     style={selectedAddOnsMani.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
@@ -1592,11 +1788,11 @@ export default function BookingPage() {
                                         'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
                                     onClick={() => {
                                       if (selectedAddOnsPedi.includes(addon.name)) {
-                                        setSelectedAddOnsPedi(selectedAddOnsPedi.filter(a => a !== addon.name));
-                                        setNoAddOnsPedi(false);
+                                        setSelectedAddOnsPedi(selectedAddOnsPedi.filter(name => name !== addon.name));
+                                        setBasket(basket.filter(s => s.name !== addon.name));
                                       } else {
                                         setSelectedAddOnsPedi([...selectedAddOnsPedi, addon.name]);
-                                        setNoAddOnsPedi(false);
+                                        addAddOnToBasket(addon);
                                       }
                                     }}
                                     style={selectedAddOnsPedi.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
@@ -1617,8 +1813,8 @@ export default function BookingPage() {
                             )
                           : (
                             // Default single-service add-ons logic
-                            (selectedService && selectedService.name === 'CLASSIC MANICURE - BIAB' && selectedBiabVariant)
-                              ? allAddOns.filter(addon => addon.onlyFor === 'CLASSIC MANICURE - BIAB').map(addon => (
+                            (selectedService && selectedService.name === 'BIAB' && selectedBiabVariant)
+                              ? allAddOns.filter(addon => addon.onlyFor === 'BIAB').map(addon => (
                                   <div
                                     key={addon.name}
                                     className={`service-card p-4 cursor-pointer transition-all duration-300 bg-[#f6c453] border-2 border-[#d4af37] text-[#2d1b0e] relative` +
@@ -1627,11 +1823,11 @@ export default function BookingPage() {
                                         'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
                                     onClick={() => {
                                       if (selectedAddOns.includes(addon.name)) {
-                                        setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
-                                        setNoAddOns(false);
+                                        setSelectedAddOns(selectedAddOns.filter(name => name !== addon.name));
+                                        setBasket(basket.filter(s => s.name !== addon.name));
                                       } else {
                                         setSelectedAddOns([...selectedAddOns, addon.name]);
-                                        setNoAddOns(false);
+                                        addAddOnToBasket(addon);
                                       }
                                     }}
                                     style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
@@ -1670,11 +1866,11 @@ export default function BookingPage() {
                                       'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
                                   onClick={() => {
                                     if (selectedAddOns.includes(addon.name)) {
-                                      setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
-                                      setNoAddOns(false);
+                                      setSelectedAddOns(selectedAddOns.filter(name => name !== addon.name));
+                                      setBasket(basket.filter(s => s.name !== addon.name));
                                     } else {
                                       setSelectedAddOns([...selectedAddOns, addon.name]);
-                                      setNoAddOns(false);
+                                      addAddOnToBasket(addon);
                                     }
                                   }}
                                   style={selectedAddOns.includes(addon.name) ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
@@ -1943,7 +2139,15 @@ export default function BookingPage() {
                                 (selectedRemovalType === label ?
                                   'ring-2 ring-[#f6c453] bg-[#f6c453]' :
                                   'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5')}
-                              onClick={() => setSelectedRemovalType(selectedRemovalType === label ? null : label)}
+                              onClick={() => {
+                                if (selectedRemovalType === label) {
+                                  setSelectedRemovalType(null);
+                                  setBasket(basket.filter(s => s.name !== label));
+                                } else {
+                                  setSelectedRemovalType(label);
+                                  addRemovalToBasket(option);
+                                }
+                              }}
                               style={selectedRemovalType === label ? { background: '#fff3d1', borderColor: '#e6be7e' } : {}}
                             >
                               {/* Special case: split label for REMOVAL OF HARD GEL, EXTENSIONS OR ACRYLICS */}
@@ -2105,7 +2309,12 @@ export default function BookingPage() {
                               return (
                                 <button
                                   key={date.toISOString()}
-                                  onClick={() => setSelectedDate(date)}
+                                  onClick={() => {
+                                    const prev = selectedDate || new Date();
+                                    const newDate = new Date(date);
+                                    newDate.setHours(prev.getHours() || openHours[date.getDay()].start, prev.getMinutes() || 0, 0, 0);
+                                    setSelectedDate(newDate);
+                                  }}
                                   className={`flex flex-col items-center px-2 py-2 sm:px-4 sm:py-2 rounded-lg border-2 transition-all duration-300 focus:outline-none ${
                                     isSelected
                                       ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
@@ -2132,51 +2341,59 @@ export default function BookingPage() {
                           Select Your Time
                         </h3>
                         {selectedDate ? (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                            {generateTimeSlotsForDay(selectedDate, openHours).map(time => {
-                              const [hours, minutes] = time.split(':').map(Number);
-                              const year = selectedDate.getFullYear();
-                              const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                              const day = String(selectedDate.getDate()).padStart(2, '0');
-                              const hour = String(hours).padStart(2, '0');
-                              const minute = String(minutes).padStart(2, '0');
-                              const datetimeString = `${year}-${month}-${day}T${hour}:${minute}`;
-
-                              // --- Real-time disabling logic ---
-                              const isToday = selectedDate.getFullYear() === now.getFullYear() &&
-                                selectedDate.getMonth() === now.getMonth() &&
-                                selectedDate.getDate() === now.getDate();
-                              let slotDate = new Date(selectedDate);
-                              slotDate.setHours(hours, minutes, 0, 0);
-                              const isPast = isToday && slotDate < now;
-                              // --- End real-time disabling logic ---
-
-                              return (
-                                <button
-                                  key={time}
-                                  onClick={() => {
-                                    if (!isPast) {
-                                      setForm({ ...form, appointment_datetime: datetimeString });
-                                    }
-                                  }}
-                                  className={`p-2 sm:p-3 text-center rounded-lg border-2 transition-all duration-300 text-xs sm:text-base ${
-                                    form.appointment_datetime === datetimeString
-                                      ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
-                                      : isPast
-                                        ? 'opacity-50 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400'
-                                        : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
-                                  }`}
-                                  disabled={isPast}
-                                >
-                                  {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', { 
-                                    hour: 'numeric', 
-                                    minute: '2-digit',
-                                    hour12: true 
-                                  })}
-                                </button>
-                              );
-                            })}
-                          </div>
+                          <>
+                            {console.log('allBookings:', allBookings)}
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                              {generateTimeSlotsForDay(selectedDate, openHours).map(time => {
+                                const [hours, minutes] = time.split(':').map(Number);
+                                const slotStart = new Date(Date.UTC(
+                                  selectedDate.getUTCFullYear(),
+                                  selectedDate.getUTCMonth(),
+                                  selectedDate.getUTCDate(),
+                                  hours, minutes, 0, 0
+                                ));
+                                const selectedServiceObj = basket[0] || selectedService || selectedManiPediManicure || selectedManiPediPedicure;
+                                const duration = selectedServiceObj?.duration_minutes || selectedServiceObj?.duration || 30;
+                                const slotEnd = new Date(slotStart.getTime() + duration * 60000);
+                                const available = isSlotAvailable(slotStart, slotEnd, allBookings, staff, form.staff_id);
+                                // Debug log for each slot
+                                console.log('Rendering time slot:', time, { slotStart, slotEnd, available });
+                                return (
+                                  <button
+                                    key={time}
+                                    disabled={!available}
+                                    onClick={() => {
+                                      if (available) {
+                                        const newDate = new Date(selectedDate);
+                                        newDate.setHours(hours, minutes, 0, 0);
+                                        setSelectedDate(newDate);
+                                        const year = newDate.getFullYear();
+                                        const month = String(newDate.getMonth() + 1).padStart(2, '0');
+                                        const day = String(newDate.getDate()).padStart(2, '0');
+                                        const hour = String(newDate.getHours()).padStart(2, '0');
+                                        const minute = String(newDate.getMinutes()).padStart(2, '0');
+                                        const localDateTime = `${year}-${month}-${day}T${hour}:${minute}`;
+                                        setForm({ ...form, appointment_datetime: localDateTime });
+                                      }
+                                    }}
+                                    className={`p-2 sm:p-3 text-center rounded-lg border-2 transition-all duration-300 text-xs sm:text-base ${
+                                      form.appointment_datetime && form.appointment_datetime.slice(11, 16) === `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+                                        ? 'ring-2 ring-[#e6be7e] bg-[#fff3d1] border-[#e6be7e]'
+                                        : !available
+                                          ? 'opacity-50 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400'
+                                          : 'hover:bg-gradient-to-br hover:from-[#d4af37]/5 hover:to-[#b87333]/5'
+                                    }`}
+                                  >
+                                    {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', { 
+                                      hour: 'numeric', 
+                                      minute: '2-digit',
+                                      hour12: true 
+                                    })}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </>
                         ) : (
                           <p className="text-[#8b7d6b] text-center py-4">Please select a date first to see available time slots</p>
                         )}
@@ -2436,6 +2653,7 @@ export default function BookingPage() {
                       <button
                         onClick={() => {
                           if (!selectedBiabVariant) return;
+                          setBasket([selectedBiabVariant]);
                           if (selectedBiabVariant.name === 'BIAB Removal') {
                             setCurrentStep(2); // Go directly to confirmation
                           } else {

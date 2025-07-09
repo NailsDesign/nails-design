@@ -171,35 +171,16 @@ nav, header, footer {
   border: 1px solid var(--border-soft);
   border-radius: 1.5rem;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
+  /* Removed transition and position for zoom effect */
 }
 
 .service-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 20px 40px var(--shadow-medium),
-    0 8px 16px rgba(232, 180, 184, 0.1);
+  /* Removed transform and box-shadow for zoom effect */
 }
 
 .service-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-gold) 0%, var(--accent-copper) 100%);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.service-card:hover::before {
-  transform: scaleX(1);
-}
-
-.no-zoom.service-card:hover {
-  transform: none !important;
+  /* Removed top border/line gradient effect */
+  content: none;
 }
 
 /* Testimonial Styling */
