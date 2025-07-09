@@ -215,11 +215,12 @@ app.post('/admin/register', async (req, res) => {
   }
   try {
     const password_hash = await bcrypt.hash(password, 10);
+    const hire_date = new Date();
     const result = await pool.query(
-      `INSERT INTO staff (first_name, last_name, email, phone, role, password_hash)
-       VALUES ($1, $2, $3, $4, 'admin', $5)
-       RETURNING staff_id, first_name, last_name, email, phone, role`,
-      [first_name, last_name, email, phone, password_hash]
+      `INSERT INTO staff (first_name, last_name, email, phone, role, password_hash, hire_date)
+       VALUES ($1, $2, $3, $4, 'admin', $5, $6)
+       RETURNING staff_id, first_name, last_name, email, phone, role, hire_date`,
+      [first_name, last_name, email, phone, password_hash, hire_date]
     );
     console.log('Admin registration successful:', result.rows[0]);
     res.json({ success: true, admin: result.rows[0] });
