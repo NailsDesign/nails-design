@@ -152,6 +152,83 @@ app.post('/customers/reset-password', async (req, res) => {
   res.json({ success: true });
 });
 
+// Admin password reset request
+app.post('/admin/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  // Only allow for admin role
+  const result = await pool.query(
+    `SELECT * FROM staff WHERE email=$1 AND role='admin'`, [email]
+  );
+  const admin = result.rows[0];
+  if (!admin) return res.status(400).json({ error: "Email not found" });
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  await pool.query(
+    `UPDATE staff SET reset_token=$1, reset_token_expiry=$2 WHERE staff_id=$3`,
+    [token, expiry, admin.staff_id]
+  );
+  // Demo email sending (replace with real SMTP details in production)
+  const transporter = nodemailer.createTransport({
+    host: "smtp.example.com", port: 587, secure: false,
+    auth: { user: "your_email", pass: "your_password" }
+  });
+  await transporter.sendMail({
+    from: '"Nail Salon" <noreply@nailsalon.com>',
+    to: email,
+    subject: "Admin password reset",
+    text: `To reset your admin password, click: https://yourdomain.com/admin/reset-password?token=${token}`
+  });
+  res.json({ success: true });
+});
+
+// Admin password reset with token
+app.post('/admin/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  const adminRes = await pool.query(
+    `SELECT * FROM staff WHERE reset_token=$1 AND reset_token_expiry > NOW() AND role='admin'`, [token]
+  );
+  const admin = adminRes.rows[0];
+  if (!admin) return res.status(400).json({ error: "Invalid or expired token" });
+  const password_hash = await bcrypt.hash(password, 10);
+  await pool.query(
+    `UPDATE staff SET password_hash=$1, reset_token=NULL, reset_token_expiry=NULL WHERE staff_id=$2`,
+    [password_hash, admin.staff_id]
+  );
+  res.json({ success: true });
+});
+
+// Admin registration endpoint (invite code required)
+app.post('/admin/register', async (req, res) => {
+  const { first_name, last_name, email, phone, password, invite_code } = req.body;
+  console.log('Admin registration attempt:', { first_name, last_name, email, phone, invite_code });
+  const ADMIN_INVITE_CODE = process.env.ADMIN_INVITE_CODE || "supersecretcode";
+  if (invite_code !== ADMIN_INVITE_CODE) {
+    console.log('Invalid invite code:', invite_code);
+    return res.status(403).json({ error: "Invalid invite code." });
+  }
+  // Check if admin with this email already exists
+  const exists = await pool.query('SELECT * FROM staff WHERE email=$1 AND role=$2', [email, 'admin']);
+  console.log('Admin exists check:', exists.rows.length);
+  if (exists.rows.length > 0) {
+    console.log('Admin with this email already exists:', email);
+    return res.status(400).json({ error: "Admin with this email already exists." });
+  }
+  try {
+    const password_hash = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      `INSERT INTO staff (first_name, last_name, email, phone, role, password_hash)
+       VALUES ($1, $2, $3, $4, 'admin', $5)
+       RETURNING staff_id, first_name, last_name, email, phone, role`,
+      [first_name, last_name, email, phone, password_hash]
+    );
+    console.log('Admin registration successful:', result.rows[0]);
+    res.json({ success: true, admin: result.rows[0] });
+  } catch (err) {
+    console.error('Admin registration error:', err);
+    res.status(500).json({ error: "Registration failed. " + (err.message || "") });
+  }
+});
+
 // Get bookings for logged-in customer
 app.get('/my-bookings', authenticateToken, async (req, res) => {
   const customer_id = req.user.id;
