@@ -322,23 +322,24 @@ app.get('/appointments/by-day', async (req, res) => {
   try {
     const { date, staff_id } = req.query;
     let rows;
+    console.log('API /appointments/by-day - Querying for date:', date, 'staff_id:', staff_id);
     if (staff_id === "any") {
       // Get all bookings for the date, regardless of staff
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1::date`,
         [date]
       );
       rows = result.rows;
     } else {
       // Get bookings for the date and specific staff
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1 AND staff_id = $2`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1::date AND staff_id = $2`,
         [date, staff_id]
       );
       rows = result.rows;
     }
     // Debug log
-    console.log('API /appointments/by-day', { date, staff_id }, rows);
+    console.log('API /appointments/by-day - Results:', rows);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
