@@ -323,17 +323,17 @@ app.get('/appointments/by-day', async (req, res) => {
     const { date, staff_id } = req.query;
     let rows;
     console.log('API /appointments/by-day - Querying for date:', date, 'staff_id:', staff_id);
-    if (staff_id === "any") {
-      // Get all bookings for the date, regardless of staff
+    if (staff_id === "any" || !staff_id) {
+      // Get all bookings for the date, regardless of staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1::date`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London'::date = $1::date`,
         [date]
       );
       rows = result.rows;
     } else {
-      // Get bookings for the date and specific staff
+      // Get bookings for the date and specific staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date) = $1::date AND staff_id = $2`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London'::date = $1::date AND staff_id = $2`,
         [date, staff_id]
       );
       rows = result.rows;
