@@ -326,14 +326,14 @@ app.get('/appointments/by-day', async (req, res) => {
     if (staff_id === "any" || !staff_id) {
       // Get all bookings for the date, regardless of staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London'::date = $1::date`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date`,
         [date]
       );
       rows = result.rows;
     } else {
       // Get bookings for the date and specific staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London'::date = $1::date AND staff_id = $2`,
+        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date AND staff_id = $2`,
         [date, staff_id]
       );
       rows = result.rows;
@@ -349,49 +349,68 @@ app.get('/appointments/by-day', async (req, res) => {
 // Create new booking
 app.post('/appointments', async (req, res) => {
   try {
-    const { name, email, phone, service_ids, staff_id, appointment_datetime } = req.body;
-    
-    // First, create or get customer
-    let customerResult = await pool.query(
-      `SELECT customer_id FROM customers WHERE email = $1`,
-      [email]
-    );
-    
-    let customer_id;
-    if (customerResult.rows.length === 0) {
-      // Create new customer
-      const newCustomer = await pool.query(
-        `INSERT INTO customers (first_name, last_name, email, phone) 
-         VALUES ($1, $2, $3, $4) 
-         RETURNING customer_id`,
-        [name.split(' ')[0] || name, name.split(' ').slice(1).join(' ') || '', email, phone]
+    console.log('POST /appointments body:', req.body);
+    const { name, email, phone, service_ids, staff_id, appointment_datetime, is_block, duration_minutes, status } = req.body;
+
+    let customer_id = null;
+
+    // Only create/find customer if not a block time
+    if (!is_block) {
+      if (!email) {
+        return res.status(400).json({ error: "Email is required for appointments." });
+      }
+      let customerResult = await pool.query(
+        `SELECT customer_id FROM customers WHERE email = $1`,
+        [email]
       );
-      customer_id = newCustomer.rows[0].customer_id;
-    } else {
-      customer_id = customerResult.rows[0].customer_id;
+
+      if (customerResult.rows.length === 0) {
+        // Defensive: handle missing or empty name
+        const safeName = typeof name === "string" && name.trim() ? name.trim() : "Guest";
+        const firstName = safeName.split(' ')[0] || safeName;
+        const lastName = safeName.split(' ').slice(1).join(' ') || "";
+        const newCustomer = await pool.query(
+          `INSERT INTO customers (first_name, last_name, email, phone) 
+           VALUES ($1, $2, $3, $4) 
+           RETURNING customer_id`,
+          [firstName, lastName, email, phone]
+        );
+        customer_id = newCustomer.rows[0].customer_id;
+      } else {
+        customer_id = customerResult.rows[0].customer_id;
+      }
     }
-    
+
     // Create booking
     const bookingResult = await pool.query(
       `INSERT INTO bookings (customer_id, staff_id, booking_date, duration_minutes, status) 
-       VALUES ($1, $2, $3, 60, 'confirmed') 
+       VALUES ($1, $2, $3, $4, $5) 
        RETURNING booking_id`,
-      [customer_id, staff_id, appointment_datetime]
+      [
+        customer_id, // will be null for block times
+        staff_id,
+        appointment_datetime,
+        duration_minutes || 60, // fallback to 60 if not provided
+        status || (is_block ? 'blocked' : 'confirmed')
+      ]
     );
-    
+
     const booking_id = bookingResult.rows[0].booking_id;
-    
-    // Add each selected service to booking
-    for (const service_id of service_ids) {
-      await pool.query(
-        `INSERT INTO booking_services (booking_id, service_id, price_at_booking) 
-         VALUES ($1, $2, (SELECT price FROM services WHERE service_id = $2))`,
-        [booking_id, service_id]
-      );
+
+    // Only add services for regular appointments
+    if (!is_block && Array.isArray(service_ids)) {
+      for (const service_id of service_ids) {
+        await pool.query(
+          `INSERT INTO booking_services (booking_id, service_id, price_at_booking) 
+           VALUES ($1, $2, (SELECT price FROM services WHERE service_id = $2))`,
+          [booking_id, service_id]
+        );
+      }
     }
-    
+
     res.json({ success: true, booking_id });
   } catch (err) {
+    console.error("Error in /appointments:", err);
     res.status(500).json({ error: err.message });
   }
 });
