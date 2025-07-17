@@ -271,7 +271,7 @@ app.post('/admin/login', async (req, res) => {
 
 app.get('/appointments', authenticateAdmin, async (req, res) => {
   const { rows } = await pool.query(
-    `SELECT b.*, 
+    `SELECT b.booking_id, b.customer_id, b.staff_id, b.booking_date, b.duration_minutes, b.status, b.total, b.promo_code, b.discount,
             CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
             CONCAT(st.first_name, ' ', st.last_name) AS staff_name,
             s.name AS service_name
@@ -326,18 +326,20 @@ app.get('/appointments/by-day', async (req, res) => {
     if (staff_id === "any" || !staff_id) {
       // Get all bookings for the date, regardless of staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date`,
+        `SELECT staff_id, booking_date, duration_minutes, status FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date`,
         [date]
       );
       rows = result.rows;
     } else {
       // Get bookings for the date and specific staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date AND staff_id = $2`,
+        `SELECT staff_id, booking_date, duration_minutes, status FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date AND staff_id = $2`,
         [date, staff_id]
       );
       rows = result.rows;
     }
+    // Add is_block: true for block times
+    rows = rows.map(row => row.status === 'blocked' ? { ...row, is_block: true } : row);
     // Debug log
     console.log('API /appointments/by-day - Results:', rows);
     res.json(rows);
@@ -381,6 +383,9 @@ app.post('/appointments', async (req, res) => {
       }
     }
 
+    // Use booking_date for block times, appointment_datetime for regular bookings
+    const bookingDate = is_block ? req.body.booking_date : appointment_datetime;
+
     // Create booking
     const bookingResult = await pool.query(
       `INSERT INTO bookings (customer_id, staff_id, booking_date, duration_minutes, status) 
@@ -389,7 +394,7 @@ app.post('/appointments', async (req, res) => {
       [
         customer_id, // will be null for block times
         staff_id,
-        appointment_datetime,
+        bookingDate, // use correct field for block or appointment
         duration_minutes || 60, // fallback to 60 if not provided
         status || (is_block ? 'blocked' : 'confirmed')
       ]
@@ -523,6 +528,68 @@ app.post('/api/bookings/finalize', async (req, res) => {
     assigned_staff_id: final_staff_id,
     assigned_staff_name: staff_name
   });
+});
+
+// --- BLOCK TIMES ENDPOINTS ---
+
+// Get block times for a day (optionally by staff)
+app.get('/block-times', async (req, res) => {
+  try {
+    const { date, staff_id } = req.query;
+    let query = `SELECT * FROM block_times WHERE DATE(block_start AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1`;
+    let params = [date];
+    if (staff_id && staff_id !== 'any') {
+      query += ' AND staff_id = $2';
+      params.push(staff_id);
+    }
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create a block time
+app.post('/block-times', async (req, res) => {
+  try {
+    const { staff_id, block_start, block_end, description, repeat } = req.body;
+    const result = await pool.query(
+      `INSERT INTO block_times (staff_id, block_start, block_end, description, repeat)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [staff_id, block_start, block_end, description, repeat]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update a block time
+app.put('/block-times/:id', async (req, res) => {
+  try {
+    const { staff_id, block_start, block_end, description, repeat } = req.body;
+    const { id } = req.params;
+    const result = await pool.query(
+      `UPDATE block_times SET staff_id=$1, block_start=$2, block_end=$3, description=$4, repeat=$5, updated_at=now()
+       WHERE block_time_id=$6 RETURNING *`,
+      [staff_id, block_start, block_end, description, repeat, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete a block time
+app.delete('/block-times/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query(`DELETE FROM block_times WHERE block_time_id=$1`, [id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.get('/', (req, res) => {
