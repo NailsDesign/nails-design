@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_default_jwt_secret_here";
+console.log('JWT_SECRET:', JWT_SECRET);
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -45,8 +46,13 @@ function authenticateToken(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth) return res.status(401).json({ error: "No token" });
   const token = auth.split(" ")[1];
+  console.log('Verifying token:', token);
+  console.log('JWT_SECRET in middleware:', JWT_SECRET);
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
+    if (err) {
+      console.log('JWT error:', err);
+      return res.status(403).json({ error: "Invalid token" });
+    }
     req.user = user;
     next();
   });
@@ -326,14 +332,28 @@ app.get('/appointments/by-day', async (req, res) => {
     if (staff_id === "any" || !staff_id) {
       // Get all bookings for the date, regardless of staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes, status FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date`,
+        `SELECT b.booking_id, b.customer_id, b.staff_id, b.booking_date, b.duration_minutes, b.status,
+                ARRAY_REMOVE(ARRAY_AGG(s.name), NULL) AS service_names
+         FROM bookings b
+         LEFT JOIN booking_services bs ON b.booking_id = bs.booking_id
+         LEFT JOIN services s ON bs.service_id = s.service_id
+         WHERE DATE(b.booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date
+         GROUP BY b.booking_id, b.customer_id, b.staff_id, b.booking_date, b.duration_minutes, b.status
+         ORDER BY b.booking_date ASC`,
         [date]
       );
       rows = result.rows;
     } else {
       // Get bookings for the date and specific staff, using Europe/London local date
       const result = await pool.query(
-        `SELECT staff_id, booking_date, duration_minutes, status FROM bookings WHERE DATE(booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date AND staff_id = $2`,
+        `SELECT b.booking_id, b.customer_id, b.staff_id, b.booking_date, b.duration_minutes, b.status,
+                ARRAY_REMOVE(ARRAY_AGG(s.name), NULL) AS service_names
+         FROM bookings b
+         LEFT JOIN booking_services bs ON b.booking_id = bs.booking_id
+         LEFT JOIN services s ON bs.service_id = s.service_id
+         WHERE DATE(b.booking_date AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/London') = $1::date AND b.staff_id = $2
+         GROUP BY b.booking_id, b.customer_id, b.staff_id, b.booking_date, b.duration_minutes, b.status
+         ORDER BY b.booking_date ASC`,
         [date, staff_id]
       );
       rows = result.rows;
@@ -586,6 +606,40 @@ app.delete('/block-times/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query(`DELETE FROM block_times WHERE block_time_id=$1`, [id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH: Update booking note
+app.patch('/bookings/:id/note', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { note } = req.body;
+  try {
+    await pool.query('UPDATE bookings SET note = $1 WHERE booking_id = $2', [note, id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH: Mark as no-show
+app.patch('/bookings/:id/no-show', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('UPDATE bookings SET status = $1 WHERE booking_id = $2', ['no-show', id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH: Cancel booking
+app.patch('/bookings/:id/cancel', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('UPDATE bookings SET status = $1 WHERE booking_id = $2', ['cancelled', id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
