@@ -37,6 +37,11 @@ export default function AdminLogin() {
         <input name="password" type="password" placeholder="Password" required className="w-full p-2 border rounded" onChange={handleChange} />
         <button className="w-full bg-pink-600 text-white py-2 rounded">Login</button>
       </form>
+      <div className="mt-4 text-center">
+        <a href="/admin/forgot-password" className="text-pink-600 hover:text-pink-800 underline text-base transition-colors">
+          Forgot your password?
+        </a>
+      </div>
     </main>
   );
 }

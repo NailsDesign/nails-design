@@ -597,10 +597,41 @@ export default function BookingPage() {
     );
   }
 
+  // Helper to convert local time to 'fake UTC' ISO string
+  function toFakeUTCISOString(date) {
+    const tzOffset = date.getTimezoneOffset();
+    const fakeUTC = new Date(date.getTime() - tzOffset * 60000);
+    return fakeUTC.toISOString().slice(0, 16);
+  }
+
+  // Helper to convert Date to local time string (YYYY-MM-DDTHH:mm)
+  function toLocalISOString(date) {
+    const pad = n => n.toString().padStart(2, '0');
+    return (
+      date.getFullYear() + '-' +
+      pad(date.getMonth() + 1) + '-' +
+      pad(date.getDate()) + 'T' +
+      pad(date.getHours()) + ':' +
+      pad(date.getMinutes())
+    );
+  }
+
+  function toUTCISOStringFromLocal(date) {
+    // Construct a new Date using local time parts, then get UTC ISO string
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      0, 0
+    ).toISOString();
+  }
+
   const handleDateChange = (date) => {
     if (date) {
       setSelectedDate(date);
-      setForm({ ...form, appointment_datetime: date.toISOString().slice(0, 16) });
+      setForm({ ...form, appointment_datetime: toUTCISOStringFromLocal(date) });
       setError("");
     }
   };
@@ -729,6 +760,9 @@ export default function BookingPage() {
       setError("Sorry, this slot is already booked for the staff selected. Please pick another time.");
       return;
     }
+
+    // Log the value being sent
+    console.log('Form appointment_datetime:', form.appointment_datetime);
 
     try {
       // Replace with actual customer_id (from logged-in user)
@@ -2367,13 +2401,7 @@ export default function BookingPage() {
                                         const newDate = new Date(selectedDate);
                                         newDate.setHours(hours, minutes, 0, 0);
                                         setSelectedDate(newDate);
-                                        const year = newDate.getFullYear();
-                                        const month = String(newDate.getMonth() + 1).padStart(2, '0');
-                                        const day = String(newDate.getDate()).padStart(2, '0');
-                                        const hour = String(newDate.getHours()).padStart(2, '0');
-                                        const minute = String(newDate.getMinutes()).padStart(2, '0');
-                                        const localDateTime = `${year}-${month}-${day}T${hour}:${minute}`;
-                                        setForm({ ...form, appointment_datetime: localDateTime });
+                                        setForm({ ...form, appointment_datetime: toUTCISOStringFromLocal(newDate) });
                                       }
                                     }}
                                     className={`p-2 sm:p-3 text-center rounded-lg border-2 transition-all duration-300 text-xs sm:text-base ${
